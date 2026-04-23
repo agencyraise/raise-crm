@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Raise — CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0c0c10;--surface:#14141a;--surface2:#1c1c25;--border:#2a2a38;--border2:#3a3a4e;--accent:#7c6fe0;--accent2:#a99ef5;--accent-bg:rgba(124,111,224,0.12);--text:#f0f0f8;--text2:#8888aa;--text3:#55556a;--green:#3ecf8e;--green-bg:rgba(62,207,142,0.1);--red:#f87171;--red-bg:rgba(248,113,113,0.1);--amber:#fbbf24;--amber-bg:rgba(251,191,36,0.1);--blue:#60a5fa;--r:10px;--r-sm:6px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.auth-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 32px;width:100%;max-width:380px}
+.auth-logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--text);margin-bottom:4px}
+.auth-sub{font-size:13px;color:var(--text3);margin-bottom:28px}
+.auth-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-weight:500;display:block;margin-bottom:5px}
+.auth-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;padding:10px 12px;outline:none;transition:border-color .15s;margin-bottom:14px}
+.auth-input:focus{border-color:var(--accent)}
+.auth-btn{width:100%;background:var(--accent);border:none;border-radius:var(--r-sm);color:#fff;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;padding:11px;cursor:pointer;margin-top:4px}
+.auth-err{font-size:12px;color:var(--red);margin-top:10px;text-align:center;min-height:18px}
+.auth-ok{font-size:12px;color:var(--green);margin-top:10px;text-align:center;min-height:18px}
+.auth-toggle{font-size:12px;color:var(--text3);text-align:center;margin-top:16px;cursor:pointer}
+.auth-toggle span{color:var(--accent2)}
+.shell{display:flex;min-height:100vh}
+.sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.main{flex:1;overflow-x:hidden}
+.logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+.logo-mark{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text)}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+.nav{padding:12px 10px;flex:1}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r-sm);color:var(--text2);font-size:13px;cursor:pointer;margin-bottom:2px;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--accent-bg);color:var(--accent2);font-weight:500}
+.nav-section{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;padding:16px 12px 6px}
+.sidebar-bottom{padding:16px 10px;border-top:1px solid var(--border)}
+.user-info{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r-sm);background:var(--surface2);margin-bottom:8px}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:11px;color:var(--accent2);flex-shrink:0}
+.user-name{font-size:11px;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.logout-btn{width:100%;background:none;border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text3);font-size:11px;font-family:'DM Sans',sans-serif;padding:7px;cursor:pointer;margin-bottom:8px}
+.logout-btn:hover{border-color:var(--red);color:var(--red)}
+.day-sel{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 12px}
+.day-sel label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
+.day-sel select{background:none;border:none;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;width:100%;cursor:pointer;outline:none}
+.day-sel select option{background:var(--surface2)}
+.topbar{padding:20px 28px 0;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text)}
+.page-sub{font-size:13px;color:var(--text2);margin-top:2px}
+.content{padding:20px 28px 40px}
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:20px}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
+.metric-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--text);line-height:1}
+.metric-val.green{color:var(--green)}.metric-val.red{color:var(--red)}.metric-val.amber{color:var(--amber)}
+.metric-lbl{font-size:11px;color:var(--text3);margin-top:5px;text-transform:uppercase;letter-spacing:.05em}
+.cr-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.cr-chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:none;color:var(--text2);font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap}
+.cr-chip:hover{border-color:var(--accent);color:var(--accent2)}
+.cr-chip.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent2);font-weight:500}
+.task-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.creator-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.creator-card-hd{padding:10px 14px;background:var(--surface2);display:flex;align-items:center;justify-content:space-between}
+.creator-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
+.creator-prog{font-size:11px;color:var(--text3)}
+.prog-bar{height:3px;background:var(--border)}
+.prog-fill{height:3px;background:var(--accent);transition:width .4s}
+.task-list{padding:8px}
+.task-row{display:flex;align-items:flex-start;gap:8px;padding:7px 8px;border-radius:var(--r-sm);cursor:pointer;transition:background .1s;margin-bottom:2px}
+.task-row:hover{background:var(--surface2)}
+.task-row.done{opacity:.5}
+.task-row.done .task-name{text-decoration:line-through;color:var(--text3)}
+.chkbox{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border2);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.task-row.done .chkbox{background:var(--green);border-color:var(--green)}
+.chk-mark{display:none;color:#fff;font-size:10px;font-weight:700}
+.task-row.done .chk-mark{display:block}
+.task-name{font-size:12px;color:var(--text);line-height:1.4;flex:1}
+.task-meta{margin-top:3px;display:flex;gap:5px;flex-wrap:wrap}
+.badge{font-size:9px;font-weight:500;padding:2px 6px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em}
+.badge-raise{background:var(--accent-bg);color:var(--accent2)}
+.badge-cri{background:var(--green-bg);color:var(--green)}
+.badge-both{background:var(--amber-bg);color:var(--amber)}
+.badge-pilar{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
+.btn{padding:8px 16px;border-radius:var(--r-sm);font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid var(--border2);background:none;color:var(--text2)}
+.btn:hover{background:var(--surface2);color:var(--text)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-sm{padding:5px 10px;font-size:11px}
+.kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.kb-col{background:var(--surface2);border-radius:var(--r);padding:10px;min-height:160px}
+.kb-col-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.kb-col-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:6px}
+.kb-dot{width:7px;height:7px;border-radius:50%}
+.kb-count{background:var(--border);color:var(--text3);font-size:10px;font-weight:600;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.ticket{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:8px}
+.ticket-title{font-size:12px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:5px}
+.ticket-creator{font-size:11px;color:var(--accent2);margin-bottom:4px}
+.ticket-meta{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.prio{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase}
+.prio-urg{background:var(--red-bg);color:var(--red)}.prio-med{background:var(--amber-bg);color:var(--amber)}.prio-low{background:var(--green-bg);color:var(--green)}
+.ticket-actions{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+.ticket-move{font-size:10px;padding:3px 7px;border-radius:4px;border:1px solid var(--border2);background:none;color:var(--text3);cursor:pointer;font-family:'DM Sans',sans-serif}
+.ticket-move:hover{border-color:var(--accent);color:var(--accent2)}
+.ticket-del{font-size:10px;padding:3px 7px;border-radius:4px;border:none;background:none;color:var(--text3);cursor:pointer;margin-left:auto}
+.ticket-del:hover{color:var(--red)}
+.form-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.form-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px}
+.form-group label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-weight:500}
+.form-group input,.form-group select,.form-group textarea{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;padding:8px 10px;outline:none;transition:border-color .15s}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent)}
+.form-group select option{background:var(--surface2)}
+.form-group textarea{resize:vertical;min-height:60px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r)}
+.card-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
+.card-body{padding:12px}
+.dossie-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pw-val{font-family:monospace;font-size:12px;color:var(--text);filter:blur(5px);cursor:pointer;transition:filter .2s;flex:1;word-break:break-all}
+.pw-val.show{filter:none}
+.pw-toggle{font-size:10px;color:var(--text3);cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:4px;flex-shrink:0;background:none;font-family:'DM Sans',sans-serif}
+.fin-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.fin-row:last-child{border:none;font-weight:600}
+.fin-lbl{color:var(--text2)}.fin-pos{color:var(--green);font-weight:500}.fin-neg{color:var(--red);font-weight:500}
+.res-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.res-lbl{font-size:12px;color:var(--text2);width:80px;flex-shrink:0}
+.res-bar-w{flex:1;background:var(--border);border-radius:3px;height:8px;overflow:hidden}
+.res-bar{height:8px;background:var(--accent);border-radius:3px;transition:width .4s}
+.res-pct{font-size:11px;color:var(--text3);width:36px;text-align:right;flex-shrink:0}
+.panel{display:none}.panel.active{display:block}
+.empty{text-align:center;padding:24px;color:var(--text3);font-size:12px}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:#000;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+@media(max-width:700px){.sidebar{display:none}.mobile-nav{display:flex !important}.content{padding:12px 14px 70px}.topbar{padding:14px 14px 0}.dossie-grid{grid-template-columns:1fr}}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:8px 16px;z-index:100;justify-content:space-around}
+.mob-btn{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);font-size:10px;cursor:pointer;padding:4px 8px;border-radius:6px;border:none;background:none;font-family:'DM Sans',sans-serif}
+.mob-btn.active{color:var(--accent2)}
+.mob-btn span:first-child{font-size:18px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--surface)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+<div id="auth-screen" class="auth-wrap">
+  <div class="auth-box">
+    <div class="auth-logo">Raise</div>
+    <div class="auth-sub" id="auth-sub">Entre com sua conta da agência</div>
+    <label class="auth-label">E-mail</label>
+    <input class="auth-input" type="email" id="auth-email" placeholder="seu@email.com">
+    <label class="auth-label">Senha</label>
+    <input class="auth-input" type="password" id="auth-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')authAction()">
+    <div id="auth-name-wrap" style="display:none">
+      <label class="auth-label">Seu nome</label>
+      <input class="auth-input" type="text" id="auth-name" placeholder="Ex: Murilo">
+    </div>
+    <button class="auth-btn" onclick="authAction()" id="auth-btn">Entrar</button>
+    <div class="auth-err" id="auth-err"></div>
+    <div class="auth-ok" id="auth-ok"></div>
+    <div class="auth-toggle" id="auth-toggle" onclick="toggleMode()">Não tem conta? <span>Criar conta</span></div>
+  </div>
+</div>
+
+<div id="app-screen" style="display:none">
+<div class="shell">
+  <aside class="sidebar">
+    <div class="logo"><div class="logo-mark">Raise</div><div class="logo-sub">CRM Operacional</div></div>
+    <nav class="nav">
+      <div class="nav-section">Principal</div>
+      <button class="nav-item active" onclick="goto('rotina')"><span>✓</span> Rotina do dia</button>
+      <button class="nav-item" onclick="goto('kanban')"><span>⚡</span> Chamados</button>
+      <div class="nav-section">Gestão</div>
+      <button class="nav-item" onclick="goto('dossie')"><span>👤</span> Dossiê criadores</button>
+      <button class="nav-item" onclick="goto('fin')"><span>💰</span> Financeiro</button>
+      <button class="nav-item" onclick="goto('equipe')"><span>👥</span> Equipe & Log</button>
+      <div class="nav-section">Análise</div>
+      <button class="nav-item" onclick="goto('resumo')"><span>📊</span> Resumo semanal</button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="day-sel" style="margin-bottom:8px">
+        <label>Dia atual</label>
+        <select id="day-select" onchange="buildRotina()">
+          <option value="seg">Segunda-feira</option><option value="ter">Terça-feira</option>
+          <option value="qua">Quarta-feira</option><option value="qui">Quinta-feira</option>
+          <option value="sex">Sexta-feira</option><option value="sab">Sábado</option><option value="dom">Domingo</option>
+        </select>
+      </div>
+      <div class="user-info"><div class="user-avatar" id="user-avatar">?</div><div class="user-name" id="user-name">...</div></div>
+      <button class="logout-btn" onclick="logout()">Sair da conta</button>
+    </div>
+  </aside>
+  <div class="main">
+    <div id="panel-rotina" class="panel active">
+      <div class="topbar"><div><div class="page-title">Rotina do dia</div><div class="page-sub" id="rotina-sub">Marque as tarefas executadas</div></div><button class="btn btn-sm" onclick="resetDay()">↺ Reiniciar dia</button></div>
+      <div class="content"><div class="metrics-row" id="rotina-metrics"></div><div class="cr-filter" id="cr-filter"></div><div class="task-grid" id="task-grid"><div class="empty">Carregando...</div></div></div>
+    </div>
+    <div id="panel-kanban" class="panel">
+      <div class="topbar"><div><div class="page-title">Chamados & Incidentes</div><div class="page-sub">Tudo fora da rotina</div></div></div>
+      <div class="content">
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header"><span class="card-title">Novo chamado</span></div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group" style="flex:3"><label>Descrição</label><input id="kb-desc" placeholder="Ex: Perfil da Bruna caiu..."></div>
+              <div class="form-group"><label>Criador</label><select id="kb-creator"><option value="">Geral</option><option>Bruna Santiny</option><option>Negao Rubi</option><option>Barbara Fartura</option><option>Rick Necker</option><option>Gabriela Avillar</option><option>Meck</option><option>Perola</option><option>Alice</option><option>Luh</option></select></div>
+              <div class="form-group"><label>Tipo</label><select id="kb-tipo"><option value="perfil-caido">Perfil caído</option><option value="nova-conta">Nova conta</option><option value="senha">Recuperar senha</option><option value="marketing">Marketing</option><option value="plataforma">Plataforma +18</option><option value="outro">Outro</option></select></div>
+              <div class="form-group"><label>Prioridade</label><select id="kb-prio"><option value="urg">🔴 Urgente</option><option value="med">🟡 Médio</option><option value="low">🟢 Baixo</option></select></div>
+              <div class="form-group" style="justify-content:flex-end;flex:0 0 auto;min-width:auto"><label>&nbsp;</label><button class="btn btn-primary" onclick="addTicket()">Abrir chamado</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="kanban" id="kanban-board"><div class="empty">Carregando...</div></div>
+      </div>
+    </div>
+    <div id="panel-dossie" class="panel">
+      <div class="topbar"><div><div class="page-title">Dossiê dos criadores</div><div class="page-sub">Dados de acesso e senhas — confidencial</div></div></div>
+      <div class="content"><div class="cr-filter" id="dossie-tabs" style="margin-bottom:16px"></div><div id="dossie-body"><div class="empty">Carregando...</div></div></div>
+    </div>
+    <div id="panel-fin" class="panel">
+      <div class="topbar"><div><div class="page-title">Financeiro</div><div class="page-sub">Fechamento quinzenal, lucros e distribuição</div></div></div>
+      <div class="content">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div class="card"><div class="card-header"><span class="card-title">Fechamento do período</span></div><div class="card-body">
+            <div class="form-row"><div class="form-group"><label>Receita bruta (R$)</label><input type="number" id="f-bruta" value="0" oninput="calcFin()"></div><div class="form-group"><label>Custos (R$)</label><input type="number" id="f-custos" value="0" oninput="calcFin()"></div></div>
+            <div class="form-row"><div class="form-group"><label>Impostos (R$)</label><input type="number" id="f-imp" value="0" oninput="calcFin()"></div></div>
+            <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px">
+              <div class="fin-row"><span class="fin-lbl">Receita bruta</span><span class="fin-pos" id="fi-bruta">R$ 0</span></div>
+              <div class="fin-row"><span class="fin-lbl">Custos</span><span class="fin-neg" id="fi-custos">(R$ 0)</span></div>
+              <div class="fin-row"><span class="fin-lbl">Impostos</span><span class="fin-neg" id="fi-imp">(R$ 0)</span></div>
+              <div class="fin-row"><span class="fin-lbl">Lucro líquido</span><span class="fin-pos" id="fi-lucro" style="font-size:18px;font-family:'Syne',sans-serif;font-weight:800">R$ 0</span></div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="saveFin()" style="margin-top:10px;width:100%">Salvar fechamento</button>
+          </div></div>
+          <div class="card"><div class="card-header"><span class="card-title">Distribuição de lucro</span></div><div class="card-body">
+            <div id="dist-list" style="margin-bottom:10px"></div>
+            <div class="form-row"><div class="form-group"><label>Nome</label><input id="dist-nome" placeholder="Criador / Operador"></div><div class="form-group" style="flex:0 0 70px"><label>%</label><input id="dist-pct" type="number" placeholder="0"></div><div class="form-group" style="justify-content:flex-end;flex:0;min-width:auto"><label>&nbsp;</label><button class="btn btn-primary btn-sm" onclick="addDist()">+</button></div></div>
+          </div></div>
+        </div>
+        <div class="card"><div class="card-header"><span class="card-title">Checklist estratégico mensal</span></div><div class="card-body" id="fin-checks"></div></div>
+      </div>
+    </div>
+    <div id="panel-equipe" class="panel">
+      <div class="topbar"><div><div class="page-title">Equipe & Log</div><div class="page-sub">Operadores e registro de atividades</div></div></div>
+      <div class="content">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:16px" id="team-grid"></div>
+        <div class="card" style="margin-bottom:16px"><div class="card-header"><span class="card-title">Adicionar operador</span></div><div class="card-body"><div class="form-row"><div class="form-group"><label>Nome</label><input id="op-nome" placeholder="Nome"></div><div class="form-group"><label>Função</label><input id="op-func" placeholder="Ex: Editor"></div><div class="form-group"><label>Criadores</label><input id="op-cris" placeholder="Ex: Rubi, Alice"></div><div class="form-group" style="justify-content:flex-end;flex:0;min-width:auto"><label>&nbsp;</label><button class="btn btn-primary" onclick="addOp()">+ Adicionar</button></div></div></div></div>
+        <div class="card"><div class="card-header"><span class="card-title">Log de atividades</span><div style="display:flex;gap:6px"><input id="log-txt" placeholder="Descrever ação..." style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:12px;padding:5px 9px;font-family:'DM Sans',sans-serif;width:200px;outline:none"><button class="btn btn-primary btn-sm" onclick="addLog()">Registrar</button></div></div><div id="log-list" style="max-height:280px;overflow-y:auto"><div class="empty">Nenhuma atividade</div></div></div>
+      </div>
+    </div>
+    <div id="panel-resumo" class="panel">
+      <div class="topbar"><div><div class="page-title">Resumo semanal</div><div class="page-sub">Panorama de execução e chamados</div></div></div>
+      <div class="content">
+        <div class="metrics-row" id="resumo-metrics" style="margin-bottom:20px"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="card"><div class="card-header"><span class="card-title">Execução por dia</span></div><div class="card-body" id="resumo-days"></div></div>
+          <div class="card"><div class="card-header"><span class="card-title">Chamados por status</span></div><div class="card-body" id="resumo-tickets"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<nav class="mobile-nav">
+  <button class="mob-btn active" onclick="goto('rotina')"><span>✓</span><span>Rotina</span></button>
+  <button class="mob-btn" onclick="goto('kanban')"><span>⚡</span><span>Chamados</span></button>
+  <button class="mob-btn" onclick="goto('dossie')"><span>👤</span><span>Dossiê</span></button>
+  <button class="mob-btn" onclick="goto('fin')"><span>💰</span><span>Financeiro</span></button>
+  <button class="mob-btn" onclick="goto('resumo')"><span>📊</span><span>Resumo</span></button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+const SURL='https://jgqetqltkmokbbbnoxts.supabase.co';
+const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpncWV0cWx0a21va2tiYm5veHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODYyNzQsImV4cCI6MjA5MjQ2MjI3NH0.duNrxbiUkzVBuuMKpdMZrCgx_bWRtPXIWrsNwdwbwSc';
+
+// Minimal Supabase REST client sem biblioteca externa
+const api = {
+  async req(method, path, body, token) {
+    const headers = {'Content-Type':'application/json','apikey':SKEY,'Authorization':`Bearer ${token||SKEY}`};
+    const res = await fetch(`${SURL}${path}`, {method, headers, body: body ? JSON.stringify(body) : undefined});
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || data.error_description || JSON.stringify(data));
+    return data;
+  },
+  async signUp(email, password) { return this.req('POST','/auth/v1/signup',{email,password}); },
+  async signIn(email, password) { return this.req('POST','/auth/v1/token?grant_type=password',{email,password}); },
+  async signOut(token) { return this.req('POST','/auth/v1/logout',{},token); },
+  async select(table, query, token) { return this.req('GET',`/rest/v1/${table}?${query||''}`,null,token); },
+  async insert(table, body, token) { 
+    const headers = {'Content-Type':'application/json','apikey':SKEY,'Authorization':`Bearer ${token||SKEY}`,'Prefer':'return=representation'};
+    const res = await fetch(`${SURL}/rest/v1/${table}`, {method:'POST', headers, body: JSON.stringify(body)});
+    return res.json();
+  },
+  async update(table, query, body, token) {
+    const headers = {'Content-Type':'application/json','apikey':SKEY,'Authorization':`Bearer ${token||SKEY}`,'Prefer':'return=representation'};
+    const res = await fetch(`${SURL}/rest/v1/${table}?${query}`, {method:'PATCH', headers, body: JSON.stringify(body)});
+    return res.json();
+  },
+  async delete(table, query, token) {
+    const headers = {'Content-Type':'application/json','apikey':SKEY,'Authorization':`Bearer ${token||SKEY}`};
+    const res = await fetch(`${SURL}/rest/v1/${table}?${query}`, {method:'DELETE', headers});
+    return res.ok;
+  },
+  async upsert(table, body, token) {
+    const headers = {'Content-Type':'application/json','apikey':SKEY,'Authorization':`Bearer ${token||SKEY}`,'Prefer':'resolution=merge-duplicates,return=representation'};
+    const res = await fetch(`${SURL}/rest/v1/${table}`, {method:'POST', headers, body: JSON.stringify(body)});
+    return res.json();
+  }
+};
+
+const CREATORS=['Bruna Santiny','Negao Rubi','Barbara Fartura','Rick Necker','Gabriela Avillar','Meck','Perola','Alice','Luh'];
+const DAYS_MAP={seg:'Segunda',ter:'Terça',qua:'Quarta',qui:'Quinta',sex:'Sexta',sab:'Sábado',dom:'Domingo'};
+const ROUTINE={
+  seg:[['Criação + postagem redes sociais','raise','Criação'],['Storie com @ do perfil de links','cri','Funil'],['Grupo Free e Twitter','raise','Funil'],['Monitoramento de engajamento','cri','Funil'],['Programar live semanal','raise','Conversão'],['Edição e postagem plataformas +18','raise','Criação']],
+  ter:[['Criação + postagem redes sociais','raise','Criação'],['Anunciar live nos stories','raise','Conversão'],['Post 2x','raise','Criação'],['Story com @ do perfil de links','cri','Funil'],['Grupo Free 1x','raise','Funil'],['Caixa de perguntas','raise','Funil'],['Monitoramento de engajamento','raise','Funil'],['Execução da live','both','Conversão']],
+  qua:[['Criação de post','raise','Criação'],['Post 2x','raise','Criação'],['Story com @ do perfil de links','cri','Funil'],['Grupo Free 1x','raise','Funil'],['Storie Sua Vez','raise','Funil'],['Monitoramento de engajamento','raise','Funil'],['Responder caixa de perguntas','cri','Funil'],['Programação TikTok','raise','Criação']],
+  qui:[['Post 2x','raise','Criação'],['Story com @ do perfil de links','cri','Funil'],['Grupo Free 1x','raise','Funil'],['Monitoramento de engajamento','raise','Funil'],['Configuração de remarketing','raise','Conversão'],['Responder mensagens automáticas','raise','Conversão'],['Post X (Twitter)','raise','Criação']],
+  sex:[['Criação de post','raise','Criação'],['Post 2x','raise','Criação'],['Story com @ do perfil de links','cri','Funil'],['Grupo Free 1x','raise','Funil'],['Monitoramento de engajamento','raise','Funil'],['Postagem e edição plataformas +18','raise','Criação'],['Post X (Twitter)','raise','Criação']],
+  sab:[['Criação de post','raise','Criação'],['Post 2x','raise','Criação'],['Story com @ do perfil de links','cri','Funil'],['Grupo Free 1x','raise','Funil'],['Monitoramento de engajamento','raise','Funil']],
+  dom:[['Criação de post','raise','Criação'],['Post 1x','raise','Criação'],['Story com @ do perfil de links','cri','Funil'],['Grupo Free 1x','raise','Funil'],['Monitoramento de engajamento','raise','Funil']],
+};
+const KB_COLS=['aberto','progresso','revisao','resolvido'];
+const KB_LABELS={aberto:'Aberto',progresso:'Em andamento',revisao:'Em revisão',resolvido:'Resolvido'};
+const KB_COLORS={aberto:'var(--red)',progresso:'var(--amber)',revisao:'var(--blue)',resolvido:'var(--green)'};
+const TIPO_LABEL={'perfil-caido':'Perfil caído','nova-conta':'Nova conta','senha':'Senha','marketing':'Marketing','plataforma':'Plataforma +18','outro':'Outro'};
+const FIN_CHECKS=['Fechamento e distribuição de lucros','Feedback de vendas e engajamento','Reunião de alinhamento de metas','Análise de desempenho global','Fechamento financeiro mensal','Configuração de remarketing','Revisão do dossiê e senhas','Avaliação dos operadores'];
+
+let userToken=null,currentUser=null,filterCr='all',activeCr=CREATORS[0];
+let tasksCache={},ticketsCache=[],finCache={bruta:0,custos:0,imp:0,dist:[],checks:Array(FIN_CHECKS.length).fill(false)};
+let teamCache=[{name:'Operador 1',role:'Editor',cris:'Todos'},{name:'Operador 2',role:'Community Manager',cris:'Todos'}];
+let logsCache=[];
+let isLogin=true;
+
+// Check saved session
+const savedSession = localStorage.getItem('raise_session');
+if(savedSession) {
+  try {
+    const s = JSON.parse(savedSession);
+    if(s.token && s.user && s.expires > Date.now()) {
+      userToken = s.token;
+      currentUser = s.user;
+      document.getElementById('auth-screen').style.display='none';
+      document.getElementById('app-screen').style.display='block';
+      const nome = currentUser.email.split('@')[0];
+      document.getElementById('user-name').textContent=nome;
+      document.getElementById('user-avatar').textContent=nome.slice(0,2).toUpperCase();
+      const dm={1:'seg',2:'ter',3:'qua',4:'qui',5:'sex',6:'sab',0:'dom'};
+      document.getElementById('day-select').value=dm[new Date().getDay()]||'seg';
+      loadTasks().then(()=>loadTickets()).then(()=>buildRotina());
+    }
+  } catch(e) { localStorage.removeItem('raise_session'); }
+}
+
+function toast(msg,col='var(--green)'){const t=document.getElementById('toast');t.textContent=msg;t.style.background=col;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+function toggleMode(){
+  isLogin=!isLogin;
+  document.getElementById('auth-sub').textContent=isLogin?'Entre com sua conta da agência':'Criar conta na agência Raise';
+  document.getElementById('auth-btn').textContent=isLogin?'Entrar':'Criar conta';
+  document.getElementById('auth-toggle').innerHTML=isLogin?'Não tem conta? <span>Criar conta</span>':'Já tem conta? <span>Entrar</span>';
+  document.getElementById('auth-name-wrap').style.display=isLogin?'none':'block';
+  document.getElementById('auth-err').textContent='';
+  document.getElementById('auth-ok').textContent='';
+}
+
+async function authAction(){
+  const email=document.getElementById('auth-email').value.trim();
+  const pass=document.getElementById('auth-pass').value;
+  const errEl=document.getElementById('auth-err');
+  const okEl=document.getElementById('auth-ok');
+  errEl.textContent='';okEl.textContent='';
+  if(!email||!pass){errEl.textContent='Preencha e-mail e senha.';return;}
+  if(pass.length<6){errEl.textContent='Senha mínima de 6 caracteres.';return;}
+  document.getElementById('auth-btn').textContent='Aguarde...';
+  try{
+    let data;
+    if(isLogin){
+      data = await api.signIn(email, pass);
+    } else {
+      data = await api.signUp(email, pass);
+    }
+    if(data.access_token){
+      userToken = data.access_token;
+      currentUser = data.user;
+      localStorage.setItem('raise_session', JSON.stringify({token:userToken, user:currentUser, expires: Date.now() + 3600000*24}));
+      document.getElementById('auth-screen').style.display='none';
+      document.getElementById('app-screen').style.display='block';
+      const nome = email.split('@')[0];
+      document.getElementById('user-name').textContent=nome;
+      document.getElementById('user-avatar').textContent=nome.slice(0,2).toUpperCase();
+      const dm={1:'seg',2:'ter',3:'qua',4:'qui',5:'sex',6:'sab',0:'dom'};
+      document.getElementById('day-select').value=dm[new Date().getDay()]||'seg';
+      await loadTasks(); await loadTickets(); buildRotina();
+    } else if(!isLogin && data.id){
+      okEl.textContent='Conta criada! Verifique seu e-mail ou tente fazer login.';
+    } else {
+      errEl.textContent='Resposta inesperada. Tente novamente.';
+    }
+  } catch(e){
+    console.error('Auth error:',e);
+    const msg=e.message||'';
+    if(msg.includes('Invalid login') || msg.includes('invalid_grant'))errEl.textContent='E-mail ou senha incorretos.';
+    else if(msg.includes('already registered') || msg.includes('already exists'))errEl.textContent='E-mail já cadastrado. Faça login.';
+    else if(msg.includes('Email not confirmed'))errEl.textContent='Confirme seu e-mail antes de entrar.';
+    else errEl.textContent='Erro: '+msg;
+  }
+  document.getElementById('auth-btn').textContent=isLogin?'Entrar':'Criar conta';
+}
+
+function logout(){
+  localStorage.removeItem('raise_session');
+  userToken=null;currentUser=null;
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('app-screen').style.display='none';
+}
+
+function tk(day,cr,idx){return `${day}_${cr}_${idx}`}
+
+async function loadTasks(){
+  try{
+    const data = await api.select('tasks','select=*',userToken);
+    tasksCache={};
+    (Array.isArray(data)?data:[]).forEach(t=>{tasksCache[tk(t.day,t.creator,t.task_idx)]=t.done;});
+  }catch(e){console.error('loadTasks:',e);}
+}
+
+async function loadTickets(){
+  try{
+    const data = await api.select('tickets','select=*&order=created_at.desc',userToken);
+    ticketsCache=Array.isArray(data)?data:[];
+  }catch(e){console.error('loadTickets:',e);}
+}
+
+function buildRotina(){
+  const day=document.getElementById('day-select').value;
+  const tasks=ROUTINE[day]||[];
+  const crs=filterCr==='all'?CREATORS:[filterCr];
+  let tot=0,done=0;
+  crs.forEach(cr=>{tasks.forEach((_,i)=>{tot++;if(tasksCache[tk(day,cr,i)])done++;});});
+  const pct=tot?Math.round(done/tot*100):0;
+  document.getElementById('rotina-sub').textContent=DAYS_MAP[day]+' — '+new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long'});
+  document.getElementById('rotina-metrics').innerHTML=`
+    <div class="metric"><div class="metric-val green">${done}</div><div class="metric-lbl">Concluídas</div></div>
+    <div class="metric"><div class="metric-val ${tot-done>0?'amber':'green'}">${tot-done}</div><div class="metric-lbl">Pendentes</div></div>
+    <div class="metric"><div class="metric-val ${pct>=80?'green':pct>=50?'amber':'red'}">${pct}%</div><div class="metric-lbl">Execução</div></div>
+    <div class="metric"><div class="metric-val">${ticketsCache.filter(t=>t.status==='aberto').length}</div><div class="metric-lbl">Chamados abertos</div></div>`;
+  document.getElementById('cr-filter').innerHTML=
+    `<button class="cr-chip${filterCr==='all'?' active':''}" onclick="setFilter('all')">Todos</button>`+
+    CREATORS.map(c=>`<button class="cr-chip${filterCr===c?' active':''}" onclick="setFilter('${c.replace(/'/g,"\\'")}')">` +c.split(' ')[0]+'</button>').join('');
+  const grid=document.getElementById('task-grid');grid.innerHTML='';
+  crs.forEach(cr=>{
+    const d=tasks.filter((_,i)=>tasksCache[tk(day,cr,i)]).length;
+    const p=tasks.length?Math.round(d/tasks.length*100):0;
+    const items=tasks.map(([name,owner,pilar],i)=>{
+      const isDone=!!tasksCache[tk(day,cr,i)];
+      const bc=owner==='raise'?'badge-raise':owner==='cri'?'badge-cri':'badge-both';
+      const bl=owner==='raise'?'RAISE':owner==='cri'?'CRIADOR':'RAISE+CRIA';
+      return `<div class="task-row${isDone?' done':''}" onclick="toggleTask('${day}','${cr.replace(/'/g,"\\'")}',${i})">
+        <div class="chkbox"><span class="chk-mark">✓</span></div>
+        <div><div class="task-name">${name}</div><div class="task-meta"><span class="badge ${bc}">${bl}</span><span class="badge badge-pilar">${pilar}</span></div></div>
+      </div>`;
+    }).join('');
+    grid.innerHTML+=`<div class="creator-card"><div class="creator-card-hd"><span class="creator-name">${cr}</span><span class="creator-prog">${d}/${tasks.length}</span></div><div class="prog-bar"><div class="prog-fill" style="width:${p}%"></div></div><div class="task-list">${items}</div></div>`;
+  });
+}
+
+function setFilter(v){filterCr=v;buildRotina();}
+
+async function toggleTask(day,cr,idx){
+  const k=tk(day,cr,idx);const newVal=!tasksCache[k];tasksCache[k]=newVal;buildRotina();
+  try{
+    const existing = await api.select('tasks',`select=id&day=eq.${day}&creator=eq.${encodeURIComponent(cr)}&task_idx=eq.${idx}`,userToken);
+    if(Array.isArray(existing)&&existing.length>0){
+      await api.update('tasks',`id=eq.${existing[0].id}`,{done:newVal},userToken);
+    } else {
+      await api.insert('tasks',{day,creator:cr,task_idx:idx,done:newVal,user_id:currentUser.id},userToken);
+    }
+  }catch(e){console.error('toggleTask:',e);}
+}
+
+async function resetDay(){
+  if(!confirm('Reiniciar tarefas do dia?'))return;
+  const day=document.getElementById('day-select').value;
+  CREATORS.forEach(cr=>{(ROUTINE[day]||[]).forEach((_,i)=>{tasksCache[tk(day,cr,i)]=false;});});
+  buildRotina();
+  try{await api.update('tasks',`day=eq.${day}`,{done:false},userToken);}catch(e){}
+  toast('Dia reiniciado!');
+}
+
+async function buildKanban(){
+  await loadTickets();
+  document.getElementById('kanban-board').innerHTML=KB_COLS.map(col=>{
+    const tks=ticketsCache.filter(t=>t.status===col);
+    const items=tks.map(t=>{
+      const pc=t.prioridade==='urg'?'prio-urg':t.prioridade==='med'?'prio-med':'prio-low';
+      const pl=t.prioridade==='urg'?'Urgente':t.prioridade==='med'?'Médio':'Baixo';
+      const moves=KB_COLS.filter(c=>c!==col).map(c=>`<button class="ticket-move" onclick="moveTicket(${t.id},'${c}')">${KB_LABELS[c]}</button>`).join('');
+      return `<div class="ticket"><div class="ticket-title">${t.descricao}</div>${t.creator?`<div class="ticket-creator">${t.creator}</div>`:''}<div class="ticket-meta"><span class="prio ${pc}">${pl}</span><span class="badge badge-pilar">${TIPO_LABEL[t.tipo]||t.tipo}</span></div><div class="ticket-actions">${moves}<button class="ticket-del" onclick="delTicket(${t.id})">✕</button></div></div>`;
+    }).join('')||'<div class="empty">Nenhum chamado</div>';
+    return `<div class="kb-col"><div class="kb-col-hd"><span class="kb-col-title"><span class="kb-dot" style="background:${KB_COLORS[col]}"></span>${KB_LABELS[col]}</span><span class="kb-count">${tks.length}</span></div>${items}</div>`;
+  }).join('');
+}
+
+async function addTicket(){
+  const desc=document.getElementById('kb-desc').value.trim();if(!desc)return;
+  try{
+    const data=await api.insert('tickets',{descricao:desc,creator:document.getElementById('kb-creator').value,tipo:document.getElementById('kb-tipo').value,prioridade:document.getElementById('kb-prio').value,status:'aberto',user_id:currentUser.id},userToken);
+    const ticket=Array.isArray(data)?data[0]:data;
+    if(ticket&&ticket.id){ticketsCache.unshift(ticket);document.getElementById('kb-desc').value='';buildKanban();toast('Chamado aberto!');}
+  }catch(e){console.error(e);}
+}
+async function moveTicket(id,status){
+  try{await api.update('tickets',`id=eq.${id}`,{status},userToken);const t=ticketsCache.find(x=>x.id===id);if(t)t.status=status;buildKanban();toast('Atualizado!');}catch(e){}
+}
+async function delTicket(id){
+  try{await api.delete('tickets',`id=eq.${id}`,userToken);ticketsCache=ticketsCache.filter(t=>t.id!==id);buildKanban();}catch(e){}
+}
+
+async function buildDossie(){
+  document.getElementById('dossie-tabs').innerHTML=CREATORS.map(c=>`<button class="cr-chip${c===activeCr?' active':''}" onclick="switchCr('${c.replace(/'/g,"\\'")}') ">${c.split(' ')[0]}</button>`).join('');
+  let d={};
+  try{
+    const data=await api.select('dossie',`select=dados&creator=eq.${encodeURIComponent(activeCr)}`,userToken);
+    if(Array.isArray(data)&&data.length>0)d=data[0].dados||{};
+  }catch(e){}
+  document.getElementById('dossie-body').innerHTML=`
+  <div class="dossie-grid">
+    <div class="card"><div class="card-header"><span class="card-title">Identificação — ${activeCr}</span></div><div class="card-body">
+      <div class="form-row"><div class="form-group"><label>CPF / CNPJ</label><input id="d-cpf" value="${d.cpf||''}"></div><div class="form-group"><label>Data de nascimento</label><input type="date" id="d-nasc" value="${d.nasc||''}"></div></div>
+      <div class="form-row"><div class="form-group"><label>Telefone</label><input id="d-tel" value="${d.tel||''}"></div><div class="form-group"><label>E-mail recuperação</label><input id="d-email" value="${d.email||''}"></div></div>
+      <div class="form-group"><label>Observações</label><textarea id="d-obs">${d.obs||''}</textarea></div>
+    </div></div>
+    <div class="card"><div class="card-header"><span class="card-title">Cofre de senhas — clique para revelar</span></div><div class="card-body">
+      ${[['IG Principal','ig_p','pw_p'],['IG Reserva','ig_r','pw_r'],['IG Links','ig_l','pw_l'],['Plataforma +18','plat','pw_plat']].map(([lbl,lk,pk])=>`
+      <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:5px">${lbl}</div>
+        <div class="form-row" style="margin:0">
+          <div class="form-group"><label>Login</label><input id="d-${lk}" placeholder="@usuario" value="${d[lk]||''}"></div>
+          <div class="form-group"><label>Senha</label><div style="display:flex;gap:5px;align-items:center">
+            <span class="pw-val" onclick="this.classList.toggle('show')">${d[pk]||'—'}</span>
+            <button class="pw-toggle" onclick="this.previousElementSibling.classList.toggle('show')">Ver</button>
+            <input type="password" id="d-${pk}" placeholder="Senha" value="${d[pk]||''}" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:12px;padding:6px 8px;outline:none">
+          </div></div>
+        </div>
+      </div>`).join('')}
+      <div class="form-row"><div class="form-group"><label>Tipo 2FA</label><input id="d-twofa" value="${d.twofa||''}"></div><div class="form-group"><label>E-mail 2FA</label><input id="d-email2fa" value="${d.email_2fa||''}"></div></div>
+      <button class="btn btn-primary btn-sm" onclick="saveDossie()" style="margin-top:6px;width:100%">Salvar ficha</button>
+    </div></div>
+  </div>`;
+}
+function switchCr(c){activeCr=c;buildDossie();}
+async function saveDossie(){
+  const dados={cpf:document.getElementById('d-cpf')?.value||'',nasc:document.getElementById('d-nasc')?.value||'',tel:document.getElementById('d-tel')?.value||'',email:document.getElementById('d-email')?.value||'',obs:document.getElementById('d-obs')?.value||'',ig_p:document.getElementById('d-ig_p')?.value||'',pw_p:document.getElementById('d-pw_p')?.value||'',ig_r:document.getElementById('d-ig_r')?.value||'',pw_r:document.getElementById('d-pw_r')?.value||'',ig_l:document.getElementById('d-ig_l')?.value||'',pw_l:document.getElementById('d-pw_l')?.value||'',plat:document.getElementById('d-plat')?.value||'',pw_plat:document.getElementById('d-pw_plat')?.value||'',twofa:document.getElementById('d-twofa')?.value||'',email_2fa:document.getElementById('d-email2fa')?.value||''};
+  try{await api.upsert('dossie',{creator:activeCr,dados,updated_at:new Date().toISOString()},userToken);toast('Ficha salva!');}catch(e){toast('Erro ao salvar','var(--red)');}
+}
+
+function calcFin(){
+  const b=parseFloat(document.getElementById('f-bruta').value)||0;const c=parseFloat(document.getElementById('f-custos').value)||0;const i=parseFloat(document.getElementById('f-imp').value)||0;
+  finCache.bruta=b;finCache.custos=c;finCache.imp=i;const liq=b-c-i;const fmt=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  document.getElementById('fi-bruta').textContent=fmt(b);document.getElementById('fi-custos').textContent='('+fmt(c)+')';document.getElementById('fi-imp').textContent='('+fmt(i)+')';document.getElementById('fi-lucro').textContent=fmt(liq);renderDist();
+}
+async function buildFin(){
+  try{
+    const data=await api.select('financeiro','select=*&order=created_at.desc&limit=1',userToken);
+    if(Array.isArray(data)&&data.length>0){const d=data[0];finCache={bruta:d.bruta||0,custos:d.custos||0,imp:d.impostos||0,dist:d.dist||[],checks:d.checks||Array(FIN_CHECKS.length).fill(false)};}
+  }catch(e){}
+  document.getElementById('f-bruta').value=finCache.bruta;document.getElementById('f-custos').value=finCache.custos;document.getElementById('f-imp').value=finCache.imp;calcFin();renderFinChecks();
+}
+async function saveFin(){try{await api.insert('financeiro',{periodo:new Date().toLocaleDateString('pt-BR'),bruta:finCache.bruta,custos:finCache.custos,impostos:finCache.imp,dist:finCache.dist,checks:finCache.checks},userToken);toast('Fechamento salvo!');}catch(e){toast('Erro ao salvar','var(--red)');}}
+function renderDist(){const liq=finCache.bruta-finCache.custos-finCache.imp;const fmt=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2});document.getElementById('dist-list').innerHTML=finCache.dist.map((d,i)=>`<div class="fin-row"><span class="fin-lbl">${d.nome} (${d.pct}%)</span><span class="fin-pos">${fmt(liq*d.pct/100)}</span><button onclick="finCache.dist.splice(${i},1);renderDist()" style="background:none;border:none;color:var(--text3);cursor:pointer">✕</button></div>`).join('')||'<div style="font-size:12px;color:var(--text3);padding:6px 0">Nenhuma distribuição</div>';}
+function addDist(){const n=document.getElementById('dist-nome').value.trim();const p=parseFloat(document.getElementById('dist-pct').value)||0;if(!n||!p)return;finCache.dist.push({nome:n,pct:p});document.getElementById('dist-nome').value='';document.getElementById('dist-pct').value='';renderDist();}
+function renderFinChecks(){document.getElementById('fin-checks').innerHTML=FIN_CHECKS.map((c,i)=>`<div class="task-row${finCache.checks[i]?' done':''}" onclick="finCache.checks[${i}]=!finCache.checks[${i}];renderFinChecks()" style="margin-bottom:4px"><div class="chkbox"><span class="chk-mark">✓</span></div><div class="task-name">${c}</div></div>`).join('');}
+
+async function buildEquipe(){
+  try{const data=await api.select('logs','select=*&order=created_at.desc&limit=40',userToken);logsCache=Array.isArray(data)?data:[];}catch(e){}
+  document.getElementById('team-grid').innerHTML=teamCache.map((op,i)=>`<div class="card" style="padding:14px 16px"><div style="display:flex;align-items:flex-start;gap:10px"><div style="width:38px;height:38px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--accent2);flex-shrink:0">${op.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div><div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text)">${op.name}</div><div style="font-size:11px;color:var(--text3);margin-top:1px">${op.role}</div><div style="font-size:11px;color:var(--text2);margin-top:5px"><span style="color:var(--text3)">Criadores: </span>${op.cris}</div></div><button onclick="teamCache.splice(${i},1);buildEquipe()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px">✕</button></div></div>`).join('')||'<div class="empty" style="grid-column:1/-1">Nenhum operador</div>';
+  renderLog();
+}
+function addOp(){const n=document.getElementById('op-nome').value.trim();if(!n)return;teamCache.push({name:n,role:document.getElementById('op-func').value||'Operador',cris:document.getElementById('op-cris').value||'—'});document.getElementById('op-nome').value='';document.getElementById('op-func').value='';document.getElementById('op-cris').value='';buildEquipe();}
+async function addLog(){
+  const t=document.getElementById('log-txt').value.trim();if(!t)return;
+  const nome=document.getElementById('user-name').textContent;
+  try{await api.insert('logs',{operador:nome,acao:t},userToken);document.getElementById('log-txt').value='';const data=await api.select('logs','select=*&order=created_at.desc&limit=40',userToken);logsCache=Array.isArray(data)?data:[];renderLog();toast('Registrado!');}catch(e){}
+}
+function renderLog(){const el=document.getElementById('log-list');if(!el)return;if(!logsCache.length){el.innerHTML='<div class="empty">Nenhuma atividade</div>';return;}el.innerHTML=logsCache.map(l=>`<div style="display:flex;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);align-items:flex-start"><span style="font-size:10px;color:var(--text3);flex-shrink:0;width:90px;margin-top:1px">${new Date(l.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span><span style="font-size:11px;color:var(--accent2);flex-shrink:0;width:100px">${l.operador}</span><span style="font-size:12px;color:var(--text)">${l.acao}</span></div>`).join('');}
+
+async function buildResumo(){
+  await loadTasks();await loadTickets();
+  const allDays=Object.keys(DAYS_MAP);let tot=0,done=0;
+  allDays.forEach(d=>{CREATORS.forEach(cr=>{(ROUTINE[d]||[]).forEach((_,i)=>{tot++;if(tasksCache[tk(d,cr,i)])done++;});});});
+  const pct=tot?Math.round(done/tot*100):0;
+  const abertos=ticketsCache.filter(t=>t.status==='aberto').length;
+  const urg=ticketsCache.filter(t=>t.prioridade==='urg'&&t.status!=='resolvido').length;
+  const resolv=ticketsCache.filter(t=>t.status==='resolvido').length;
+  document.getElementById('resumo-metrics').innerHTML=`<div class="metric"><div class="metric-val ${pct>=80?'green':pct>=50?'amber':'red'}">${pct}%</div><div class="metric-lbl">Taxa execução</div></div><div class="metric"><div class="metric-val green">${done}</div><div class="metric-lbl">Tarefas feitas</div></div><div class="metric"><div class="metric-val ${urg>0?'red':'green'}">${urg}</div><div class="metric-lbl">Urgentes</div></div><div class="metric"><div class="metric-val">${abertos}</div><div class="metric-lbl">Chamados abertos</div></div><div class="metric"><div class="metric-val green">${resolv}</div><div class="metric-lbl">Resolvidos</div></div>`;
+  document.getElementById('resumo-days').innerHTML=allDays.map(d=>{const tasks=ROUTINE[d]||[];const total=tasks.length*CREATORS.length;const d2=CREATORS.reduce((a,cr)=>a+tasks.filter((_,i)=>tasksCache[tk(d,cr,i)]).length,0);const p=total?Math.round(d2/total*100):0;return `<div class="res-bar-row"><span class="res-lbl">${DAYS_MAP[d]}</span><div class="res-bar-w"><div class="res-bar" style="width:${p}%"></div></div><span class="res-pct">${p}%</span></div>`;}).join('');
+  document.getElementById('resumo-tickets').innerHTML=KB_COLS.map(col=>{const n=ticketsCache.filter(t=>t.status===col).length;const p=ticketsCache.length?Math.round(n/ticketsCache.length*100):0;return `<div class="res-bar-row"><span class="res-lbl">${KB_LABELS[col]}</span><div class="res-bar-w"><div class="res-bar" style="width:${p}%;background:${KB_COLORS[col]}"></div></div><span class="res-pct">${n}</span></div>`;}).join('');
+}
+
+function goto(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item,.mob-btn').forEach(b=>b.classList.remove('active'));
+  [...document.querySelectorAll('.nav-item,.mob-btn')].filter(b=>b.getAttribute('onclick')?.includes("'"+id+"'")).forEach(b=>b.classList.add('active'));
+  if(id==='rotina')buildRotina();if(id==='kanban')buildKanban();if(id==='dossie')buildDossie();if(id==='fin')buildFin();if(id==='equipe')buildEquipe();if(id==='resumo')buildResumo();
+}
+</script>
+</body>
+</html>
