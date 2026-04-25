@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Raise Hot — CRM</title>
+<title>Raise Hot — CRM Profissional</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{--brand:#0D0D14;--ac:#7B6EF6;--s1:#13131F;--s2:#1A1A2B;--s3:#222236;--bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.12);--tx:#F0EFF8;--tx2:#9B9AB0;--tx3:#5E5D72;--ok:#5CF4B0;--okb:rgba(92,244,176,.1);--wn:#F4C55C;--wnb:rgba(244,197,92,.1);--dn:#F45C8B;--dnb:rgba(244,92,139,.1);--fh:"Syne",sans-serif;--fb:"DM Sans",sans-serif;--tr:.18s ease}
@@ -36,316 +35,277 @@ body{font-family:var(--fb);background:var(--brand);color:var(--tx);font-size:13p
 .sb-ft{padding:10px 14px;border-top:1px solid var(--bd)}
 .sb-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;font-family:var(--fh)}
 .av-a{background:rgba(123,110,246,.3);color:#A99EF8}.av-o{background:rgba(42,157,122,.3);color:#5BD4A8}.av-c{background:rgba(26,111,181,.3);color:#5AAEE8}
-.sb-criadores{padding:8px 14px;border-top:1px solid var(--bd)}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .topbar{height:54px;padding:0 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--s1);gap:10px}
 .tb-t{font-family:var(--fh);font-size:14px;font-weight:700;color:var(--tx)}.tb-s{font-size:10px;color:var(--tx3);margin-top:1px}
-.tb-r{display:flex;align-items:center;gap:7px;flex-shrink:0}
 .cnt{flex:1;overflow-y:auto;padding:16px 18px}
 .scr{display:none}.scr.on{display:block}
-.bdg{display:inline-flex;font-size:9px;padding:3px 8px;border-radius:20px;font-weight:700;font-family:var(--fh)}
-.bok{background:var(--okb);color:var(--ok);border:1px solid rgba(92,244,176,.25)}
-.bur{background:var(--dnb);color:var(--dn);border:1px solid rgba(244,92,139,.25)}
-.bwa{background:var(--wnb);color:var(--wn);border:1px solid rgba(244,197,92,.25)}
-.bin{background:rgba(123,110,246,.1);color:var(--ac);border:1px solid rgba(123,110,246,.25)}
-.bgr{background:rgba(255,255,255,.05);color:var(--tx3);border:1px solid var(--bd)}
-.bbl{background:rgba(26,111,181,.15);color:#5AAEE8;border:1px solid rgba(26,111,181,.3)}
-.nf{display:flex;align-items:flex-start;gap:8px;padding:8px 12px;border-radius:8px;margin-bottom:8px;font-size:11px;border:1px solid}
-.nf-r{background:var(--dnb);border-color:rgba(244,92,139,.3);color:#F89AB5}
-.nf-a{background:var(--wnb);border-color:rgba(244,197,92,.3);color:#F8DA9A}
-.nf-g{background:var(--okb);border-color:rgba(92,244,176,.3);color:#9AF8D4}
-.nf-b{background:rgba(123,110,246,.1);border-color:rgba(123,110,246,.3);color:#A99EF8}
-.nf-x{margin-left:auto;cursor:pointer;opacity:.4;font-size:11px}
 .mets{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:7px;margin-bottom:14px}
 .mc{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:11px 13px}
-.mc-v{font-family:var(--fh);font-size:20px;font-weight:700;line-height:1}.mc-l{font-size:9px;color:var(--tx3);margin-top:4px;text-transform:uppercase;letter-spacing:.06em}.mc-s{font-size:9px;margin-top:2px;font-weight:500}
-.cup{color:var(--ok)}.cdn{color:var(--dn)}.cnu{color:var(--ac)}.cam{color:var(--wn)}
+.mc-v{font-family:var(--fh);font-size:20px;font-weight:700;line-height:1}.mc-l{font-size:9px;color:var(--tx3);margin-top:4px;text-transform:uppercase;letter-spacing:.06em}
 .card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;margin-bottom:10px;overflow:hidden}
-.ch{padding:9px 13px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ch{padding:9px 13px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px}
 .ct{font-family:var(--fh);font-size:11px;font-weight:700;color:var(--tx)}.cb{padding:9px 13px}
 .row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd);font-size:11px;color:var(--tx2)}
-.row:last-child{border:none;padding-bottom:0}
 .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.dok{background:var(--ok)}.ddn{background:var(--dn)}.dam{background:var(--wn)}.dnu{background:var(--ac)}.dgr{background:var(--tx3)}
-.hrow{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);margin-bottom:4px}
-.hrow-n{font-size:11px;font-weight:500;color:var(--tx);flex:1;font-family:var(--fh)}
-.hrow-b{width:65px;height:4px;background:var(--s3);border-radius:4px;overflow:hidden;flex-shrink:0}
-.hrow-f{height:4px;border-radius:4px}
-.hrow-p{font-size:10px;width:26px;text-align:right;flex-shrink:0;font-family:var(--fh);font-weight:700}
-.av{width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;font-family:var(--fh)}
-.avp{background:rgba(123,110,246,.25);color:#A99EF8}.avt{background:rgba(42,157,122,.25);color:#5BD4A8}.avb{background:rgba(26,111,181,.25);color:#5AAEE8}
-.br{display:flex;align-items:center;gap:8px;margin-bottom:5px}
-.bl{font-size:10px;color:var(--tx2);width:78px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bw{flex:1;background:var(--s3);border-radius:4px;height:13px;overflow:hidden}
-.bf{height:13px;border-radius:4px;display:flex;align-items:center;padding:0 6px}
-.bv{font-size:9px;color:rgba(255,255,255,.9);font-weight:700;font-family:var(--fh)}
-.ck{display:flex;align-items:center;gap:8px;padding:5px 9px;border-radius:6px;margin-bottom:3px;border:1px solid var(--bd);cursor:pointer;transition:all var(--tr)}
-.ck:hover{border-color:var(--bd2);background:var(--s1)}
-.ckb{width:13px;height:13px;border-radius:3px;border:1.5px solid var(--bd2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all var(--tr)}
-.ckb.done{background:var(--ok);border-color:var(--ok)}
-.ckm{display:none;color:#0D2E20;font-size:8px;font-weight:900}.ckb.done .ckm{display:block}
-.ckl{font-size:10px;color:var(--tx);flex:1}.ckl.dl{color:var(--tx3);text-decoration:line-through}
-.tag{display:inline-flex;font-size:8px;padding:2px 6px;border-radius:10px;font-weight:700;font-family:var(--fh);flex-shrink:0}
-.tr{background:rgba(123,110,246,.2);color:#A99EF8}.tc{background:rgba(42,157,122,.2);color:#5BD4A8}.ta{background:rgba(244,197,92,.2);color:var(--wn)}
+.dok{background:var(--ok)}.ddn{background:var(--dn)}.dam{background:var(--wn)}.dnu{background:var(--ac)}
 .kb{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
 .kbc{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:9px;min-height:100px}
-.kbh{font-family:var(--fh);font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center}
-.tk{background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:7px 9px;margin-bottom:5px;cursor:pointer;transition:all var(--tr)}
-.tk:hover{border-color:var(--bd2)}.tkt{font-size:10px;font-weight:600;color:var(--tx);margin-bottom:2px;font-family:var(--fh)}.tks{font-size:9px;color:var(--tx3)}.tktip{font-size:9px;color:var(--wn);margin-top:4px;line-height:1.4}
-.sl{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin:11px 0 5px;font-family:var(--fh)}.sl:first-child{margin-top:0}
-.sp{height:8px;display:block}.pb{height:3px;background:var(--s3);border-radius:3px;overflow:hidden;margin:4px 0}.pbf{height:3px;border-radius:3px}
-.sn{width:17px;height:17px;border-radius:50%;color:#fff;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--fh)}
-.divider{border:none;border-top:1px dashed var(--bd);margin:13px 0}
-.ctup{background:var(--okb);color:var(--ok);font-size:9px;padding:2px 5px;border-radius:8px;font-weight:700;font-family:var(--fh)}.ctdn{background:var(--dnb);color:var(--dn);font-size:9px;padding:2px 5px;border-radius:8px;font-weight:700;font-family:var(--fh)}.cteq{background:rgba(255,255,255,.05);color:var(--tx3);font-size:9px;padding:2px 5px;border-radius:8px;font-weight:700;font-family:var(--fh)}
-.plr{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:6px;margin-bottom:3px;border:1px solid var(--bd);background:var(--s1);font-size:10px;color:var(--tx2)}
-.btn{padding:5px 11px;border-radius:6px;border:1px solid var(--bd2);background:var(--s2);color:var(--tx2);font-size:10px;cursor:pointer;font-family:var(--fb);transition:all var(--tr);font-weight:500}
-.btn:hover{background:var(--s3);color:var(--tx)}.btn-p{background:var(--ac);border-color:var(--ac);color:#fff}.btn-p:hover{background:#6B5EE6;color:#fff}
-.btn-g{background:rgba(42,157,122,.8);border-color:rgba(42,157,122,.8);color:#fff}.btn-b{background:rgba(26,111,181,.8);border-color:rgba(26,111,181,.8);color:#fff}
-.btn-r{background:rgba(244,92,139,.8);border-color:rgba(244,92,139,.8);color:#fff;padding:3px 7px;font-size:9px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:10px}
-.today{background:linear-gradient(135deg,rgba(123,110,246,.2),rgba(26,111,181,.2));border:1px solid rgba(123,110,246,.3);border-radius:12px;padding:13px 15px;margin-bottom:13px}
-.today-dt{font-size:10px;color:var(--ac);font-family:var(--fh);font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px}
-.today-title{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--tx);margin-bottom:9px}
-.today-tasks{display:flex;flex-direction:column;gap:4px}
-.today-t{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border-radius:6px;padding:5px 9px;font-size:10px;color:var(--tx)}
-.today-cb{width:13px;height:13px;border-radius:3px;border:1.5px solid rgba(255,255,255,.3);flex-shrink:0;cursor:pointer;transition:all var(--tr)}
-.today-cb.ok{background:var(--ok);border-color:var(--ok)}
-.today-cb.ok::after{content:"✓";color:#0D2E20;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center}
-.kg4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-.kg5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
-.kc{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:9px 11px;text-align:center}
-.kv{font-family:var(--fh);font-size:17px;font-weight:700;line-height:1}.kl{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;margin-top:3px}.ks{font-size:9px;margin-top:2px;font-weight:600}
-.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
-.mcard{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:9px 11px}
-.mcard-n{font-family:var(--fh);font-size:10px;font-weight:700;color:var(--ac);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}
-.mrow{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:10px;border-bottom:1px solid var(--bd)}.mrow:last-child{border:none}
-.ml{color:var(--tx3)}.mv{font-weight:600;color:var(--tx);font-family:var(--fh)}
-.adv{border-radius:8px;padding:9px 11px;border:1px solid rgba(244,92,139,.3);background:rgba(244,92,139,.07);margin-bottom:6px}
-.adv-t{font-size:11px;font-weight:600;color:var(--dn);margin-bottom:3px;font-family:var(--fh)}.adv-s{font-size:9px;color:#F89AB5}.adv-j{font-size:9px;color:var(--ac);margin-top:4px}
-.adv.am{border-color:rgba(244,197,92,.3);background:rgba(244,197,92,.07)}.adv.am .adv-t{color:var(--wn)}.adv.am .adv-s{color:#F8DA9A}
-.fin{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;border:1px solid var(--bd);margin-bottom:4px;background:var(--s1)}
-.fin-tp{font-size:8px;padding:3px 8px;border-radius:10px;font-weight:700;font-family:var(--fh);flex-shrink:0;width:76px;text-align:center}
-.fin-d{font-size:10px;color:var(--tx);flex:1}.fin-v{font-size:11px;font-weight:700;flex-shrink:0;font-family:var(--fh)}.fin-a{display:flex;gap:4px;flex-shrink:0}
-.ftrec{background:var(--okb);color:var(--ok);border:1px solid rgba(92,244,176,.2)}.ftret{background:rgba(123,110,246,.1);color:var(--ac);border:1px solid rgba(123,110,246,.2)}
-.ftsal{background:rgba(42,157,122,.1);color:#5BD4A8;border:1px solid rgba(42,157,122,.2)}.ftcus{background:var(--wnb);color:var(--wn);border:1px solid rgba(244,197,92,.2)}
-.ftinv{background:rgba(26,111,181,.1);color:#5AAEE8;border:1px solid rgba(26,111,181,.2)}.ftemp{background:rgba(244,92,139,.07);color:#F49AB5;border:1px solid rgba(244,92,139,.15)}
-.cham{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:9px 11px;margin-bottom:6px}
-.cham.urg{border-left:3px solid var(--dn)}.cham.pri{border-left:3px solid var(--wn)}.cham.nor{border-left:3px solid var(--ok)}
-.mo{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
-.mo-box{background:var(--s1);border:1px solid var(--bd2);border-radius:12px;padding:20px;width:100%;max-width:420px;max-height:80vh;overflow-y:auto}
+.kbh{font-family:var(--fh);font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:7px}
+.cham{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:9px 11px;margin-bottom:6px}
+.cham.nor{border-left:3px solid var(--ok)}
+.tkt{font-size:10px;font-weight:600;color:var(--tx);margin-bottom:2px}
+.tks{font-size:9px;color:var(--tx3)}
+.tktip{font-size:9px;color:var(--ac);margin-top:4px}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.mo-box{background:var(--s1);border:1px solid var(--bd2);border-radius:12px;padding:20px;width:100%;max-width:420px;overflow-y:auto;max-height:90vh}
 .mo-t{font-family:var(--fh);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:14px}
-.fg{margin-bottom:11px}.fl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;display:block;font-family:var(--fh);font-weight:700}
-.fi{width:100%;background:var(--s2);border:1px solid var(--bd2);border-radius:6px;color:var(--tx);font-size:11px;padding:7px 9px;font-family:var(--fb);outline:none;transition:border-color var(--tr)}
-.fi:focus{border-color:var(--ac)}.fs{width:100%;background:var(--s2);border:1px solid var(--bd2);border-radius:6px;color:var(--tx);font-size:11px;padding:7px 9px;font-family:var(--fb);outline:none;cursor:pointer}
+.fg{margin-bottom:11px}.fl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;display:block;font-weight:700}
+.fi,.fs{width:100%;background:var(--s2);border:1px solid var(--bd2);border-radius:6px;color:var(--tx);font-size:11px;padding:7px 9px;outline:none}
 .frow{display:flex;gap:8px}.frow .fg{flex:1}
-.ma{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+.btn{padding:5px 11px;border-radius:6px;border:1px solid var(--bd2);background:var(--s2);color:var(--tx2);font-size:10px;cursor:pointer;transition:all .2s;font-weight:500}
+.btn-p{background:var(--ac);border-color:var(--ac);color:#fff}
+.btn-b{background:rgba(26,111,181,.8);color:#fff}
+.btn:hover{background:var(--s3);color:var(--tx)}
 </style>
 </head>
 <body>
 <div id="app">
-<div class="ps">
-  <span style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-right:4px;font-family:var(--fh)">Portal:</span>
-  <button class="psb adm on" onclick="gP('adm',this)">🛡 Admin</button>
-  <button class="psb ope" onclick="gP('ope',this)">⚙️ Operador</button>
-  <button class="psb cri" onclick="gP('cri',this)">🎨 Criador</button>
-  <div style="margin-left:auto;font-size:10px;color:var(--tx3);font-family:var(--fh)" id="clk"></div>
-</div>
-<div class="shell">
-<div id="p-adm" class="portal on adm-p">
-<div class="sb">
-  <div class="sb-hd"><div class="sb-logo">Raise<span>Hot</span></div><div class="sb-ver">CRM v2</div><span class="sb-role ra">🛡 Admin</span></div>
-  <div class="sb-nav">
-    <div class="sb-sec">Visão geral</div>
-    <button class="si on" onclick="gS('adm','a-dash',this)"><span class="si-ic">📊</span><span class="si-txt">Dashboard</span></button>
-    <button class="si" onclick="gS('adm','a-proj',this)"><span class="si-ic">🎯</span><span class="si-txt">Projetos</span></button>
-    <button class="si" onclick="gS('adm','a-pipe',this)"><span class="si-ic">🔮</span><span class="si-txt">Pipeline</span></button>
-    <button class="si" onclick="gS('adm','a-alert',this)"><span class="si-ic">🚨</span><span class="si-txt">Alertas</span><span class="si-badge">5</span></button>
-    <div class="sb-sec">Operação</div>
-    <button class="si" onclick="gS('adm','a-rot',this)"><span class="si-ic">✅</span><span class="si-txt">Rotina semanal</span></button>
-    <button class="si" onclick="gS('adm','a-onb',this)"><span class="si-ic">🚀</span><span class="si-txt">Onboarding</span></button>
-    <button class="si" onclick="gS('adm','a-mid',this)"><span class="si-ic">🎬</span><span class="si-txt">Mídias</span></button>
-    <button class="si" onclick="gS('adm','a-cha',this)"><span class="si-ic">⚡</span><span class="si-txt">Chamados</span></button>
-    <div class="sb-sec">Gestão</div>
-    <button class="si" onclick="gS('adm','a-dos',this)"><span class="si-ic">🔐</span><span class="si-txt">Dossiê</span></button>
-    <button class="si" onclick="gS('adm','a-fin',this)"><span class="si-ic">💰</span><span class="si-txt">Financeiro</span></button>
-    <button class="si" onclick="gS('adm','a-fint',this)"><span class="si-ic">🏦</span><span class="si-txt">Controle interno</span></button>
-    <button class="si" onclick="gS('adm','a-equ',this)"><span class="si-ic">👥</span><span class="si-txt">Equipe</span></button>
-    <button class="si" onclick="gS('adm','a-adv',this)"><span class="si-ic">⚠️</span><span class="si-txt">Advertências</span></button>
-    <div class="sb-sec">Análise</div>
-    <button class="si" onclick="gS('adm','a-kpi',this)"><span class="si-ic">📈</span><span class="si-txt">KPIs</span></button>
-    <button class="si" onclick="gS('adm','a-rel',this)"><span class="si-ic">📋</span><span class="si-txt">Relatórios</span></button>
-    <button class="si" onclick="gS('adm','a-cfg',this)"><span class="si-ic">⚙️</span><span class="si-txt">Configurações</span></button>
-  </div>
-  <div class="sb-ft"><div style="display:flex;align-items:center;gap:8px"><div class="sb-av av-a">MU</div><div><div style="font-size:11px;font-weight:500;color:var(--tx)">Murilo</div><div style="font-size:9px;color:var(--tx3)">Administrador</div></div></div></div>
-</div>
-<div class="main">
-<div id="a-dash" class="scr on">
-  <div class="topbar"><div><div class="tb-t">Dashboard</div><div class="tb-s">Saúde consolidada · todos os projetos</div></div><div class="tb-r"><span class="bdg bin" id="a-dt"></span></div></div>
-  <div class="cnt">
-    <div class="mets">
-      <div class="mc"><div class="mc-v cnu">9</div><div class="mc-l">Projetos ativos</div></div>
-      <div class="mc"><div class="mc-v cnu">2</div><div class="mc-l">Em onboarding</div></div>
-      <div class="mc"><div class="mc-v cup">74%</div><div class="mc-l">Execução geral</div></div>
-      <div class="mc"><div class="mc-v cup">R$42k</div><div class="mc-l">Receita total</div></div>
+    <div class="ps">
+        <span style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-right:4px;font-family:var(--fh)">Portal:</span>
+        <button class="psb adm on" onclick="gP('adm',this)">🛡 Admin</button>
+        <button class="psb ope" onclick="gP('ope',this)">⚙️ Operador</button>
+        <button class="psb cri" onclick="gP('cri',this)">🎨 Criador</button>
+        <div style="margin-left:auto;font-size:10px;color:var(--tx3);font-family:var(--fh)" id="clk"></div>
     </div>
-    <div class="sl">Saúde dos projetos</div>
-    <div class="hrow"><div class="av avp">BS</div><span class="hrow-n">Bruna Santiny</span><div class="hrow-b"><div class="hrow-f" style="width:89%;background:var(--ok)"></div></div><span class="hrow-p cup">89%</span><span class="bdg bok">Saudável</span></div>
-  </div>
-</div>
-<div id="a-cha" class="scr">
-  <div class="topbar"><div><div class="tb-t">Chamados</div><div class="tb-s">Fila de atendimento em tempo real</div></div></div>
-  <div class="cnt">
-    <div class="kb">
-      <div class="kbc"><div class="kbh"><span>Aberto</span></div>
-        </div>
-      <div class="kbc"><div class="kbh"><span>Andamento</span></div></div>
-      <div class="kbc"><div class="kbh"><span>Resolvido</span></div></div>
-    </div>
-  </div>
-</div>
-</div></div>
 
-<div id="p-cri" class="portal cri-p">
-<div class="sb">
-  <div class="sb-hd"><div class="sb-logo">Raise<span>Hot</span></div><div class="sb-ver">Meu projeto</div><span class="sb-role rc">🎨 Criador</span></div>
-  <div class="sb-nav">
-    <button class="si on" onclick="gS('cri','c-ov',this)"><span class="si-ic">🏠</span><span class="si-txt">Visão geral</span></button>
-    <button class="si" onclick="gS('cri','c-pen',this)"><span class="si-ic">⚡</span><span class="si-txt">Pendências</span></button>
-  </div>
-  <div class="sb-ft">
-    <div style="display:flex;align-items:center;gap:8px"><div class="sb-av av-c">BS</div><div><div style="font-size:11px;font-weight:500;color:var(--tx)">Bruna Santiny</div></div></div>
-  </div>
+    <div class="shell">
+        <div id="p-adm" class="portal on">
+            <div class="sb">
+                <div class="sb-hd"><div class="sb-logo">Raise<span>Hot</span></div><div class="sb-ver">CRM v2</div><span class="sb-role ra">🛡 Admin</span></div>
+                <div class="sb-nav">
+                    <div class="sb-sec">Visão geral</div>
+                    <button class="si on" onclick="gS('adm','a-dash',this)"><span class="si-ic">📊</span> Dashboard</button>
+                    <button class="si" onclick="gS('adm','a-proj',this)"><span class="si-ic">🎯</span> Projetos</button>
+                    <button class="si" onclick="gS('adm','a-cha',this)"><span class="si-ic">⚡</span> Chamados</button>
+                    <div class="sb-sec">Gestão Financeira</div>
+                    <button class="si" onclick="gS('adm','a-fin',this)"><span class="si-ic">💰</span> Lançar Faturamento</button>
+                    <div class="sb-sec">Configurações</div>
+                    <button class="si" onclick="gS('adm','a-cfg',this)"><span class="si-ic">⚙️</span> Configuração Geral</button>
+                </div>
+                <div class="sb-ft"><div style="display:flex;align-items:center;gap:8px"><div class="sb-av av-a">MU</div><div><div style="font-size:11px;font-weight:500;color:var(--tx)">Murilo</div><div style="font-size:9px;color:var(--tx3)">Administrador</div></div></div></div>
+            </div>
+            <div class="main">
+                <div id="a-dash" class="scr on">
+                    <div class="topbar"><div><div class="tb-t">Dashboard Geral</div><div class="tb-s">Métricas em tempo real do Supabase</div></div></div>
+                    <div class="cnt">
+                        <div class="mets">
+                            <div class="mc"><div class="mc-v cnu" id="dash-fat">R$ 0</div><div class="mc-l">Receita do Mês</div></div>
+                            <div class="mc"><div class="mc-v cup" id="dash-eng">74%</div><div class="mc-l">Execução Geral</div></div>
+                            <div class="mc"><div class="mc-v cam" id="dash-cha-count">0</div><div class="mc-l">Chamados Abertos</div></div>
+                        </div>
+                        <div class="card"><div class="ch"><span class="ct">Lançamentos de Faturamento Recentes</span><button class="btn btn-p" onclick="oM('m-fat')">+ Novo Faturamento</button></div>
+                            <div class="cb" id="lista-faturamentos-recentes">
+                                </div>
+                        </div>
+                        <div class="sl">Saúde dos projetos</div>
+                        <div class="hrow" style="border-color:rgba(244,92,139,.4)"><div class="av avp">NR</div><span class="hrow-n">Negão Rubi</span><div class="hrow-b"><div class="hrow-f" style="width:42%;background:var(--dn)"></div></div><span class="hrow-p">42%</span><span class="bdg bur">Crise</span></div>
+                        <div class="hrow"><div class="av avp">BS</div><span class="hrow-n">Bruna Santiny</span><div class="hrow-b"><div class="hrow-f" style="width:89%;background:var(--ok)"></div></div><span class="hrow-p">89%</span><span class="bdg bok">Saudável</span></div>
+                    </div>
+                </div>
+
+                <div id="a-cha" class="scr">
+                    <div class="topbar"><div class="tb-t">Gestão de Chamados</div></div>
+                    <div class="cnt">
+                        <div class="kb">
+                            <div class="kbc" id="adm-col-aberto"><div class="kbh">Aberto</div>
+                                </div>
+                            <div class="kbc"><div class="kbh">Andamento</div></div>
+                            <div class="kbc"><div class="kbh">Resolvido</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="a-fin" class="scr">
+                    <div class="topbar"><div class="tb-t">Controle Financeiro</div></div>
+                    <div class="cnt">
+                        <div class="card"><div class="ch"><span class="ct">Relatórios de Faturamento</span><button class="btn btn-p" onclick="oM('m-fat')">Lançar Novo Valor</button></div>
+                            <div class="cb" id="lista-completa-fin">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="p-ope" class="portal">
+            <div class="sb">
+                <div class="sb-hd"><div class="sb-logo">Raise<span>Hot</span></div><span class="sb-role ro">⚙️ Operador</span></div>
+                <div class="sb-nav">
+                    <button class="si on" onclick="gS('ope','o-rot',this)"><span class="si-ic">✅</span> Rotina do Dia</button>
+                    <button class="si" onclick="gS('ope','o-cha',this)"><span class="si-ic">⚡</span> Chamados</button>
+                </div>
+                <div class="sb-ft"><div style="display:flex;align-items:center;gap:8px"><div class="sb-av av-o">MA</div><div><div style="font-size:11px;font-weight:500;color:var(--tx)">Matheus A.</div><div style="font-size:9px;color:var(--tx3)">Operador</div></div></div></div>
+            </div>
+            <div class="main">
+                <div id="o-rot" class="scr on"><div class="cnt"><h2>Rotina do Operador</h2><p>Checklist de tarefas diárias.</p></div></div>
+                <div id="o-cha" class="scr"><div class="cnt"><h2>Chamados</h2><p>Alertas dos seus criadores específicos.</p></div></div>
+            </div>
+        </div>
+
+        <div id="p-cri" class="portal">
+            <div class="sb">
+                <div class="sb-hd"><div class="sb-logo">Raise<span>Hot</span></div><span class="sb-role rc">🎨 Criador</span></div>
+                <div class="sb-nav">
+                    <button class="si on" onclick="gS('cri','c-ov',this)"><span class="si-ic">🏠</span> Visão Geral</button>
+                </div>
+                <div class="sb-ft"><div style="display:flex;align-items:center;gap:8px"><div class="sb-av av-c">BS</div><div><div style="font-size:11px;font-weight:500;color:var(--tx)">Bruna Santiny</div></div></div></div>
+            </div>
+            <div class="main">
+                <div id="c-ov" class="scr on">
+                    <div class="topbar"><div><div class="tb-t">Olá, Criador!</div></div></div>
+                    <div class="cnt">
+                        <div class="today">
+                            <div class="today-title">Precisa de ajuda da Agência?</div>
+                            <button class="btn btn-b" style="width:100%;padding:10px" onclick="oM('m-cham-cri')">⚡ Abrir Chamado para a Raise</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div class="main">
-<div id="c-ov" class="scr on">
-  <div class="topbar"><div><div class="tb-t">Olá, Bruna 👋</div></div></div>
-  <div class="cnt">
-    <div class="today">
-        <div class="today-title">Precisa de ajuda da Agência?</div>
-        <button class="btn btn-b" style="width:100%;padding:10px" onclick="oM('m-cham-cri')">⚡ Abrir Chamado Agora</button>
+
+<div id="m-fat" class="mo">
+    <div class="mo-box">
+        <div class="mo-t">💰 Lançar Faturamento Manual</div>
+        <div class="fg"><label class="fl">Criador</label>
+            <select class="fs" id="f-criador">
+                <option value="Bruna Santiny">Bruna Santiny</option>
+                <option value="Negão Rubi">Negão Rubi</option>
+                <option value="Juju Hellcat">Juju Hellcat</option>
+            </select>
+        </div>
+        <div class="frow">
+            <div class="fg"><label class="fl">Privacy (R$)</label><input type="number" class="fi" id="f-privacy" value="0"></div>
+            <div class="fg"><label class="fl">OnlyFans (R$)</label><input type="number" class="fi" id="f-only" value="0"></div>
+        </div>
+        <div class="ma">
+            <button class="btn" onclick="cM('m-fat')">Cancelar</button>
+            <button class="btn btn-p" onclick="salvarFaturamento()">Salvar Lançamento</button>
+        </div>
     </div>
-  </div>
 </div>
-</div></div>
-</div><div id="m-cham-cri" class="mo" style="display:none" onclick="if(event.target===this)cM('m-cham-cri')">
-  <div class="mo-box"><div class="mo-t">⚡ Abrir chamado</div>
-    <div class="fg"><label class="fl">Tipo de problema</label>
-        <select class="fs" id="tipo-chamado">
-            <option>Perfil suspenso / restrito</option>
-            <option>Problema técnico</option>
-            <option>Dúvida operacional</option>
-        </select>
+
+<div id="m-cham-cri" class="mo">
+    <div class="mo-box">
+        <div class="mo-t">⚡ Abrir Chamado</div>
+        <div class="fg"><label class="fl">O que aconteceu?</label>
+            <textarea class="fi" id="c-desc-cri" rows="3" placeholder="Descreva o problema..."></textarea>
+        </div>
+        <div class="ma">
+            <button class="btn" onclick="cM('m-cham-cri')">Sair</button>
+            <button class="btn btn-b" onclick="enviarChamadoCriador()">Enviar para a Raise</button>
+        </div>
     </div>
-    <div class="fg"><label class="fl">Descrição</label>
-        <textarea class="fi" id="desc-chamado" rows="3" placeholder="O que está acontecendo?"></textarea>
-    </div>
-    <div class="ma">
-        <button class="btn" onclick="cM('m-cham-cri')">Cancelar</button>
-        <button class="btn btn-b" id="btn-enviar-chamado" onclick="enviarChamadoReal()">Enviar chamado</button>
-    </div>
-  </div>
 </div>
 
 <script>
-// === CONFIGURAÇÃO SUPABASE CONECTADA AO SEU PROJETO ===
+// === MOTOR SUPABASE - CONEXÃO REAL ===
 const SUPABASE_URL = 'https://jgqetqltkmokkbbnoxts.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_FZbMpNFtR90ysZcLkoj-sQ_9_CSZv3Q';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// === FUNÇÃO PARA ENVIAR CHAMADO (CRIADOR) ===
-async function enviarChamadoReal() {
-    const btn = document.getElementById('btn-enviar-chamado');
-    const tipo = document.getElementById('tipo-chamado').value;
-    const desc = document.getElementById('desc-chamado').value;
-
-    if(!desc) return alert("Por favor, descreva o problema.");
-
-    btn.disabled = true;
-    btn.innerText = "Enviando...";
-
-    const { error } = await supabaseClient
-        .from('chamados')
-        .insert([{ 
-            titulo: tipo, 
-            descricao: desc, 
-            criador_nome: "Bruna Santiny" 
-        }]);
-
-    if (error) {
-        alert("Erro: " + error.message);
-        btn.disabled = false;
-        btn.innerText = "Enviar chamado";
-    } else {
-        alert("Chamado enviado com sucesso!");
-        cM('m-cham-cri');
-        document.getElementById('desc-chamado').value = "";
-        btn.disabled = false;
-        btn.innerText = "Enviar chamado";
-    }
-}
-
-// === FUNÇÃO PARA CARREGAR CHAMADOS (ADM) ===
-async function carregarChamadosNoKanban() {
-    const { data: chamados, error } = await supabaseClient
-        .from('chamados')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if (error) return;
-
-    const colunaAberto = document.querySelector('#a-cha .kbc:first-child');
-    if(!colunaAberto) return;
-
-    const header = colunaAberto.querySelector('.kbh').outerHTML;
-    colunaAberto.innerHTML = header;
-
-    chamados.forEach(c => {
-        const card = document.createElement('div');
-        card.className = 'cham nor';
-        card.innerHTML = `
-            <div class="tkt">${c.titulo}</div>
-            <div class="tks"><b>${c.criador_nome}</b>: ${c.descricao}</div>
-            <div class="tktip">Enviado às: ${new Date(c.created_at).toLocaleTimeString()}</div>
-        `;
-        colunaAberto.appendChild(card);
-    });
-}
-
-// === REALTIME ===
-supabaseClient
-    .channel('chamados_realtime')
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chamados' }, () => {
-        carregarChamadosNoKanban();
-    })
-    .subscribe();
-
-// Funções de Navegação
+// --- FUNÇÕES DE NAVEGAÇÃO ORIGINAIS ---
 function gP(id,btn){
-  document.querySelectorAll('.portal').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.psb').forEach(b=>b.classList.remove('on'));
-  document.getElementById('p-'+id).classList.add('on');
-  btn.classList.add('on');
-  if(id === 'adm') carregarChamadosNoKanban();
+    document.querySelectorAll('.portal').forEach(p=>p.classList.remove('on'));
+    document.querySelectorAll('.psb').forEach(b=>b.classList.remove('on'));
+    document.getElementById('p-'+id).classList.add('on');
+    btn.classList.add('on');
+    if(id === 'adm') carregarDadosGerais();
 }
 function gS(portal,id,btn){
-  const p=document.getElementById('p-'+portal);
-  p.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
-  const t=document.getElementById(id);
-  if(t)t.classList.add('on');
-  p.querySelectorAll('.si').forEach(b=>b.classList.remove('on'));
-  if(btn)btn.classList.add('on');
+    const p=document.getElementById('p-'+portal);
+    p.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+    document.getElementById(id).classList.add('on');
+    p.querySelectorAll('.si').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
 }
 function oM(id){document.getElementById(id).style.display='flex'}
 function cM(id){document.getElementById(id).style.display='none'}
 
-function initAll(){
-    const n = new Date();
-    const clk = document.getElementById('clk');
-    if(clk) clk.textContent = n.toLocaleTimeString();
+// --- FUNÇÕES DE DADOS (DANDO VIDA AO CRM) ---
+
+async function salvarFaturamento() {
+    const criador = document.getElementById('f-criador').value;
+    const privacy = parseFloat(document.getElementById('f-privacy').value) || 0;
+    const only = parseFloat(document.getElementById('f-only').value) || 0;
+    const total = privacy + only;
+
+    const { error } = await supabaseClient.from('faturamentos').insert([{
+        criador_nome: criador,
+        valor_total: total,
+        detalhes: `Privacy: R$${privacy} | OF: R$${only}`
+    }]);
+
+    if(error) alert("Erro: " + error.message);
+    else { alert("Faturamento lançado com sucesso!"); cM('m-fat'); carregarDadosGerais(); }
 }
-setInterval(initAll, 1000);
-document.addEventListener('DOMContentLoaded', carregarChamadosNoKanban);
+
+async function enviarChamadoCriador() {
+    const desc = document.getElementById('c-desc-cri').value;
+    const { error } = await supabaseClient.from('chamados').insert([{
+        titulo: 'Alerta Criador',
+        descricao: desc,
+        criador_nome: 'Bruna Santiny', // Depois pegamos via login
+        status: 'aberto'
+    }]);
+    if(!error) { alert('A Raise recebeu seu chamado!'); cM('m-cham-cri'); }
+}
+
+async function carregarDadosGerais() {
+    // 1. Atualizar Chamados no Kanban ADM
+    const { data: chamados } = await supabaseClient.from('chamados').select('*').eq('status','aberto');
+    const colCha = document.getElementById('adm-col-aberto');
+    if(colCha) {
+        colCha.innerHTML = '<div class="kbh">Aberto</div>';
+        chamados?.forEach(c => {
+            const card = document.createElement('div');
+            card.className = 'cham nor';
+            card.innerHTML = `<div class="tkt">${c.criador_nome}</div><div class="tks">${c.descricao}</div>`;
+            colCha.appendChild(card);
+        });
+        document.getElementById('dash-cha-count').innerText = chamados?.length || 0;
+    }
+
+    // 2. Atualizar Dashboard Financeiro com valores REAIS do Banco
+    const { data: fats } = await supabaseClient.from('faturamentos').select('valor_total, criador_nome, detalhes');
+    const somaTotal = fats?.reduce((acc, curr) => acc + parseFloat(curr.valor_total), 0) || 0;
+    document.getElementById('dash-fat').innerText = `R$ ${somaTotal.toLocaleString('pt-BR')}`;
+
+    // 3. Preencher lista de faturamentos recentes no Dashboard
+    const listaRecentes = document.getElementById('lista-faturamentos-recentes');
+    if(listaRecentes) {
+        listaRecentes.innerHTML = '';
+        fats?.slice(-3).reverse().forEach(f => {
+            const r = document.createElement('div');
+            r.className = 'row';
+            r.innerHTML = `<span class="dot dnu"></span><span style="flex:1">${f.criador_nome}</span><span>R$ ${f.valor_total}</span>`;
+            listaRecentes.appendChild(r);
+        });
+    }
+}
+
+// REALTIME (Atualiza as telas de todos na hora que alguém envia algo)
+supabaseClient.channel('any').on('postgres_changes', {event:'*', schema:'public'}, () => carregarDadosGerais()).subscribe();
+
+// Relógio e Inicialização
+setInterval(() => { 
+    const n = new Date();
+    document.getElementById('clk').innerText = n.toLocaleTimeString('pt-BR');
+}, 1000);
+
+document.addEventListener('DOMContentLoaded', carregarDadosGerais);
 </script>
 </body>
 </html>
