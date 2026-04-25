@@ -3,601 +3,1100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Raise — CRM</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<title>Raise Hot — CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0c0c10;--surface:#14141a;--surface2:#1c1c25;--border:#2a2a38;--border2:#3a3a4e;--accent:#7c6fe0;--accent2:#a99ef5;--accent-bg:rgba(124,111,224,0.12);--text:#f0f0f8;--text2:#8888aa;--text3:#55556a;--green:#3ecf8e;--green-bg:rgba(62,207,142,0.1);--red:#f87171;--red-bg:rgba(248,113,113,0.1);--amber:#fbbf24;--amber-bg:rgba(251,191,36,0.1);--blue:#60a5fa;--r:10px;--r-sm:6px}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.auth-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px 32px;width:100%;max-width:380px}
-.auth-logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--text);margin-bottom:4px}
-.auth-sub{font-size:13px;color:var(--text3);margin-bottom:28px}
-.auth-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-weight:500;display:block;margin-bottom:5px}
-.auth-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;padding:10px 12px;outline:none;transition:border-color .15s;margin-bottom:14px}
-.auth-input:focus{border-color:var(--accent)}
-.auth-btn{width:100%;background:var(--accent);border:none;border-radius:var(--r-sm);color:#fff;font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;padding:11px;cursor:pointer;margin-top:4px}
-.auth-err{font-size:12px;color:var(--red);margin-top:10px;text-align:center;min-height:18px}
-.auth-ok{font-size:12px;color:var(--green);margin-top:10px;text-align:center;min-height:18px}
-.auth-toggle{font-size:12px;color:var(--text3);text-align:center;margin-top:16px;cursor:pointer}
-.auth-toggle span{color:var(--accent2)}
-.shell{display:flex;min-height:100vh}
-.sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column}
-.main{flex:1;overflow-x:hidden}
-.logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
-.logo-mark{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--text)}
-.logo-sub{font-size:11px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
-.nav{padding:12px 10px;flex:1}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r-sm);color:var(--text2);font-size:13px;cursor:pointer;margin-bottom:2px;transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif}
-.nav-item:hover{background:var(--surface2);color:var(--text)}
-.nav-item.active{background:var(--accent-bg);color:var(--accent2);font-weight:500}
-.nav-section{font-size:10px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;padding:16px 12px 6px}
-.sidebar-bottom{padding:16px 10px;border-top:1px solid var(--border)}
-.user-info{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r-sm);background:var(--surface2);margin-bottom:8px}
-.user-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:11px;color:var(--accent2);flex-shrink:0}
-.user-name{font-size:11px;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.logout-btn{width:100%;background:none;border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text3);font-size:11px;font-family:'DM Sans',sans-serif;padding:7px;cursor:pointer;margin-bottom:8px}
-.logout-btn:hover{border-color:var(--red);color:var(--red)}
-.day-sel{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 12px}
-.day-sel label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
-.day-sel select{background:none;border:none;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;width:100%;cursor:pointer;outline:none}
-.day-sel select option{background:var(--surface2)}
-.topbar{padding:20px 28px 0;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--text)}
-.page-sub{font-size:13px;color:var(--text2);margin-top:2px}
-.content{padding:20px 28px 40px}
-.metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:20px}
-.metric{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px}
-.metric-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--text);line-height:1}
-.metric-val.green{color:var(--green)}.metric-val.red{color:var(--red)}.metric-val.amber{color:var(--amber)}
-.metric-lbl{font-size:11px;color:var(--text3);margin-top:5px;text-transform:uppercase;letter-spacing:.05em}
-.cr-filter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
-.cr-chip{padding:5px 12px;border-radius:20px;border:1px solid var(--border2);background:none;color:var(--text2);font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap}
-.cr-chip:hover{border-color:var(--accent);color:var(--accent2)}
-.cr-chip.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent2);font-weight:500}
-.task-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
-.creator-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.creator-card-hd{padding:10px 14px;background:var(--surface2);display:flex;align-items:center;justify-content:space-between}
-.creator-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
-.creator-prog{font-size:11px;color:var(--text3)}
-.prog-bar{height:3px;background:var(--border)}
-.prog-fill{height:3px;background:var(--accent);transition:width .4s}
-.task-list{padding:8px}
-.task-row{display:flex;align-items:flex-start;gap:8px;padding:7px 8px;border-radius:var(--r-sm);cursor:pointer;transition:background .1s;margin-bottom:2px}
-.task-row:hover{background:var(--surface2)}
-.task-row.done{opacity:.5}
-.task-row.done .task-name{text-decoration:line-through;color:var(--text3)}
-.chkbox{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border2);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.task-row.done .chkbox{background:var(--green);border-color:var(--green)}
-.chk-mark{display:none;color:#fff;font-size:10px;font-weight:700}
-.task-row.done .chk-mark{display:block}
-.task-name{font-size:12px;color:var(--text);line-height:1.4;flex:1}
-.task-meta{margin-top:3px;display:flex;gap:5px;flex-wrap:wrap}
-.badge{font-size:9px;font-weight:500;padding:2px 6px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em}
-.badge-raise{background:var(--accent-bg);color:var(--accent2)}
-.badge-cri{background:var(--green-bg);color:var(--green)}
-.badge-both{background:var(--amber-bg);color:var(--amber)}
-.badge-pilar{background:var(--surface2);color:var(--text3);border:1px solid var(--border)}
-.btn{padding:8px 16px;border-radius:var(--r-sm);font-size:12px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid var(--border2);background:none;color:var(--text2)}
-.btn:hover{background:var(--surface2);color:var(--text)}
-.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
-.btn-sm{padding:5px 10px;font-size:11px}
-.kanban{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
-.kb-col{background:var(--surface2);border-radius:var(--r);padding:10px;min-height:160px}
-.kb-col-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.kb-col-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;display:flex;align-items:center;gap:6px}
-.kb-dot{width:7px;height:7px;border-radius:50%}
-.kb-count{background:var(--border);color:var(--text3);font-size:10px;font-weight:600;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center}
-.ticket{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:8px}
-.ticket-title{font-size:12px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:5px}
-.ticket-creator{font-size:11px;color:var(--accent2);margin-bottom:4px}
-.ticket-meta{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
-.prio{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase}
-.prio-urg{background:var(--red-bg);color:var(--red)}.prio-med{background:var(--amber-bg);color:var(--amber)}.prio-low{background:var(--green-bg);color:var(--green)}
-.ticket-actions{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
-.ticket-move{font-size:10px;padding:3px 7px;border-radius:4px;border:1px solid var(--border2);background:none;color:var(--text3);cursor:pointer;font-family:'DM Sans',sans-serif}
-.ticket-move:hover{border-color:var(--accent);color:var(--accent2)}
-.ticket-del{font-size:10px;padding:3px 7px;border-radius:4px;border:none;background:none;color:var(--text3);cursor:pointer;margin-left:auto}
-.ticket-del:hover{color:var(--red)}
-.form-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.form-group{display:flex;flex-direction:column;gap:4px;flex:1;min-width:120px}
-.form-group label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;font-weight:500}
-.form-group input,.form-group select,.form-group textarea{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;padding:8px 10px;outline:none;transition:border-color .15s}
-.form-group input:focus,.form-group select:focus{border-color:var(--accent)}
-.form-group select option{background:var(--surface2)}
-.form-group textarea{resize:vertical;min-height:60px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r)}
-.card-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
-.card-body{padding:12px}
-.dossie-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.pw-val{font-family:monospace;font-size:12px;color:var(--text);filter:blur(5px);cursor:pointer;transition:filter .2s;flex:1;word-break:break-all}
-.pw-val.show{filter:none}
-.pw-toggle{font-size:10px;color:var(--text3);cursor:pointer;padding:3px 7px;border:1px solid var(--border);border-radius:4px;flex-shrink:0;background:none;font-family:'DM Sans',sans-serif}
-.fin-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
-.fin-row:last-child{border:none;font-weight:600}
-.fin-lbl{color:var(--text2)}.fin-pos{color:var(--green);font-weight:500}.fin-neg{color:var(--red);font-weight:500}
-.res-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.res-lbl{font-size:12px;color:var(--text2);width:80px;flex-shrink:0}
-.res-bar-w{flex:1;background:var(--border);border-radius:3px;height:8px;overflow:hidden}
-.res-bar{height:8px;background:var(--accent);border-radius:3px;transition:width .4s}
-.res-pct{font-size:11px;color:var(--text3);width:36px;text-align:right;flex-shrink:0}
-.panel{display:none}.panel.active{display:block}
-.empty{text-align:center;padding:24px;color:var(--text3);font-size:12px}
-.toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:#000;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
-.toast.show{opacity:1}
-@media(max-width:700px){.sidebar{display:none}.mobile-nav{display:flex !important}.content{padding:12px 14px 70px}.topbar{padding:14px 14px 0}.dossie-grid{grid-template-columns:1fr}}
-.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:8px 16px;z-index:100;justify-content:space-around}
-.mob-btn{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);font-size:10px;cursor:pointer;padding:4px 8px;border-radius:6px;border:none;background:none;font-family:'DM Sans',sans-serif}
-.mob-btn.active{color:var(--accent2)}
-.mob-btn span:first-child{font-size:18px}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--surface)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+:root{--brand:#0D0D14;--ac:#7B6EF6;--s1:#13131F;--s2:#1A1A2B;--s3:#222236;--bd:rgba(255,255,255,.07);--bd2:rgba(255,255,255,.12);--tx:#F0EFF8;--tx2:#9B9AB0;--tx3:#5E5D72;--ok:#5CF4B0;--okb:rgba(92,244,176,.1);--wn:#F4C55C;--wnb:rgba(244,197,92,.1);--dn:#F45C8B;--dnb:rgba(244,92,139,.1);--fh:"Syne",sans-serif;--fb:"DM Sans",sans-serif;--tr:.18s ease}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;overflow:hidden}
+body{font-family:var(--fb);background:var(--brand);color:var(--tx);font-size:13px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
+#app{display:flex;flex-direction:column;height:100vh}
+/* PORTAL BAR */
+.ps{display:flex;gap:6px;padding:10px 16px;background:var(--s1);border-bottom:1px solid var(--bd);align-items:center;flex-shrink:0}
+.psb{padding:6px 14px;border-radius:20px;border:1px solid var(--bd2);background:transparent;color:var(--tx2);font-size:11px;cursor:pointer;font-family:var(--fh);font-weight:600;transition:all var(--tr)}
+.psb:hover{border-color:var(--ac);color:var(--ac)}.psb.on{color:#fff;border-color:transparent}
+.psb.adm.on{background:var(--ac)}.psb.ope.on{background:#2A9D7A}.psb.cri.on{background:#1A6FB5}
+/* SHELL */
+.shell{display:flex;flex:1;overflow:hidden}
+.portal{display:none}.portal.on{display:flex;flex:1;overflow:hidden}
+/* SIDEBAR */
+.sb{width:200px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
+.sb-hd{padding:14px 14px 10px;border-bottom:1px solid var(--bd)}
+.sb-logo{font-family:var(--fh);font-size:15px;font-weight:800;color:var(--tx)}.sb-logo span{color:var(--ac)}
+.sb-ver{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+.sb-role{display:inline-flex;font-size:9px;padding:3px 8px;border-radius:20px;margin-top:6px;font-family:var(--fh);font-weight:700}
+.ra{background:rgba(123,110,246,.2);color:#A99EF8;border:1px solid rgba(123,110,246,.3)}
+.ro{background:rgba(42,157,122,.2);color:#5BD4A8;border:1px solid rgba(42,157,122,.3)}
+.rc{background:rgba(26,111,181,.2);color:#5AAEE8;border:1px solid rgba(26,111,181,.3)}
+.sb-nav{padding:6px;flex:1;overflow-y:auto}
+.sb-sec{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;padding:8px 8px 3px;font-family:var(--fh);font-weight:700}
+.si{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;color:var(--tx2);font-size:11px;cursor:pointer;margin-bottom:1px;border:none;background:none;width:100%;text-align:left;font-family:var(--fb);transition:all var(--tr)}
+.si:hover{background:var(--s2);color:var(--tx)}.si.on{background:var(--s3);color:var(--tx);font-weight:500}
+.si-ic{font-size:12px;width:15px;text-align:center;flex-shrink:0}.si-txt{flex:1}
+.si-badge{font-size:8px;padding:2px 5px;border-radius:10px;background:rgba(244,92,139,.2);color:var(--dn);font-weight:700}
+.sb-ft{padding:10px 14px;border-top:1px solid var(--bd)}
+.sb-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;font-family:var(--fh)}
+.av-a{background:rgba(123,110,246,.3);color:#A99EF8}.av-o{background:rgba(42,157,122,.3);color:#5BD4A8}.av-c{background:rgba(26,111,181,.3);color:#5AAEE8}
+.sb-criadores{padding:8px 14px;border-top:1px solid var(--bd)}
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:54px;padding:0 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--s1);gap:10px}
+.tb-t{font-family:var(--fh);font-size:14px;font-weight:700;color:var(--tx)}.tb-s{font-size:10px;color:var(--tx3);margin-top:1px}
+.tb-r{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.cnt{flex:1;overflow-y:auto;padding:16px 18px}
+.scr{display:none}.scr.on{display:block}
+/* BADGES */
+.bdg{display:inline-flex;font-size:9px;padding:3px 8px;border-radius:20px;font-weight:700;font-family:var(--fh)}
+.bok{background:var(--okb);color:var(--ok);border:1px solid rgba(92,244,176,.25)}
+.bur{background:var(--dnb);color:var(--dn);border:1px solid rgba(244,92,139,.25)}
+.bwa{background:var(--wnb);color:var(--wn);border:1px solid rgba(244,197,92,.25)}
+.bin{background:rgba(123,110,246,.1);color:var(--ac);border:1px solid rgba(123,110,246,.25)}
+.bgr{background:rgba(255,255,255,.05);color:var(--tx3);border:1px solid var(--bd)}
+.bbl{background:rgba(26,111,181,.15);color:#5AAEE8;border:1px solid rgba(26,111,181,.3)}
+/* NOTIF */
+.nf{display:flex;align-items:flex-start;gap:8px;padding:8px 12px;border-radius:8px;margin-bottom:8px;font-size:11px;border:1px solid}
+.nf-r{background:var(--dnb);border-color:rgba(244,92,139,.3);color:#F89AB5}
+.nf-a{background:var(--wnb);border-color:rgba(244,197,92,.3);color:#F8DA9A}
+.nf-g{background:var(--okb);border-color:rgba(92,244,176,.3);color:#9AF8D4}
+.nf-b{background:rgba(123,110,246,.1);border-color:rgba(123,110,246,.3);color:#A99EF8}
+.nf-x{margin-left:auto;cursor:pointer;opacity:.4;font-size:11px}
+/* METRICS */
+.mets{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:7px;margin-bottom:14px}
+.mc{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:11px 13px}
+.mc-v{font-family:var(--fh);font-size:20px;font-weight:700;line-height:1}.mc-l{font-size:9px;color:var(--tx3);margin-top:4px;text-transform:uppercase;letter-spacing:.06em}.mc-s{font-size:9px;margin-top:2px;font-weight:500}
+.cup{color:var(--ok)}.cdn{color:var(--dn)}.cnu{color:var(--ac)}.cam{color:var(--wn)}
+/* CARD */
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.ch{padding:9px 13px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ct{font-family:var(--fh);font-size:11px;font-weight:700;color:var(--tx)}.cb{padding:9px 13px}
+/* ROW */
+.row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bd);font-size:11px;color:var(--tx2)}
+.row:last-child{border:none;padding-bottom:0}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.dok{background:var(--ok)}.ddn{background:var(--dn)}.dam{background:var(--wn)}.dnu{background:var(--ac)}.dgr{background:var(--tx3)}
+/* HROW */
+.hrow{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);margin-bottom:4px}
+.hrow-n{font-size:11px;font-weight:500;color:var(--tx);flex:1;font-family:var(--fh)}
+.hrow-b{width:65px;height:4px;background:var(--s3);border-radius:4px;overflow:hidden;flex-shrink:0}
+.hrow-f{height:4px;border-radius:4px}
+.hrow-p{font-size:10px;width:26px;text-align:right;flex-shrink:0;font-family:var(--fh);font-weight:700}
+/* AV */
+.av{width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;font-family:var(--fh)}
+.avp{background:rgba(123,110,246,.25);color:#A99EF8}.avt{background:rgba(42,157,122,.25);color:#5BD4A8}.avb{background:rgba(26,111,181,.25);color:#5AAEE8}
+/* BAR */
+.br{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.bl{font-size:10px;color:var(--tx2);width:78px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bw{flex:1;background:var(--s3);border-radius:4px;height:13px;overflow:hidden}
+.bf{height:13px;border-radius:4px;display:flex;align-items:center;padding:0 6px}
+.bv{font-size:9px;color:rgba(255,255,255,.9);font-weight:700;font-family:var(--fh)}
+/* CHECKLIST */
+.ck{display:flex;align-items:center;gap:8px;padding:5px 9px;border-radius:6px;margin-bottom:3px;border:1px solid var(--bd);cursor:pointer;transition:all var(--tr)}
+.ck:hover{border-color:var(--bd2);background:var(--s1)}
+.ckb{width:13px;height:13px;border-radius:3px;border:1.5px solid var(--bd2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all var(--tr)}
+.ckb.done{background:var(--ok);border-color:var(--ok)}
+.ckm{display:none;color:#0D2E20;font-size:8px;font-weight:900}.ckb.done .ckm{display:block}
+.ckl{font-size:10px;color:var(--tx);flex:1}.ckl.dl{color:var(--tx3);text-decoration:line-through}
+/* TAG */
+.tag{display:inline-flex;font-size:8px;padding:2px 6px;border-radius:10px;font-weight:700;font-family:var(--fh);flex-shrink:0}
+.tr{background:rgba(123,110,246,.2);color:#A99EF8}.tc{background:rgba(42,157,122,.2);color:#5BD4A8}.ta{background:rgba(244,197,92,.2);color:var(--wn)}
+/* KANBAN */
+.kb{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.kbc{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:9px;min-height:100px}
+.kbh{font-family:var(--fh);font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center}
+.tk{background:var(--s2);border:1px solid var(--bd);border-radius:6px;padding:7px 9px;margin-bottom:5px;cursor:pointer;transition:all var(--tr)}
+.tk:hover{border-color:var(--bd2)}.tkt{font-size:10px;font-weight:600;color:var(--tx);margin-bottom:2px;font-family:var(--fh)}.tks{font-size:9px;color:var(--tx3)}.tktip{font-size:9px;color:var(--wn);margin-top:4px;line-height:1.4}
+/* MISC */
+.sl{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin:11px 0 5px;font-family:var(--fh)}.sl:first-child{margin-top:0}
+.sp{height:8px;display:block}.pb{height:3px;background:var(--s3);border-radius:3px;overflow:hidden;margin:4px 0}.pbf{height:3px;border-radius:3px}
+.sn{width:17px;height:17px;border-radius:50%;color:#fff;font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--fh)}
+.divider{border:none;border-top:1px dashed var(--bd);margin:13px 0}
+.ctup{background:var(--okb);color:var(--ok);font-size:9px;padding:2px 5px;border-radius:8px;font-weight:700;font-family:var(--fh)}.ctdn{background:var(--dnb);color:var(--dn);font-size:9px;padding:2px 5px;border-radius:8px;font-weight:700;font-family:var(--fh)}.cteq{background:rgba(255,255,255,.05);color:var(--tx3);font-size:9px;padding:2px 5px;border-radius:8px;font-weight:700;font-family:var(--fh)}
+.plr{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:6px;margin-bottom:3px;border:1px solid var(--bd);background:var(--s1);font-size:10px;color:var(--tx2)}
+/* BTN */
+.btn{padding:5px 11px;border-radius:6px;border:1px solid var(--bd2);background:var(--s2);color:var(--tx2);font-size:10px;cursor:pointer;font-family:var(--fb);transition:all var(--tr);font-weight:500}
+.btn:hover{background:var(--s3);color:var(--tx)}.btn-p{background:var(--ac);border-color:var(--ac);color:#fff}.btn-p:hover{background:#6B5EE6;color:#fff}
+.btn-g{background:rgba(42,157,122,.8);border-color:rgba(42,157,122,.8);color:#fff}.btn-b{background:rgba(26,111,181,.8);border-color:rgba(26,111,181,.8);color:#fff}
+.btn-r{background:rgba(244,92,139,.8);border-color:rgba(244,92,139,.8);color:#fff;padding:3px 7px;font-size:9px}
+/* G2 G3 */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:10px}
+/* TODAY BOX */
+.today{background:linear-gradient(135deg,rgba(123,110,246,.2),rgba(26,111,181,.2));border:1px solid rgba(123,110,246,.3);border-radius:12px;padding:13px 15px;margin-bottom:13px}
+.today-dt{font-size:10px;color:var(--ac);font-family:var(--fh);font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px}
+.today-title{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--tx);margin-bottom:9px}
+.today-tasks{display:flex;flex-direction:column;gap:4px}
+.today-t{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border-radius:6px;padding:5px 9px;font-size:10px;color:var(--tx)}
+.today-cb{width:13px;height:13px;border-radius:3px;border:1.5px solid rgba(255,255,255,.3);flex-shrink:0;cursor:pointer;transition:all var(--tr)}
+.today-cb.ok{background:var(--ok);border-color:var(--ok)}
+.today-cb.ok::after{content:"✓";color:#0D2E20;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center}
+/* KPIS */
+.kg4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.kg5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+.kc{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:9px 11px;text-align:center}
+.kv{font-family:var(--fh);font-size:17px;font-weight:700;line-height:1}.kl{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em;margin-top:3px}.ks{font-size:9px;margin-top:2px;font-weight:600}
+/* MES CARDS */
+.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.mcard{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:9px 11px}
+.mcard-n{font-family:var(--fh);font-size:10px;font-weight:700;color:var(--ac);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}
+.mrow{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:10px;border-bottom:1px solid var(--bd)}.mrow:last-child{border:none}
+.ml{color:var(--tx3)}.mv{font-weight:600;color:var(--tx);font-family:var(--fh)}
+/* ADV */
+.adv{border-radius:8px;padding:9px 11px;border:1px solid rgba(244,92,139,.3);background:rgba(244,92,139,.07);margin-bottom:6px}
+.adv-t{font-size:11px;font-weight:600;color:var(--dn);margin-bottom:3px;font-family:var(--fh)}.adv-s{font-size:9px;color:#F89AB5}.adv-j{font-size:9px;color:var(--ac);margin-top:4px}
+.adv.am{border-color:rgba(244,197,92,.3);background:rgba(244,197,92,.07)}.adv.am .adv-t{color:var(--wn)}.adv.am .adv-s{color:#F8DA9A}
+/* FIN ROW */
+.fin{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;border:1px solid var(--bd);margin-bottom:4px;background:var(--s1)}
+.fin-tp{font-size:8px;padding:3px 8px;border-radius:10px;font-weight:700;font-family:var(--fh);flex-shrink:0;width:76px;text-align:center}
+.fin-d{font-size:10px;color:var(--tx);flex:1}.fin-v{font-size:11px;font-weight:700;flex-shrink:0;font-family:var(--fh)}.fin-a{display:flex;gap:4px;flex-shrink:0}
+.ftrec{background:var(--okb);color:var(--ok);border:1px solid rgba(92,244,176,.2)}.ftret{background:rgba(123,110,246,.1);color:var(--ac);border:1px solid rgba(123,110,246,.2)}
+.ftsal{background:rgba(42,157,122,.1);color:#5BD4A8;border:1px solid rgba(42,157,122,.2)}.ftcus{background:var(--wnb);color:var(--wn);border:1px solid rgba(244,197,92,.2)}
+.ftinv{background:rgba(26,111,181,.1);color:#5AAEE8;border:1px solid rgba(26,111,181,.2)}.ftemp{background:rgba(244,92,139,.07);color:#F49AB5;border:1px solid rgba(244,92,139,.15)}
+/* CHAMADO */
+.cham{background:var(--s1);border:1px solid var(--bd);border-radius:8px;padding:9px 11px;margin-bottom:6px}
+.cham.urg{border-left:3px solid var(--dn)}.cham.pri{border-left:3px solid var(--wn)}.cham.nor{border-left:3px solid var(--ok)}
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.mo-box{background:var(--s1);border:1px solid var(--bd2);border-radius:12px;padding:20px;width:100%;max-width:420px;max-height:80vh;overflow-y:auto}
+.mo-t{font-family:var(--fh);font-size:14px;font-weight:700;color:var(--tx);margin-bottom:14px}
+.fg{margin-bottom:11px}.fl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;display:block;font-family:var(--fh);font-weight:700}
+.fi{width:100%;background:var(--s2);border:1px solid var(--bd2);border-radius:6px;color:var(--tx);font-size:11px;padding:7px 9px;font-family:var(--fb);outline:none;transition:border-color var(--tr)}
+.fi:focus{border-color:var(--ac)}.fs{width:100%;background:var(--s2);border:1px solid var(--bd2);border-radius:6px;color:var(--tx);font-size:11px;padding:7px 9px;font-family:var(--fb);outline:none;cursor:pointer}
+.frow{display:flex;gap:8px}.frow .fg{flex:1}
+.ma{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
 </style>
 </head>
 <body>
-<div id="auth-screen" class="auth-wrap">
-  <div class="auth-box">
-    <div class="auth-logo">Raise</div>
-    <div class="auth-sub" id="auth-sub">Entre com sua conta da agência</div>
-    <label class="auth-label">E-mail</label>
-    <input class="auth-input" type="email" id="auth-email" placeholder="seu@email.com">
-    <label class="auth-label">Senha</label>
-    <input class="auth-input" type="password" id="auth-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')authAction()">
-    <div id="auth-name-wrap" style="display:none">
-      <label class="auth-label">Seu nome</label>
-      <input class="auth-input" type="text" id="auth-name" placeholder="Ex: Murilo">
-    </div>
-    <button class="auth-btn" onclick="authAction()" id="auth-btn">Entrar</button>
-    <div class="auth-err" id="auth-err"></div>
-    <div class="auth-ok" id="auth-ok"></div>
-    <div class="auth-toggle" id="auth-toggle" onclick="toggleMode()">Não tem conta? <span>Criar conta</span></div>
-  </div>
+<div id="app">
+<div class="ps">
+  <span style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;margin-right:4px;font-family:var(--fh)">Portal:</span>
+  <button class="psb adm on" onclick="gP('adm',this)">🛡 Admin</button>
+  <button class="psb ope" onclick="gP('ope',this)">⚙️ Operador</button>
+  <button class="psb cri" onclick="gP('cri',this)">🎨 Criador</button>
+  <div style="margin-left:auto;font-size:10px;color:var(--tx3);font-family:var(--fh)" id="clk"></div>
 </div>
-
-<div id="app-screen" style="display:none">
 <div class="shell">
-  <aside class="sidebar">
-    <div class="logo"><div class="logo-mark">Raise</div><div class="logo-sub">CRM Operacional</div></div>
-    <nav class="nav">
-      <div class="nav-section">Principal</div>
-      <button class="nav-item active" onclick="goto('rotina')"><span>✓</span> Rotina do dia</button>
-      <button class="nav-item" onclick="goto('kanban')"><span>⚡</span> Chamados</button>
-      <div class="nav-section">Gestão</div>
-      <button class="nav-item" onclick="goto('dossie')"><span>👤</span> Dossiê criadores</button>
-      <button class="nav-item" onclick="goto('fin')"><span>💰</span> Financeiro</button>
-      <button class="nav-item" onclick="goto('equipe')"><span>👥</span> Equipe & Log</button>
-      <div class="nav-section">Análise</div>
-      <button class="nav-item" onclick="goto('resumo')"><span>📊</span> Resumo semanal</button>
-    </nav>
-    <div class="sidebar-bottom">
-      <div class="day-sel" style="margin-bottom:8px">
-        <label>Dia atual</label>
-        <select id="day-select" onchange="buildRotina()">
-          <option value="seg">Segunda-feira</option><option value="ter">Terça-feira</option>
-          <option value="qua">Quarta-feira</option><option value="qui">Quinta-feira</option>
-          <option value="sex">Sexta-feira</option><option value="sab">Sábado</option><option value="dom">Domingo</option>
-        </select>
-      </div>
-      <div class="user-info"><div class="user-avatar" id="user-avatar">?</div><div class="user-name" id="user-name">...</div></div>
-      <button class="logout-btn" onclick="logout()">Sair da conta</button>
+<!-- ADMIN PORTAL -->
+<div id="p-adm" class="portal on adm-p">
+<div class="sb">
+  <div class="sb-hd"><div class="sb-logo">Raise<span>Hot</span></div><div class="sb-ver">CRM v2</div><span class="sb-role ra">🛡 Admin</span></div>
+  <div class="sb-nav">
+    <div class="sb-sec">Visão geral</div>
+    <button class="si on" onclick="gS('adm','a-dash',this)"><span class="si-ic">📊</span><span class="si-txt">Dashboard</span></button>
+    <button class="si" onclick="gS('adm','a-proj',this)"><span class="si-ic">🎯</span><span class="si-txt">Projetos</span></button>
+    <button class="si" onclick="gS('adm','a-pipe',this)"><span class="si-ic">🔮</span><span class="si-txt">Pipeline</span></button>
+    <button class="si" onclick="gS('adm','a-alert',this)"><span class="si-ic">🚨</span><span class="si-txt">Alertas</span><span class="si-badge">5</span></button>
+    <div class="sb-sec">Operação</div>
+    <button class="si" onclick="gS('adm','a-rot',this)"><span class="si-ic">✅</span><span class="si-txt">Rotina semanal</span></button>
+    <button class="si" onclick="gS('adm','a-onb',this)"><span class="si-ic">🚀</span><span class="si-txt">Onboarding</span></button>
+    <button class="si" onclick="gS('adm','a-mid',this)"><span class="si-ic">🎬</span><span class="si-txt">Mídias</span></button>
+    <button class="si" onclick="gS('adm','a-cha',this)"><span class="si-ic">⚡</span><span class="si-txt">Chamados</span><span class="si-badge">4</span></button>
+    <div class="sb-sec">Gestão</div>
+    <button class="si" onclick="gS('adm','a-dos',this)"><span class="si-ic">🔐</span><span class="si-txt">Dossiê</span></button>
+    <button class="si" onclick="gS('adm','a-fin',this)"><span class="si-ic">💰</span><span class="si-txt">Financeiro</span></button>
+    <button class="si" onclick="gS('adm','a-fint',this)"><span class="si-ic">🏦</span><span class="si-txt">Controle interno</span></button>
+    <button class="si" onclick="gS('adm','a-equ',this)"><span class="si-ic">👥</span><span class="si-txt">Equipe</span></button>
+    <button class="si" onclick="gS('adm','a-adv',this)"><span class="si-ic">⚠️</span><span class="si-txt">Advertências</span></button>
+    <div class="sb-sec">Análise</div>
+    <button class="si" onclick="gS('adm','a-kpi',this)"><span class="si-ic">📈</span><span class="si-txt">KPIs</span></button>
+    <button class="si" onclick="gS('adm','a-rel',this)"><span class="si-ic">📋</span><span class="si-txt">Relatórios</span></button>
+    <button class="si" onclick="gS('adm','a-cfg',this)"><span class="si-ic">⚙️</span><span class="si-txt">Configurações</span></button>
+  </div>
+  <div class="sb-ft"><div style="display:flex;align-items:center;gap:8px"><div class="sb-av av-a">MU</div><div><div style="font-size:11px;font-weight:500;color:var(--tx)">Murilo</div><div style="font-size:9px;color:var(--tx3)">Administrador</div></div></div></div>
+</div>
+<div class="main">
+<!-- DASHBOARD -->
+<div id="a-dash" class="scr on">
+  <div class="topbar"><div><div class="tb-t">Dashboard</div><div class="tb-s">Saúde consolidada · todos os projetos</div></div><div class="tb-r"><span class="bdg bin" id="a-dt"></span></div></div>
+  <div class="cnt">
+    <div class="nf nf-r"><span>🚨</span><span>Rick Necker — promoção vence <b>amanhã</b>. Ação imediata.</span><span class="nf-x" onclick="this.parentElement.remove()">✕</span></div>
+    <div class="nf nf-a"><span>⚠️</span><span>Ana C. acumulou 3 advertências este mês.</span><span class="nf-x" onclick="this.parentElement.remove()">✕</span></div>
+    <div class="mets">
+      <div class="mc"><div class="mc-v cnu">9</div><div class="mc-l">Projetos ativos</div></div>
+      <div class="mc"><div class="mc-v cnu">2</div><div class="mc-l">Em onboarding</div></div>
+      <div class="mc"><div class="mc-v cup">74%</div><div class="mc-l">Execução geral</div></div>
+      <div class="mc"><div class="mc-v cam">5</div><div class="mc-l">Alertas críticos</div></div>
+      <div class="mc"><div class="mc-v cup">R$42k</div><div class="mc-l">Receita total</div></div>
+      <div class="mc"><div class="mc-v cdn">4</div><div class="mc-l">Chamados abertos</div></div>
     </div>
-  </aside>
-  <div class="main">
-    <div id="panel-rotina" class="panel active">
-      <div class="topbar"><div><div class="page-title">Rotina do dia</div><div class="page-sub" id="rotina-sub">Marque as tarefas executadas</div></div><button class="btn btn-sm" onclick="resetDay()">↺ Reiniciar dia</button></div>
-      <div class="content"><div class="metrics-row" id="rotina-metrics"></div><div class="cr-filter" id="cr-filter"></div><div class="task-grid" id="task-grid"><div class="empty">Carregando...</div></div></div>
-    </div>
-    <div id="panel-kanban" class="panel">
-      <div class="topbar"><div><div class="page-title">Chamados & Incidentes</div><div class="page-sub">Tudo fora da rotina</div></div></div>
-      <div class="content">
-        <div class="card" style="margin-bottom:16px">
-          <div class="card-header"><span class="card-title">Novo chamado</span></div>
-          <div class="card-body">
-            <div class="form-row">
-              <div class="form-group" style="flex:3"><label>Descrição</label><input id="kb-desc" placeholder="Ex: Perfil da Bruna caiu..."></div>
-              <div class="form-group"><label>Criador</label><select id="kb-creator"><option value="">Geral</option><option>Bruna Santiny</option><option>Negao Rubi</option><option>Barbara Fartura</option><option>Rick Necker</option><option>Gabriela Avillar</option><option>Meck</option><option>Perola</option><option>Alice</option><option>Luh</option></select></div>
-              <div class="form-group"><label>Tipo</label><select id="kb-tipo"><option value="perfil-caido">Perfil caído</option><option value="nova-conta">Nova conta</option><option value="senha">Recuperar senha</option><option value="marketing">Marketing</option><option value="plataforma">Plataforma +18</option><option value="outro">Outro</option></select></div>
-              <div class="form-group"><label>Prioridade</label><select id="kb-prio"><option value="urg">🔴 Urgente</option><option value="med">🟡 Médio</option><option value="low">🟢 Baixo</option></select></div>
-              <div class="form-group" style="justify-content:flex-end;flex:0 0 auto;min-width:auto"><label>&nbsp;</label><button class="btn btn-primary" onclick="addTicket()">Abrir chamado</button></div>
-            </div>
-          </div>
-        </div>
-        <div class="kanban" id="kanban-board"><div class="empty">Carregando...</div></div>
-      </div>
-    </div>
-    <div id="panel-dossie" class="panel">
-      <div class="topbar"><div><div class="page-title">Dossiê dos criadores</div><div class="page-sub">Dados de acesso e senhas — confidencial</div></div></div>
-      <div class="content"><div class="cr-filter" id="dossie-tabs" style="margin-bottom:16px"></div><div id="dossie-body"><div class="empty">Carregando...</div></div></div>
-    </div>
-    <div id="panel-fin" class="panel">
-      <div class="topbar"><div><div class="page-title">Financeiro</div><div class="page-sub">Fechamento quinzenal, lucros e distribuição</div></div></div>
-      <div class="content">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-          <div class="card"><div class="card-header"><span class="card-title">Fechamento do período</span></div><div class="card-body">
-            <div class="form-row"><div class="form-group"><label>Receita bruta (R$)</label><input type="number" id="f-bruta" value="0" oninput="calcFin()"></div><div class="form-group"><label>Custos (R$)</label><input type="number" id="f-custos" value="0" oninput="calcFin()"></div></div>
-            <div class="form-row"><div class="form-group"><label>Impostos (R$)</label><input type="number" id="f-imp" value="0" oninput="calcFin()"></div></div>
-            <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px">
-              <div class="fin-row"><span class="fin-lbl">Receita bruta</span><span class="fin-pos" id="fi-bruta">R$ 0</span></div>
-              <div class="fin-row"><span class="fin-lbl">Custos</span><span class="fin-neg" id="fi-custos">(R$ 0)</span></div>
-              <div class="fin-row"><span class="fin-lbl">Impostos</span><span class="fin-neg" id="fi-imp">(R$ 0)</span></div>
-              <div class="fin-row"><span class="fin-lbl">Lucro líquido</span><span class="fin-pos" id="fi-lucro" style="font-size:18px;font-family:'Syne',sans-serif;font-weight:800">R$ 0</span></div>
-            </div>
-            <button class="btn btn-primary btn-sm" onclick="saveFin()" style="margin-top:10px;width:100%">Salvar fechamento</button>
-          </div></div>
-          <div class="card"><div class="card-header"><span class="card-title">Distribuição de lucro</span></div><div class="card-body">
-            <div id="dist-list" style="margin-bottom:10px"></div>
-            <div class="form-row"><div class="form-group"><label>Nome</label><input id="dist-nome" placeholder="Criador / Operador"></div><div class="form-group" style="flex:0 0 70px"><label>%</label><input id="dist-pct" type="number" placeholder="0"></div><div class="form-group" style="justify-content:flex-end;flex:0;min-width:auto"><label>&nbsp;</label><button class="btn btn-primary btn-sm" onclick="addDist()">+</button></div></div>
-          </div></div>
-        </div>
-        <div class="card"><div class="card-header"><span class="card-title">Checklist estratégico mensal</span></div><div class="card-body" id="fin-checks"></div></div>
-      </div>
-    </div>
-    <div id="panel-equipe" class="panel">
-      <div class="topbar"><div><div class="page-title">Equipe & Log</div><div class="page-sub">Operadores e registro de atividades</div></div></div>
-      <div class="content">
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:16px" id="team-grid"></div>
-        <div class="card" style="margin-bottom:16px"><div class="card-header"><span class="card-title">Adicionar operador</span></div><div class="card-body"><div class="form-row"><div class="form-group"><label>Nome</label><input id="op-nome" placeholder="Nome"></div><div class="form-group"><label>Função</label><input id="op-func" placeholder="Ex: Editor"></div><div class="form-group"><label>Criadores</label><input id="op-cris" placeholder="Ex: Rubi, Alice"></div><div class="form-group" style="justify-content:flex-end;flex:0;min-width:auto"><label>&nbsp;</label><button class="btn btn-primary" onclick="addOp()">+ Adicionar</button></div></div></div></div>
-        <div class="card"><div class="card-header"><span class="card-title">Log de atividades</span><div style="display:flex;gap:6px"><input id="log-txt" placeholder="Descrever ação..." style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:12px;padding:5px 9px;font-family:'DM Sans',sans-serif;width:200px;outline:none"><button class="btn btn-primary btn-sm" onclick="addLog()">Registrar</button></div></div><div id="log-list" style="max-height:280px;overflow-y:auto"><div class="empty">Nenhuma atividade</div></div></div>
-      </div>
-    </div>
-    <div id="panel-resumo" class="panel">
-      <div class="topbar"><div><div class="page-title">Resumo semanal</div><div class="page-sub">Panorama de execução e chamados</div></div></div>
-      <div class="content">
-        <div class="metrics-row" id="resumo-metrics" style="margin-bottom:20px"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <div class="card"><div class="card-header"><span class="card-title">Execução por dia</span></div><div class="card-body" id="resumo-days"></div></div>
-          <div class="card"><div class="card-header"><span class="card-title">Chamados por status</span></div><div class="card-body" id="resumo-tickets"></div></div>
-        </div>
-      </div>
+    <div class="sl">Saúde dos projetos</div>
+    <div class="hrow" style="border-color:rgba(244,92,139,.4)"><div class="av avp">NR</div><span class="hrow-n">Negão Rubi</span><div style="font-size:9px;color:var(--tx3);margin-right:6px">Perfil caído·fat.↓18%</div><div class="hrow-b"><div class="hrow-f" style="width:42%;background:var(--dn)"></div></div><span class="hrow-p cdn">42%</span><span class="bdg bur">Crise</span></div>
+    <div class="hrow" style="border-color:rgba(244,197,92,.4)"><div class="av avb">RN</div><span class="hrow-n">Rick Necker</span><div style="font-size:9px;color:var(--tx3);margin-right:6px">Promo vence amanhã</div><div class="hrow-b"><div class="hrow-f" style="width:61%;background:var(--wn)"></div></div><span class="hrow-p cam">61%</span><span class="bdg bwa">Atenção</span></div>
+    <div class="hrow"><div class="av avp">BS</div><span class="hrow-n">Bruna Santiny</span><div class="hrow-b"><div class="hrow-f" style="width:89%;background:var(--ok)"></div></div><span class="hrow-p cup">89%</span><span class="bdg bok">Saudável</span></div>
+    <div class="hrow"><div class="av avt">BF</div><span class="hrow-n">Barbara Fartura</span><div class="hrow-b"><div class="hrow-f" style="width:84%;background:var(--ok)"></div></div><span class="hrow-p cup">84%</span><span class="bdg bok">Saudável</span></div>
+    <div class="hrow"><div class="av avt">GA</div><span class="hrow-n">Gabriela Avillar</span><div class="hrow-b"><div class="hrow-f" style="width:77%;background:var(--ok)"></div></div><span class="hrow-p cup">77%</span><span class="bdg bok">Saudável</span></div>
+    <div class="hrow"><div class="av avp">PE</div><span class="hrow-n">Pérola</span><div class="hrow-b"><div class="hrow-f" style="width:85%;background:var(--ok)"></div></div><span class="hrow-p cup">85%</span><span class="bdg bok">Saudável</span></div>
+    <div class="hrow"><div class="av avt">AL</div><span class="hrow-n">Alice</span><div class="hrow-b"><div class="hrow-f" style="width:71%;background:var(--ok)"></div></div><span class="hrow-p cup">71%</span><span class="bdg bok">Saudável</span></div>
+    <div class="hrow"><div class="av avb">LH</div><span class="hrow-n">Luh</span><div class="hrow-b"><div class="hrow-f" style="width:79%;background:var(--ok)"></div></div><span class="hrow-p cup">79%</span><span class="bdg bok">Saudável</span></div>
+    <div class="hrow" style="border-color:rgba(244,197,92,.4)"><div class="av avb">MK</div><span class="hrow-n">Meck</span><div style="font-size:9px;color:var(--tx3);margin-right:6px">Decisão pendente</div><div class="hrow-b"><div class="hrow-f" style="width:63%;background:var(--wn)"></div></div><span class="hrow-p cam">63%</span><span class="bdg bwa">Atenção</span></div>
+  </div>
+</div>
+<!-- PROJETOS -->
+<div id="a-proj" class="scr">
+  <div class="topbar"><div><div class="tb-t">Projetos</div><div class="tb-s">Receita, contrato e indicadores por criador</div></div></div>
+  <div class="cnt">
+    <div class="hrow" style="border-color:rgba(244,92,139,.4)"><div class="av avp">NR</div><div style="flex:1"><div style="font-size:11px;font-weight:600;font-family:var(--fh)">Negão Rubi</div><div style="font-size:9px;color:var(--tx3)">Op:Ana C.·fev/25·180 dias restantes</div></div><div style="text-align:right;margin-right:8px"><div style="font-size:11px;font-weight:700;color:var(--dn);font-family:var(--fh)">R$3.1k <span class="ctdn">↓18%</span></div><div style="font-size:9px;color:var(--tx3)">CTA estágio 2</div></div><span class="bdg bur">Crise</span></div>
+    <div class="hrow" style="border-color:rgba(244,197,92,.4)"><div class="av avb">RN</div><div style="flex:1"><div style="font-size:11px;font-weight:600;font-family:var(--fh)">Rick Necker</div><div style="font-size:9px;color:var(--tx3)">Op:Lucas F.·mar/25·210 dias restantes</div></div><div style="text-align:right;margin-right:8px"><div style="font-size:11px;font-weight:700;color:var(--wn);font-family:var(--fh)">R$5.2k <span class="cteq">→</span></div><div style="font-size:9px;color:var(--tx3)">CTA estágio 3</div></div><span class="bdg bwa">Atenção</span></div>
+    <div class="hrow"><div class="av avp">BS</div><div style="flex:1"><div style="font-size:11px;font-weight:600;font-family:var(--fh)">Bruna Santiny</div><div style="font-size:9px;color:var(--tx3)">Op:Matheus A.·jan/25·240 dias restantes</div></div><div style="text-align:right;margin-right:8px"><div style="font-size:11px;font-weight:700;color:var(--ok);font-family:var(--fh)">R$8.4k <span class="ctup">↑12%</span></div><div style="font-size:9px;color:var(--tx3)">CTA estágio 3</div></div><span class="bdg bok">Saudável</span></div>
+    <div class="hrow"><div class="av avt">BF</div><div style="flex:1"><div style="font-size:11px;font-weight:600;font-family:var(--fh)">Barbara Fartura</div><div style="font-size:9px;color:var(--tx3)">Op:Carla M.·jan/25·190 dias restantes</div></div><div style="text-align:right;margin-right:8px"><div style="font-size:11px;font-weight:700;color:var(--ok);font-family:var(--fh)">R$9.1k <span class="ctup">↑5%</span></div><div style="font-size:9px;color:var(--tx3)">CTA estágio 4</div></div><span class="bdg bok">Saudável</span></div>
+    <div class="hrow"><div class="av avt">GA</div><div style="flex:1"><div style="font-size:11px;font-weight:600;font-family:var(--fh)">Gabriela Avillar</div><div style="font-size:9px;color:var(--tx3)">Op:Lucas F.·mar/25·165 dias restantes</div></div><div style="text-align:right;margin-right:8px"><div style="font-size:11px;font-weight:700;color:var(--ok);font-family:var(--fh)">R$6.2k <span class="ctup">↑8%</span></div><div style="font-size:9px;color:var(--tx3)">CTA estágio 2</div></div><span class="bdg bok">Saudável</span></div>
+    <div class="hrow"><div class="av avb">MK</div><div style="flex:1"><div style="font-size:11px;font-weight:600;font-family:var(--fh)">Meck</div><div style="font-size:9px;color:var(--tx3)">Op:Lucas F.·abr/25·340 dias restantes</div></div><div style="text-align:right;margin-right:8px"><div style="font-size:11px;font-weight:700;color:var(--wn);font-family:var(--fh)">R$4.1k <span class="cteq">→</span></div><div style="font-size:9px;color:var(--tx3)">CTA estágio 2</div></div><span class="bdg bwa">Atenção</span></div>
+    <div class="hrow"><div class="av avp">PE</div><div style="flex:1"><div style="font-size:11px;font-weight:600;font-family:var(--fh)">Pérola</div><div style="font-size:9px;color:var(--tx3)">Op:Matheus A.·fev/25·200 dias restantes</div></div><div style="text-align:right;margin-right:8px"><div style="font-size:11px;font-weight:700;color:var(--ok);font-family:var(--fh)">R$5.8k <span class="ctup">↑3%</span></div><div style="font-size:9px;color:var(--tx3)">CTA estágio 2</div></div><span class="bdg bok">Saudável</span></div>
+    <div class="hrow"><div class="av avt">AL</div><div style="flex:1"><div style="font-size:11px;font-weight:600;font-family:var(--fh)">Alice</div><div style="font-size:9px;color:var(--tx3)">Op:Ana C.·mar/25·280 dias restantes</div></div><div style="text-align:right;margin-right:8px"><div style="font-size:11px;font-weight:700;color:var(--ok);font-family:var(--fh)">R$3.9k <span class="ctup">↑6%</span></div><div style="font-size:9px;color:var(--tx3)">CTA estágio 1</div></div><span class="bdg bok">Saudável</span></div>
+    <div class="hrow"><div class="av avb">LH</div><div style="flex:1"><div style="font-size:11px;font-weight:600;font-family:var(--fh)">Luh</div><div style="font-size:9px;color:var(--tx3)">Op:Ana C.·fev/25·220 dias restantes</div></div><div style="text-align:right;margin-right:8px"><div style="font-size:11px;font-weight:700;color:var(--ok);font-family:var(--fh)">R$4.8k <span class="ctup">↑4%</span></div><div style="font-size:9px;color:var(--tx3)">CTA estágio 2</div></div><span class="bdg bok">Saudável</span></div>
+  </div>
+</div>
+<!-- ALERTAS -->
+<div id="a-alert" class="scr">
+  <div class="topbar"><div><div class="tb-t">Alertas críticos</div><div class="tb-s">Situações que exigem decisão imediata</div></div></div>
+  <div class="cnt">
+    <div class="sl">Alertas de projeto</div>
+    <div class="adv"><div class="adv-t">🔴 Rick Necker — Promoção vence amanhã (dia 20)</div><div class="adv-s">Decisão de renovar ou encerrar necessária hoje.</div></div>
+    <div class="adv"><div class="adv-t">🔴 Negão Rubi — Perfil caído + faturamento ↓18%</div><div class="adv-s">Protocolo Tipo 1 ativo. Perfil reserva acionado.</div></div>
+    <div class="adv am"><div class="adv-t">⚠️ Negão Rubi — 7 meses · risco de saturação de audiência</div><div class="adv-s">Recomendar campanha de reativação + topo de funil.</div></div>
+    <div class="sl">Alertas de equipe</div>
+    <div class="adv am"><div class="adv-t">⚠️ Ana C. — 3 advertências acumuladas este mês</div><div class="adv-s">Verificar entrega de obrigações. Conversa individual recomendada.</div></div>
+    <div class="adv am"><div class="adv-t">⚠️ Pérola — sem envio de mídias esta semana</div><div class="adv-s">Banco de mídias: 1 semana restante. Operador notificado.</div></div>
+  </div>
+</div>
+<!-- PIPELINE -->
+<div id="a-pipe" class="scr">
+  <div class="topbar"><div><div class="tb-t">Pipeline de prospecção</div><div class="tb-s">Funil com passo a passo por lead</div></div><div class="tb-r"><button class="btn btn-p" onclick="oM('m-lead')">+ Novo lead</button></div></div>
+  <div class="cnt">
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:12px">
+      <div class="kbc"><div class="kbh"><span>Atração</span><span class="bdg bgr">3</span></div><div class="tk"><div class="tkt">Lead Instagram</div><div class="tks">Eng.8.2%·45k seg.</div></div><div class="tk"><div class="tkt">Indicação Rubi</div><div class="tks">50k seg.</div></div><div class="tk"><div class="tkt">DM recebido</div><div class="tks">Visual Raise</div></div></div>
+      <div class="kbc"><div class="kbh"><span>Qualificação</span><span class="bdg bwa">2</span></div><div class="tk"><div class="tkt">Camila R.</div><div class="tks">Diagnóstico feito</div></div><div class="tk"><div class="tkt">Sofia M.</div><div class="tks">1º contato</div></div></div>
+      <div class="kbc"><div class="kbh"><span>Proposta</span><span class="bdg bin">1</span></div><div class="tk" style="border-color:rgba(123,110,246,.4)"><div class="tkt">Leticia P.</div><div class="tks">Proposta enviada</div></div></div>
+      <div class="kbc"><div class="kbh"><span>Fechamento</span><span class="bdg bok">1</span></div><div class="tk" style="border-color:rgba(92,244,176,.4)"><div class="tkt">Fernanda K.</div><div class="tks">Aguard. contrato</div></div></div>
+      <div class="kbc"><div class="kbh"><span>Onboarding</span><span class="bdg bok">2</span></div><div class="tk" style="border-color:rgba(123,110,246,.4)"><div class="tkt">Julia S.</div><div class="tks">Passo 3/7·43%</div><div class="pb"><div class="pbf" style="width:43%;background:var(--ac)"></div></div></div><div class="tk" style="border-color:rgba(123,110,246,.4)"><div class="tkt">Mariana F.</div><div class="tks">Passo 1/7·14%</div><div class="pb"><div class="pbf" style="width:14%;background:var(--ac)"></div></div></div></div>
     </div>
   </div>
 </div>
+<!-- ROTINA -->
+<div id="a-rot" class="scr">
+  <div class="topbar"><div><div class="tb-t">Rotina semanal</div><div class="tb-s">Todos os criadores · entrega de operadores e criadores</div></div><div class="tb-r"><select class="fs" style="width:96px;padding:4px 8px" id="a-rot-d"><option>Segunda</option><option>Terça</option><option>Quarta</option><option>Quinta</option><option>Sexta</option><option>Sábado</option><option>Domingo</option></select></div></div>
+  <div class="cnt">
+    <div class="mets" style="grid-template-columns:repeat(4,1fr)">
+      <div class="mc"><div class="mc-v cup">67%</div><div class="mc-l">Entrega operadores</div></div>
+      <div class="mc"><div class="mc-v cnu">78%</div><div class="mc-l">Entrega criadores</div></div>
+      <div class="mc"><div class="mc-v cam">3</div><div class="mc-l">Obrig. atrasadas</div></div>
+      <div class="mc"><div class="mc-v cdn">1</div><div class="mc-l">Advertências hoje</div></div>
+    </div>
+    <div class="sl">Bruna Santiny · Operador: Matheus A.</div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Editar + post Instagram (2x)</span><span class="tag tr">RAISE</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Edição conteúdo +18 · Privacy e OnlyFans</span><span class="tag tr">RAISE</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Post Telegram VIP</span><span class="tag tr">RAISE</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb"></div><span class="ckl">Post Privacy + OnlyFans</span><span class="tag tr">RAISE</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Post grupo free + canal WhatsApp</span><span class="tag tr">RAISE</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb"></div><span class="ckl">Post X (Twitter)</span><span class="tag tr">RAISE</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Stories Instagram / TikTok / X</span><span class="tag ta">AMBOS</span></div>
+    <div class="ck" style="border-color:rgba(244,197,92,.3)" onclick="tCk(this)"><div class="ckb"></div><span class="ckl" style="color:var(--wn)">Envio mídias · criadora não enviou</span><span class="tag tc">CRIADOR</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb"></div><span class="ckl">Monitoramento engajamento + vendas</span><span class="tag tr">RAISE</span></div>
+  </div>
+</div>
+<!-- ONBOARDING -->
+<div id="a-onb" class="scr">
+  <div class="topbar"><div><div class="tb-t">Onboarding</div><div class="tb-s">Página individual por lead · admin não pode falhar aqui</div></div><div class="tb-r"><button class="btn btn-p" onclick="oM('m-lead')">+ Novo lead</button></div></div>
+  <div class="cnt">
+    <div class="nf nf-b"><span>📌</span><span>Julia S. no passo 3 há 2 dias. Verifique o andamento.</span></div>
+    <div class="g2">
+      <div class="card"><div class="ch"><span class="ct">Julia S. · Passo 3/7</span><span class="bdg bin">43%</span></div><div class="cb">
+        <div class="pb" style="margin-bottom:8px"><div class="pbf" style="width:43%;background:var(--ac)"></div></div>
+        <div style="font-size:9px;color:var(--tx3);margin-bottom:8px">Responsável: Lucas F. · 5 dias</div>
+        <div class="row"><div class="sn" style="background:var(--ok)">1</div><span style="flex:1;font-size:10px">Formalização e contrato</span><span class="bdg bok">✓</span></div>
+        <div class="row"><div class="sn" style="background:var(--ok)">2</div><span style="flex:1;font-size:10px">Definição estratégica e persona</span><span class="bdg bok">✓</span></div>
+        <div class="row" style="background:rgba(123,110,246,.07);border-radius:6px;padding:5px 8px"><div class="sn" style="background:var(--ac)">3</div><span style="flex:1;font-size:10px">Estrutura de conversão</span><span class="bdg bin">Agora</span></div>
+        <div class="row" style="opacity:.4"><div class="sn" style="background:var(--tx3)">4</div><span style="flex:1;font-size:10px">Criação e aquecimento de perfis</span><span class="bdg bgr">Pendente</span></div>
+        <div class="row" style="opacity:.4"><div class="sn" style="background:var(--tx3)">5</div><span style="flex:1;font-size:10px">Plataformas premium</span><span class="bdg bgr">Pendente</span></div>
+        <div class="row" style="opacity:.4"><div class="sn" style="background:var(--tx3)">6</div><span style="flex:1;font-size:10px">Segurança e 2FA em todas as contas</span><span class="bdg bgr">Pendente</span></div>
+        <div class="row" style="opacity:.4"><div class="sn" style="background:var(--tx3)">7</div><span style="flex:1;font-size:10px">Go-live e separação de obrigações</span><span class="bdg bgr">Pendente</span></div>
+      </div></div>
+      <div class="card"><div class="ch"><span class="ct">Mariana F. · Passo 1/7</span><span class="bdg bwa">14%</span></div><div class="cb">
+        <div class="pb" style="margin-bottom:8px"><div class="pbf" style="width:14%;background:var(--wn)"></div></div>
+        <div style="font-size:9px;color:var(--tx3);margin-bottom:8px">Responsável: Matheus A. · 1 dia</div>
+        <div class="row" style="background:rgba(123,110,246,.07);border-radius:6px;padding:5px 8px"><div class="sn" style="background:var(--ac)">1</div><span style="flex:1;font-size:10px">Formalização e contrato</span><span class="bdg bin">Em andamento</span></div>
+        <div class="row" style="opacity:.4"><div class="sn" style="background:var(--tx3)">2</div><span style="flex:1;font-size:10px">Definição estratégica e persona</span></div>
+        <div class="row" style="opacity:.4"><div class="sn" style="background:var(--tx3)">3</div><span style="flex:1;font-size:10px">Estrutura de conversão</span></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+<!-- MIDIAS -->
+<div id="a-mid" class="scr">
+  <div class="topbar"><div><div class="tb-t">Controle de mídias</div><div class="tb-s" id="a-mid-s">Entrega semanal · prazo domingo</div></div></div>
+  <div class="cnt">
+    <div class="nf nf-r"><span>🚨</span><span>Pérola — sem mídias esta semana. Banco: 1 semana. Risco alto.</span></div>
+    <div class="nf nf-a"><span>⚠️</span><span>Meck — envio parcial. Falta conteúdo +18.</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Bruna Santiny · 18 arquivos · banco: 2 semanas</span><span class="bdg bok">Entregue</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Barbara Fartura · 22 arquivos · banco: 3 semanas</span><span class="bdg bok">Entregue</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Negão Rubi · 14 arquivos · banco: 1 semana</span><span class="bdg bwa">Reserva baixa</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Gabriela Avillar · 20 arquivos · banco: 2 semanas</span><span class="bdg bok">Entregue</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Rick Necker · 12 arquivos · banco: 2 semanas</span><span class="bdg bok">Entregue</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Alice · 16 arquivos · banco: 2 semanas</span><span class="bdg bok">Entregue</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Luh · 15 arquivos · banco: 2 semanas</span><span class="bdg bok">Entregue</span></div>
+    <div class="ck" style="border-color:rgba(244,92,139,.4)" onclick="tCk(this)"><div class="ckb"></div><span class="ckl" style="color:var(--dn)">Pérola · 0 arquivos · banco: 1 semana</span><span class="bdg bur">ATRASADO</span></div>
+    <div class="ck" style="border-color:rgba(244,197,92,.4)" onclick="tCk(this)"><div class="ckb"></div><span class="ckl" style="color:var(--wn)">Meck · 8 arquivos · falta +18</span><span class="bdg bwa">Parcial</span></div>
+  </div>
+</div>
+<!-- CHAMADOS -->
+<div id="a-cha" class="scr">
+  <div class="topbar"><div><div class="tb-t">Chamados</div><div class="tb-s">Notificação imediata ao Admin · protocolo por tipo</div></div></div>
+  <div class="cnt">
+    <div class="nf nf-r"><span>🚨</span><span>Novo chamado urgente: <b>Perfil Rubi caído</b>. Aberto por Ana C. há 14 min.</span></div>
+    <div class="kb">
+      <div class="kbc"><div class="kbh"><span>Aberto</span><span class="bdg bur">4</span></div>
+        <div class="cham urg"><div class="tkt">Perfil Rubi caído</div><div class="tks">🔴 Urgente · Tipo 1 · Ana C.</div><div class="tktip">Protocolo: ativar perfil reserva → redirecionar CTA grupo free → abrir recurso</div></div>
+        <div class="cham pri"><div class="tkt">Rick — promo vencendo</div><div class="tks">🟡 Prioridade · Tipo 2 · Lucas F.</div></div>
+        <div class="cham nor"><div class="tkt">TikTok Gabi pendente</div><div class="tks">🟢 Normal · Nova conta</div></div>
+        <div class="cham nor"><div class="tkt">Dúvida Bruna sobre live</div><div class="tks">🟢 Normal · Criadora abriu</div></div>
+      </div>
+      <div class="kbc"><div class="kbh"><span>Andamento</span><span class="bdg bwa">2</span></div>
+        <div class="cham pri"><div class="tkt">Conta links Rubi</div><div class="tks">Ana C. · Em criação</div></div>
+        <div class="cham nor"><div class="tkt">TikTok Alice</div><div class="tks">Lucas F.</div></div>
+      </div>
+      <div class="kbc"><div class="kbh"><span>Revisão</span><span class="bdg bin">1</span></div>
+        <div class="cham nor"><div class="tkt">Sorteio Santiny</div><div class="tks">Aguard. Admin</div></div>
+      </div>
+      <div class="kbc"><div class="kbh"><span>Resolvido</span><span class="bdg bok">8</span></div>
+        <div class="cham nor" style="opacity:.5"><div class="tkt">Promo Meck</div><div class="tks">Resolvido · ontem</div></div>
+        <div class="cham nor" style="opacity:.5"><div class="tkt">Senha Luh</div><div class="tks">Resolvido · 20/04</div></div>
+      </div>
+    </div>
+    <div class="sl">Chamados internos da Raise</div>
+    <div class="card"><div class="ch"><span class="ct">Internos</span><button class="btn btn-p" style="font-size:9px;padding:3px 8px" onclick="oM('m-int')">+ Novo interno</button></div><div class="cb">
+      <div class="row"><span class="dot dnu"></span><span style="flex:1">Contabilidade — notas fiscais de abril</span><span class="bdg bin">Em andamento</span></div>
+      <div class="row"><span class="dot dam"></span><span style="flex:1">Novo projeto parceiro externo</span><span class="bdg bwa">Pendente</span></div>
+    </div></div>
+  </div>
+</div>
+<!-- DOSSIE -->
+<div id="a-dos" class="scr">
+  <div class="topbar"><div><div class="tb-t">Dossiê completo</div><div class="tb-s">Dados, contrato, plataformas, 2FA e cofre de senhas</div></div><div class="tb-r"><select class="fs" style="width:140px;padding:4px 8px" id="a-dos-sel"><option>Bruna Santiny</option><option>Negão Rubi</option><option>Barbara Fartura</option><option>Rick Necker</option><option>Gabriela Avillar</option><option>Meck</option><option>Pérola</option><option>Alice</option><option>Luh</option></select></div></div>
+  <div class="cnt">
+    <div class="g2">
+      <div class="card"><div class="ch"><span class="ct">Bruna Santiny · Cadastro</span></div><div class="cb">
+        <div class="row"><span style="font-size:9px;color:var(--tx3);width:110px">CPF</span><span>•••.•••.•••-62</span></div>
+        <div class="row"><span style="font-size:9px;color:var(--tx3);width:110px">Início contrato</span><span>Janeiro/2025</span></div>
+        <div class="row"><span style="font-size:9px;color:var(--tx3);width:110px">Duração</span><span>12 meses</span></div>
+        <div class="row"><span style="font-size:9px;color:var(--tx3);width:110px">Dias restantes</span><span class="bdg bok">240 dias</span></div>
+        <div class="row"><span style="font-size:9px;color:var(--tx3);width:110px">Persona</span><span>Feminino·25-35·BR</span></div>
+        <div class="row"><span style="font-size:9px;color:var(--tx3);width:110px">CTA estágio</span><span class="bdg bin">Estágio 3 — escassez</span></div>
+        <div class="row"><span style="font-size:9px;color:var(--tx3);width:110px">Faturamento</span><span class="cup" style="font-weight:700;font-family:var(--fh)">R$8.4k ↑12%</span></div>
+        <div class="row"><span style="font-size:9px;color:var(--tx3);width:110px">Seguidores</span><span>48.2k <span class="ctup">+340</span></span></div>
+      </div></div>
+      <div class="card"><div class="ch"><span class="ct">Plataformas · tipo e status</span><span class="bdg bgr" style="font-size:8px">Editável: Admin/Op.</span></div><div class="cb">
+        <div class="plr"><span class="dot dok"></span><span style="flex:1">Instagram Principal</span><span class="bdg bgr" style="margin-right:4px;font-size:8px">Rede Social</span><span class="bdg bok">Ativo</span></div>
+        <div class="plr"><span class="dot dok"></span><span style="flex:1">Instagram Reserva 1</span><span class="bdg bgr" style="margin-right:4px;font-size:8px">Rede Social</span><span class="bdg bok">Ativo</span></div>
+        <div class="plr"><span class="dot dok"></span><span style="flex:1">Instagram Reserva 2</span><span class="bdg bgr" style="margin-right:4px;font-size:8px">Rede Social</span><span class="bdg bok">Ativo</span></div>
+        <div class="plr"><span class="dot dok"></span><span style="flex:1">Canal WhatsApp</span><span class="bdg bgr" style="margin-right:4px;font-size:8px">Rede Social</span><span class="bdg bok">Ativo</span></div>
+        <div class="plr"><span class="dot dam"></span><span style="flex:1">TikTok</span><span class="bdg bgr" style="margin-right:4px;font-size:8px">Rede Social</span><span class="bdg bwa">Restrito</span></div>
+        <div class="plr"><span class="dot dok"></span><span style="flex:1">Privacy</span><span class="bdg bur" style="margin-right:4px;font-size:8px">+18</span><span class="bdg bok">Ativo</span></div>
+        <div class="plr"><span class="dot dok"></span><span style="flex:1">OnlyFans</span><span class="bdg bur" style="margin-right:4px;font-size:8px">+18</span><span class="bdg bok">Ativo</span></div>
+        <div class="plr"><span class="dot dok"></span><span style="flex:1">Telegram VIP</span><span class="bdg bur" style="margin-right:4px;font-size:8px">+18</span><span class="bdg bok">Ativo</span></div>
+        <div class="plr"><span class="dot dok"></span><span style="flex:1">Telegram Free</span><span class="bdg bur" style="margin-right:4px;font-size:8px">+18</span><span class="bdg bok">Ativo</span></div>
+      </div></div>
+    </div>
+    <div class="card"><div class="ch"><span class="ct">Cofre de senhas · clique para revelar</span><span class="bdg bur">Confidencial</span></div><div class="cb">
+      <div class="row"><span style="width:145px;font-size:9px;color:var(--tx3)">IG Principal · App 2FA</span><span class="blr" onclick="tBlr(this)" style="filter:blur(5px);cursor:pointer;font-family:monospace;font-size:10px">@bruna_santiny / Br@2025#</span></div>
+      <div class="row"><span style="width:145px;font-size:9px;color:var(--tx3)">IG Reserva 1 · App 2FA</span><span class="blr" onclick="tBlr(this)" style="filter:blur(5px);cursor:pointer;font-family:monospace;font-size:10px">@bruna_res1 / Res@1234!</span></div>
+      <div class="row"><span style="width:145px;font-size:9px;color:var(--tx3)">Privacy · SMS 2FA</span><span class="blr" onclick="tBlr(this)" style="filter:blur(5px);cursor:pointer;font-family:monospace;font-size:10px">brunasantiny / Prv#2025</span></div>
+      <div class="row"><span style="width:145px;font-size:9px;color:var(--tx3)">OnlyFans · App 2FA</span><span class="blr" onclick="tBlr(this)" style="filter:blur(5px);cursor:pointer;font-family:monospace;font-size:10px">bruna.hot / OF@pass!</span></div>
+      <div class="row"><span style="width:145px;font-size:9px;color:var(--tx3)">Telegram VIP · App 2FA</span><span class="blr" onclick="tBlr(this)" style="filter:blur(5px);cursor:pointer;font-family:monospace;font-size:10px">t.me/brunavip · Admin@raise</span></div>
+      <div class="row"><span style="width:145px;font-size:9px;color:var(--tx3)">E-mail recuperação</span><span class="blr" onclick="tBlr(this)" style="filter:blur(5px);cursor:pointer;font-family:monospace;font-size:10px">bruna.recovery@gmail.com</span></div>
+      <div style="font-size:9px;color:var(--tx3);margin-top:6px">👆 Clique em qualquer senha para revelar</div>
+    </div></div>
+  </div>
+</div>
+<!-- FINANCEIRO -->
+<div id="a-fin" class="scr">
+  <div class="topbar"><div><div class="tb-t">Financeiro</div><div class="tb-s">Lançamento pelo Admin toda sexta · distribuição e KPIs</div></div><div class="tb-r"><button class="btn btn-p" onclick="oM('m-fat')">Lançar faturamento</button></div></div>
+  <div class="cnt">
+    <div class="mets">
+      <div class="mc"><div class="mc-v cnu">R$42k</div><div class="mc-l">Receita total</div><div class="mc-s cup">↑9% vs mês anterior</div></div>
+      <div class="mc"><div class="mc-v cup">R$28k</div><div class="mc-l">Lucro líquido</div></div>
+      <div class="mc"><div class="mc-v cam">11%</div><div class="mc-l">Churn médio</div></div>
+      <div class="mc"><div class="mc-v cnu">R$87</div><div class="mc-l">Ticket médio</div></div>
+    </div>
+    <div class="g2">
+      <div class="card"><div class="ch"><span class="ct">Faturamento por criador · mês</span></div><div class="cb">
+        <div class="br"><span class="bl">Barbara F.</span><div class="bw"><div class="bf" style="width:90%;background:var(--ac)"><span class="bv">R$9.1k</span></div></div></div>
+        <div class="br"><span class="bl">Bruna S.</span><div class="bw"><div class="bf" style="width:83%;background:var(--ac)"><span class="bv">R$8.4k</span></div></div></div>
+        <div class="br"><span class="bl">Gabi A.</span><div class="bw"><div class="bf" style="width:61%;background:var(--ac)"><span class="bv">R$6.2k</span></div></div></div>
+        <div class="br"><span class="bl">Rick N.</span><div class="bw"><div class="bf" style="width:51%;background:var(--wn)"><span class="bv">R$5.2k</span></div></div></div>
+        <div class="br"><span class="bl">Negão R.</span><div class="bw"><div class="bf" style="width:31%;background:var(--dn)"><span class="bv">R$3.1k</span></div></div></div>
+      </div></div>
+      <div class="card"><div class="ch"><span class="ct">KPIs financeiros</span></div><div class="cb">
+        <div class="row"><span style="flex:1">Churn de assinantes</span><span class="bdg bok">11% — ok</span></div>
+        <div class="row"><span style="flex:1">Ticket médio</span><span style="font-family:var(--fh);font-weight:700">R$87/ass.</span></div>
+        <div class="row"><span style="flex:1">Crescimento orgânico</span><span class="bdg bin">+18% mês</span></div>
+        <div class="row"><span style="flex:1">NPS médio criadores</span><span class="bdg bok">8.4/10</span></div>
+        <div class="row"><span style="flex:1">Saturação (Rubi)</span><span class="bdg bwa">7 meses ⚠️</span></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+<!-- CONTROLE INTERNO -->
+<div id="a-fint" class="scr">
+  <div class="topbar"><div><div class="tb-t">Controle financeiro interno</div><div class="tb-s">Receitas, retiradas, salários, custos, investimentos e empréstimos</div></div><div class="tb-r"><button class="btn btn-p" onclick="oM('m-fint')">+ Novo lançamento</button></div></div>
+  <div class="cnt">
+    <div class="mets">
+      <div class="mc"><div class="mc-v cup">R$42k</div><div class="mc-l">Entradas mês</div></div>
+      <div class="mc"><div class="mc-v cdn">R$18.4k</div><div class="mc-l">Total saídas</div></div>
+      <div class="mc"><div class="mc-v cup">R$23.6k</div><div class="mc-l">Saldo líquido</div></div>
+      <div class="mc"><div class="mc-v cnu">R$8k</div><div class="mc-l">Reserva/Invest.</div></div>
+    </div>
+    <div class="sl">Entradas</div>
+    <div class="fin"><span class="fin-tp ftrec">Receita</span><span class="fin-d">Honorários criadores — abril</span><span class="fin-v cup">+ R$42.000</span><div class="fin-a"><button class="btn" style="font-size:8px;padding:3px 7px">Editar</button><button class="btn btn-r">✕</button></div></div>
+    <div class="sl">Retiradas dos Admins</div>
+    <div class="fin"><span class="fin-tp ftret">Retirada</span><span class="fin-d">Murilo — retirada mensal</span><span class="fin-v cdn">- R$4.000</span><div class="fin-a"><button class="btn" style="font-size:8px;padding:3px 7px">Editar</button><button class="btn btn-r">✕</button></div></div>
+    <div class="fin"><span class="fin-tp ftret">Retirada</span><span class="fin-d">João — retirada mensal</span><span class="fin-v cdn">- R$4.000</span><div class="fin-a"><button class="btn" style="font-size:8px;padding:3px 7px">Editar</button><button class="btn btn-r">✕</button></div></div>
+    <div class="sl">Salários operadores</div>
+    <div class="fin"><span class="fin-tp ftsal">Salário</span><span class="fin-d">Matheus A. — abril</span><span class="fin-v cdn">- R$2.200</span><div class="fin-a"><button class="btn" style="font-size:8px;padding:3px 7px">Editar</button><button class="btn btn-r">✕</button></div></div>
+    <div class="fin"><span class="fin-tp ftsal">Salário</span><span class="fin-d">Ana C. — abril</span><span class="fin-v cdn">- R$2.200</span><div class="fin-a"><button class="btn" style="font-size:8px;padding:3px 7px">Editar</button><button class="btn btn-r">✕</button></div></div>
+    <div class="fin"><span class="fin-tp ftsal">Salário</span><span class="fin-d">Lucas F. — abril</span><span class="fin-v cdn">- R$2.200</span><div class="fin-a"><button class="btn" style="font-size:8px;padding:3px 7px">Editar</button><button class="btn btn-r">✕</button></div></div>
+    <div class="sl">Custos operacionais</div>
+    <div class="fin"><span class="fin-tp ftcus">Custo</span><span class="fin-d">Ferramentas / Software — mensal</span><span class="fin-v cdn">- R$890</span><div class="fin-a"><button class="btn" style="font-size:8px;padding:3px 7px">Editar</button><button class="btn btn-r">✕</button></div></div>
+    <div class="fin"><span class="fin-tp ftcus">Custo</span><span class="fin-d">Contabilidade — mensal</span><span class="fin-v cdn">- R$500</span><div class="fin-a"><button class="btn" style="font-size:8px;padding:3px 7px">Editar</button><button class="btn btn-r">✕</button></div></div>
+    <div class="sl">Investimentos e reservas</div>
+    <div class="fin"><span class="fin-tp ftinv">Invest.</span><span class="fin-d">Reserva operacional — abril</span><span class="fin-v cnu">R$5.000</span><div class="fin-a"><button class="btn" style="font-size:8px;padding:3px 7px">Editar</button><button class="btn btn-r">✕</button></div></div>
+    <div class="fin"><span class="fin-tp ftinv">Invest.</span><span class="fin-d">Reinvestimento em ferramentas</span><span class="fin-v cnu">R$3.000</span><div class="fin-a"><button class="btn" style="font-size:8px;padding:3px 7px">Editar</button><button class="btn btn-r">✕</button></div></div>
+    <div class="sl">Empréstimos</div>
+    <div class="fin"><span class="fin-tp ftemp">Empréstimo</span><span class="fin-d">Empréstimo sócio — out/24</span><span class="fin-v cam">R$10.000</span><div class="fin-a"><button class="btn" style="font-size:8px;padding:3px 7px">Editar</button><button class="btn btn-r">✕</button></div></div>
+    <div class="fin"><span class="fin-tp ftemp">Pagamento</span><span class="fin-d">Parcela empréstimo — abril</span><span class="fin-v cdn">- R$1.000</span><div class="fin-a"><button class="btn" style="font-size:8px;padding:3px 7px">Editar</button><button class="btn btn-r">✕</button></div></div>
+    <div style="margin-top:10px;padding:11px 13px;background:var(--s2);border-radius:8px;border:1px solid var(--bd2)">
+      <div class="row"><span style="flex:1;font-size:10px">Total entradas</span><span class="cup" style="font-weight:700;font-family:var(--fh)">R$42.000</span></div>
+      <div class="row"><span style="flex:1;font-size:10px">Total saídas</span><span class="cdn" style="font-weight:700;font-family:var(--fh)">- R$18.390</span></div>
+      <div class="row"><span style="flex:1;font-size:10px;font-weight:600">Saldo do mês</span><span class="cup" style="font-weight:800;font-size:14px;font-family:var(--fh)">R$23.610</span></div>
+    </div>
+  </div>
+</div>
+<!-- EQUIPE -->
+<div id="a-equ" class="scr">
+  <div class="topbar"><div><div class="tb-t">Equipe</div><div class="tb-s">Operadores · criadores · atribuições · transferências</div></div><div class="tb-r"><button class="btn btn-p" onclick="oM('m-user')">+ Usuário</button></div></div>
+  <div class="cnt">
+    <div class="sl">Operadores</div>
+    <div class="hrow"><div class="av avp">MA</div><div style="flex:1"><div style="font-size:11px;font-weight:600;font-family:var(--fh)">Matheus A. <span class="bdg bgr" style="font-size:8px">Editor</span></div><div style="font-size:9px;color:var(--tx3)">Bruna Santiny, Pérola</div></div><button class="btn" style="font-size:9px" onclick="oM('m-transfer')">Transferir criador</button><span class="bdg bok">Ativo</span></div>
+    <div class="hrow" style="border-color:rgba(244,92,139,.4)"><div class="av avt">AC</div><div style="flex:1"><div style="font-size:11px;font-weight:600;font-family:var(--fh)">Ana C. <span class="bdg bgr" style="font-size:8px">CM</span> <span class="bdg bur" style="font-size:8px">3 advertências</span></div><div style="font-size:9px;color:var(--tx3)">Rubi, Alice, Luh</div></div><button class="btn" style="font-size:9px" onclick="oM('m-transfer')">Transferir criador</button><span class="bdg bwa">Atenção</span></div>
+    <div class="hrow"><div class="av avb">LF</div><div style="flex:1"><div style="font-size:11px;font-weight:600;font-family:var(--fh)">Lucas F. <span class="bdg bgr" style="font-size:8px">Gestor</span></div><div style="font-size:9px;color:var(--tx3)">Gabi, Meck, Rick, Barbara</div></div><button class="btn" style="font-size:9px" onclick="oM('m-transfer')">Transferir criador</button><span class="bdg bok">Ativo</span></div>
+    <div class="sl">Admins · acesso total igualitário</div>
+    <div class="hrow"><div class="av av-a" style="background:rgba(123,110,246,.3);color:#A99EF8">MU</div><span class="hrow-n">Murilo (você)</span><span class="bdg bin">Admin</span></div>
+    <div class="hrow"><div class="av avt">JO</div><span class="hrow-n">João</span><span class="bdg bin">Admin</span><button class="btn btn-r" style="font-size:9px;margin-left:6px">Remover</button></div>
+    <button class="btn btn-p" style="margin-top:8px;font-size:10px" onclick="oM('m-user')">+ Adicionar Admin</button>
+  </div>
+</div>
+<!-- ADVERTENCIAS -->
+<div id="a-adv" class="scr">
+  <div class="topbar"><div><div class="tb-t">Advertências</div><div class="tb-s">Registro mensal · penalidade definida pessoalmente pelo Admin</div></div></div>
+  <div class="cnt">
+    <div class="sl">Resumo do mês atual</div>
+    <div class="hrow" style="border-color:rgba(244,92,139,.4)"><div class="av avt">AC</div><span class="hrow-n">Ana C.</span><span class="bdg bur">3 advertências</span><div style="font-size:9px;color:var(--dn);margin-left:8px">⚠️ Crítico</div></div>
+    <div class="hrow"><div class="av avp">MA</div><span class="hrow-n">Matheus A.</span><span class="bdg bwa">1 advertência</span></div>
+    <div class="hrow"><div class="av avb">LF</div><span class="hrow-n">Lucas F.</span><span class="bdg bok">0 advertências</span></div>
+    <div class="sl">Detalhes · Ana C.</div>
+    <div class="adv"><div class="adv-t">Advertência #3 · Seg 22/04 · 23:59</div><div class="adv-s">Não concluiu 100% das obrigações de Negão Rubi na segunda-feira.</div><div class="adv-j">Justificativa: "Tive problema de acesso ao Instagram do projeto."</div></div>
+    <div class="adv"><div class="adv-t">Advertência #2 · Sex 19/04 · 23:59</div><div class="adv-s">Não concluiu post Telegram VIP — Luh.</div><div class="adv-j">Justificativa: "Conteúdo não chegou a tempo do criador."</div></div>
+    <div class="adv"><div class="adv-t">Advertência #1 · Ter 16/04 · 23:59</div><div class="adv-s">Não concluiu monitoramento de engajamento — Alice.</div><div class="adv-j">Justificativa: "Esqueci de registrar, mas fiz."</div></div>
+  </div>
+</div>
+<!-- KPIS -->
+<div id="a-kpi" class="scr">
+  <div class="topbar"><div><div class="tb-t">KPIs</div><div class="tb-s" id="kpi-sub">Dias corridos do mês atual · reinicia no dia 1</div></div></div>
+  <div class="cnt">
+    <div class="nf nf-b"><span>📅</span><span id="kpi-msg">Carregando...</span></div>
+    <div class="kg4">
+      <div class="kc"><div class="kv cnu">8.4%</div><div class="kl">Engaj. médio</div><div class="ks cup">↑0.3% vs sem. ant.</div></div>
+      <div class="kc"><div class="kv cup">R$42k</div><div class="kl">Receita total</div><div class="ks cup">↑9% vs mês ant.</div></div>
+      <div class="kc"><div class="kv cup">+2.1k</div><div class="kl">Seguidores</div><div class="ks cup">↑ período</div></div>
+      <div class="kc"><div class="kv cam">11%</div><div class="kl">Churn médio</div><div class="ks">dentro da meta</div></div>
+    </div>
+    <div class="card"><div class="ch"><span class="ct" id="kpi-card-t">Vendas por plataforma · dias corridos</span></div><div class="cb">
+      <div class="br"><span class="bl">Privacy</span><div class="bw"><div class="bf" style="width:55%;background:var(--ac)"><span class="bv">R$23k</span></div></div></div>
+      <div class="br"><span class="bl">OnlyFans</span><div class="bw"><div class="bf" style="width:30%;background:var(--ac)"><span class="bv">R$12.6k</span></div></div></div>
+      <div class="br"><span class="bl">Telegram VIP</span><div class="bw"><div class="bf" style="width:15%;background:#2A9D7A"><span class="bv">R$6.3k</span></div></div></div>
+    </div></div>
+  </div>
+</div>
+<!-- RELATORIOS -->
+<div id="a-rel" class="scr">
+  <div class="topbar"><div><div class="tb-t">Relatórios</div><div class="tb-s">Gerados automaticamente toda sexta-feira às 18h</div></div></div>
+  <div class="cnt">
+    <div class="nf nf-g"><span>📋</span><span>Relatório semanal gerado automaticamente toda sexta-feira às 18h.</span></div>
+    <div class="g2">
+      <div class="card"><div class="ch"><span class="ct">Resumo semanal</span><span class="bdg bok">Pronto</span></div><div class="cb">
+        <div class="row"><span style="flex:1">Execução geral</span><span class="cup" style="font-weight:700;font-family:var(--fh)">74%</span></div>
+        <div class="row"><span style="flex:1">Chamados resolvidos</span><span>8 de 12</span></div>
+        <div class="row"><span style="flex:1">Mídias no prazo</span><span>7 de 9</span></div>
+        <div class="row"><span style="flex:1">Projetos saudáveis</span><span>6 de 9</span></div>
+        <div class="row"><span style="flex:1">Receita da semana</span><span class="cup" style="font-weight:700;font-family:var(--fh)">R$10.8k</span></div>
+        <div class="row"><span style="flex:1">Advertências geradas</span><span class="cam" style="font-weight:700">4</span></div>
+      </div></div>
+      <div class="card"><div class="ch"><span class="ct">Decisões necessárias</span></div><div class="cb">
+        <div class="row"><span class="dot ddn"></span><span style="flex:1">Rubi — perfil caído</span><span style="font-size:9px;color:var(--tx3)">Protocolo ativo</span></div>
+        <div class="row"><span class="dot ddn"></span><span style="flex:1">Rick — promo amanhã</span><span style="font-size:9px;color:var(--tx3)">Decidir hoje</span></div>
+        <div class="row"><span class="dot dam"></span><span style="flex:1">Ana C. — 3 advertências</span><span style="font-size:9px;color:var(--tx3)">Conversa pendente</span></div>
+        <div class="row"><span class="dot dam"></span><span style="flex:1">Rubi — saturação 7 meses</span><span style="font-size:9px;color:var(--tx3)">Reativar base</span></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+<!-- CONFIGURACOES -->
+<div id="a-cfg" class="scr">
+  <div class="topbar"><div><div class="tb-t">Configurações</div><div class="tb-s">Obrigações · admins · acessos</div></div></div>
+  <div class="cnt">
+    <div class="card"><div class="ch"><span class="ct">Obrigações editáveis pelo Admin</span><button class="btn btn-p" style="font-size:9px;padding:3px 8px" onclick="oM('m-obrig')">+ Nova obrigação</button></div><div class="cb">
+      <div class="row"><span style="flex:1">Editar + post Instagram (2x)</span><span class="tag tr">RAISE</span><button class="btn" style="font-size:8px;margin-left:6px;padding:3px 7px">Editar</button><button class="btn btn-r" style="margin-left:3px">✕</button></div>
+      <div class="row"><span style="flex:1">Edição conteúdo +18 · Privacy e OnlyFans</span><span class="tag tr">RAISE</span><button class="btn" style="font-size:8px;margin-left:6px;padding:3px 7px">Editar</button><button class="btn btn-r" style="margin-left:3px">✕</button></div>
+      <div class="row"><span style="flex:1">Post grupo free + canal WhatsApp</span><span class="tag tr">RAISE</span><button class="btn" style="font-size:8px;margin-left:6px;padding:3px 7px">Editar</button><button class="btn btn-r" style="margin-left:3px">✕</button></div>
+      <div class="row"><span style="flex:1">Post Privacy + OnlyFans</span><span class="tag tr">RAISE</span><button class="btn" style="font-size:8px;margin-left:6px;padding:3px 7px">Editar</button><button class="btn btn-r" style="margin-left:3px">✕</button></div>
+      <div class="row"><span style="flex:1">Post Telegram VIP</span><span class="tag tr">RAISE</span><button class="btn" style="font-size:8px;margin-left:6px;padding:3px 7px">Editar</button><button class="btn btn-r" style="margin-left:3px">✕</button></div>
+      <div class="row"><span style="flex:1">Monitoramento engajamento + vendas</span><span class="tag tr">RAISE</span><button class="btn" style="font-size:8px;margin-left:6px;padding:3px 7px">Editar</button><button class="btn btn-r" style="margin-left:3px">✕</button></div>
+      <div class="row"><span style="flex:1">Anunciar live pela manhã</span><span class="tag tc">CRIADOR</span><button class="btn" style="font-size:8px;margin-left:6px;padding:3px 7px">Editar</button><button class="btn btn-r" style="margin-left:3px">✕</button></div>
+      <div class="row"><span style="flex:1">Envio mídias da semana (Telegram)</span><span class="tag tc">CRIADOR</span><button class="btn" style="font-size:8px;margin-left:6px;padding:3px 7px">Editar</button><button class="btn btn-r" style="margin-left:3px">✕</button></div>
+      <div class="row"><span style="flex:1">Stories Instagram / TikTok / X</span><span class="tag ta">AMBOS</span><button class="btn" style="font-size:8px;margin-left:6px;padding:3px 7px">Editar</button><button class="btn btn-r" style="margin-left:3px">✕</button></div>
+    </div></div>
+  </div>
+</div>
+</div></div>
+<!-- OPERADOR PORTAL -->
+<div id="p-ope" class="portal ope-p">
+<div class="sb">
+  <div class="sb-hd"><div class="sb-logo">Raise<span>Hot</span></div><div class="sb-ver">CRM v2</div><span class="sb-role ro">⚙️ Operador</span></div>
+  <div class="sb-nav">
+    <div class="sb-sec">Meus projetos</div>
+    <button class="si on" onclick="gS('ope','o-rot',this)"><span class="si-ic">✅</span><span class="si-txt">Rotina do dia</span></button>
+    <button class="si" onclick="gS('ope','o-mid',this)"><span class="si-ic">🎬</span><span class="si-txt">Mídias</span></button>
+    <button class="si" onclick="gS('ope','o-cha',this)"><span class="si-ic">⚡</span><span class="si-txt">Chamados</span><span class="si-badge">1</span></button>
+    <button class="si" onclick="gS('ope','o-dos',this)"><span class="si-ic">🔐</span><span class="si-txt">Dossiê</span></button>
+    <div class="sb-sec">Resultados</div>
+    <button class="si" onclick="gS('ope','o-res',this)"><span class="si-ic">📊</span><span class="si-txt">Meus resultados</span></button>
+    <div class="sb-sec">Registro</div>
+    <button class="si" onclick="gS('ope','o-log',this)"><span class="si-ic">📝</span><span class="si-txt">Log extra</span></button>
+  </div>
+  <div class="sb-criadores">
+    <div class="sb-cri-lbl">Meus criadores</div>
+    <div style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:10px;color:var(--tx2)"><span class="sb-dot" style="background:var(--ok)"></span>Bruna Santiny</div>
+    <div style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:10px;color:var(--tx2)"><span class="sb-dot" style="background:var(--dn)"></span>Pérola (mídias atrasadas)</div>
+  </div>
+  <div class="sb-ft"><div style="display:flex;align-items:center;gap:8px"><div class="sb-av av-o">MA</div><div><div style="font-size:11px;font-weight:500;color:var(--tx)">Matheus A.</div><div style="font-size:9px;color:var(--tx3)">Operador · Editor</div></div></div></div>
+</div>
+<div class="main">
+<!-- ROTINA OPERADOR -->
+<div id="o-rot" class="scr on">
+  <div class="topbar"><div><div class="tb-t">Rotina do dia</div><div class="tb-s" id="o-rot-s">Carregando...</div></div><span class="bdg" style="background:rgba(42,157,122,.15);color:#5BD4A8;border:1px solid rgba(42,157,122,.3)">Operador</span></div>
+  <div class="cnt">
+    <div class="nf nf-a" id="o-lembrete"><span>⏰</span><span>Lembrete 17h: obrigações pendentes. Conclua até 23:59 para evitar advertência.</span></div>
+    <div class="mets" style="grid-template-columns:repeat(3,1fr)">
+      <div class="mc"><div class="mc-v cup">4</div><div class="mc-l">Concluídas</div></div>
+      <div class="mc"><div class="mc-v cam">6</div><div class="mc-l">Pendentes</div></div>
+      <div class="mc"><div class="mc-v cnu">40%</div><div class="mc-l">Execução</div></div>
+    </div>
+    <div class="sl">Bruna Santiny · obrigações RAISE</div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Editar + post Instagram (2x)</span><span class="tag tr">RAISE</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Edição conteúdo +18 · Privacy e OnlyFans</span><span class="tag tr">RAISE</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Post grupo free + canal WhatsApp</span><span class="tag tr">RAISE</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb"></div><span class="ckl">Post Privacy + OnlyFans</span><span class="tag tr">RAISE</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb"></div><span class="ckl">Post Telegram VIP</span><span class="tag tr">RAISE</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Stories Instagram / TikTok / X</span><span class="tag ta">AMBOS</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb"></div><span class="ckl">Monitoramento engajamento + vendas</span><span class="tag tr">RAISE</span></div>
+    <div class="sl">Bruna Santiny · obrigações CRIADOR (acompanhe)</div>
+    <div class="ck" style="border-color:rgba(244,197,92,.3)" onclick="tCk(this)"><div class="ckb"></div><span class="ckl" style="color:var(--wn)">Envio mídias · criadora ainda não enviou</span><span class="tag tc">CRIADOR</span><button class="btn" style="font-size:8px;padding:3px 6px;margin-left:6px" onclick="event.stopPropagation();alert('Notificação enviada para Bruna Santiny!')">Notificar</button></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Anunciar live pela manhã</span><span class="tag tc">CRIADOR</span></div>
+    <div class="nf nf-r" style="margin-top:8px"><span>⚠️</span><span>Criador não cumpriu obrigação. Execute se necessário e <b>notifique o Admin</b>.</span></div>
+  </div>
+</div>
+<!-- MIDIAS OPERADOR -->
+<div id="o-mid" class="scr">
+  <div class="topbar"><div><div class="tb-t">Mídias</div><div class="tb-s">Solicitar às segundas · prazo do criador: domingo</div></div></div>
+  <div class="cnt">
+    <div class="nf nf-r"><span>🚨</span><span>Pérola — sem mídias esta semana. Banco: 1 semana. Notifique a criadora.</span></div>
+    <div class="sl">Status de entrega · <span id="o-sem-label">Semana atual do mês</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Bruna Santiny · 18 arquivos · banco: 2 semanas</span><span class="bdg bok">Entregue</span></div>
+    <div class="ck" style="border-color:rgba(244,92,139,.4)" onclick="tCk(this)"><div class="ckb"></div><span class="ckl" style="color:var(--dn)">Pérola · 0 arquivos · banco: 1 semana</span><span class="bdg bur">Atrasado</span><button class="btn btn-r" style="font-size:8px;margin-left:6px" onclick="event.stopPropagation();alert('Lembrete enviado para Pérola!')">Notificar criadora</button></div>
+    <div class="sl">Banco de mídias · Bruna Santiny</div>
+    <div class="plr"><span style="flex:1">Fotos (Instagram + prévias)</span><span style="font-size:9px;color:var(--tx3)">12 arquivos</span></div>
+    <div class="plr"><span style="flex:1">Vídeos curtos (reels / TikTok)</span><span style="font-size:9px;color:var(--tx3)">6 arquivos</span></div>
+    <div class="plr"><span style="flex:1">Conteúdo +18 (Privacy / OF)</span><span style="font-size:9px;color:var(--tx3)">8 arquivos</span></div>
+    <div class="plr"><span style="flex:1">Ideias de conteúdo</span><span style="font-size:9px;color:var(--tx3)">4 arquivos</span></div>
+  </div>
+</div>
+<!-- CHAMADOS OPERADOR -->
+<div id="o-cha" class="scr">
+  <div class="topbar"><div><div class="tb-t">Chamados</div><div class="tb-s">Abra chamados para eventos fora do fluxo</div></div><div class="tb-r"><button class="btn btn-g" onclick="oM('m-cham')">+ Abrir chamado</button></div></div>
+  <div class="cnt">
+    <div class="cham pri">
+      <div class="tkt">Pérola — mídias não entregues</div>
+      <div class="tks" style="margin-bottom:4px">🟡 Prioridade razoável · Aberto por você · Status: <span class="bdg bwa">Aberto</span></div>
+      <div class="tktip">Ação: notifique a criadora, verifique banco de mídias e comunique o Admin se não resolver até sexta.</div>
+    </div>
+    <div class="cham nor">
+      <div class="tkt">Bruna — dúvida sobre live de terça</div>
+      <div class="tks" style="margin-bottom:4px">🟢 Normal · Aberto pela criadora · Status: <span class="bdg bin">Em andamento</span></div>
+      <div class="tktip">Chamado da criadora. Responda e feche quando resolver.</div>
+    </div>
+    <div style="margin-top:8px;padding:8px 10px;font-size:10px;color:var(--tx3);background:var(--s1);border-radius:8px;border:1px solid var(--bd)">ℹ️ Chamados são para eventos <b>fora do fluxo</b> — perfil fora do ar, plataforma com problema. Obrigações não cumpridas geram advertência, não chamado.</div>
+  </div>
+</div>
+<!-- DOSSIE OPERADOR -->
+<div id="o-dos" class="scr">
+  <div class="topbar"><div><div class="tb-t">Dossiê</div><div class="tb-s">Apenas seus criadores · senhas de redes sociais visíveis</div></div></div>
+  <div class="cnt">
+    <div class="nf nf-b"><span>🔐</span><span>Acesso restrito: Bruna Santiny e Pérola · somente senhas de redes sociais.</span></div>
+    <div class="sl">Bruna Santiny · Contrato: 240 dias restantes</div>
+    <div class="row"><span style="font-size:9px;color:var(--tx3);width:100px">Dias de contrato</span><span class="bdg bok">240 dias restantes</span></div>
+    <div class="row"><span style="font-size:9px;color:var(--tx3);width:100px">Persona</span><span>Feminino · 25-35 · BR</span></div>
+    <div class="row"><span style="font-size:9px;color:var(--tx3);width:100px">CTA estágio</span><span class="bdg bin">Estágio 3</span></div>
+    <div class="sl">Senhas de redes sociais · Bruna Santiny</div>
+    <div class="plr"><span style="width:140px;font-size:9px;color:var(--tx3)">IG Principal · App 2FA</span><span class="blr" onclick="tBlr(this)" style="filter:blur(5px);cursor:pointer;font-family:monospace;font-size:10px">@bruna / Br@2025#</span></div>
+    <div class="plr"><span style="width:140px;font-size:9px;color:var(--tx3)">IG Reserva 1 · App 2FA</span><span class="blr" onclick="tBlr(this)" style="filter:blur(5px);cursor:pointer;font-family:monospace;font-size:10px">@bruna_res1 / Res@1234!</span></div>
+    <div class="plr"><span style="width:140px;font-size:9px;color:var(--tx3)">IG Reserva 2 · SMS 2FA</span><span class="blr" onclick="tBlr(this)" style="filter:blur(5px);cursor:pointer;font-family:monospace;font-size:10px">@bruna_res2 / Res2@99</span></div>
+    <div class="plr"><span style="width:140px;font-size:9px;color:var(--tx3)">Canal WhatsApp</span><span class="blr" onclick="tBlr(this)" style="filter:blur(5px);cursor:pointer;font-family:monospace;font-size:10px">+55 11 9xxxx-xxxx</span></div>
+    <div style="margin-top:6px;padding:6px 10px;background:rgba(244,92,139,.07);border-radius:6px;border:1px solid rgba(244,92,139,.2);font-size:9px;color:#F89AB5">🔒 Senhas de plataformas +18 (Privacy, OnlyFans, Telegram VIP/Free) — visíveis somente pelo Admin.</div>
+    <div style="font-size:9px;color:var(--tx3);margin-top:4px">👆 Clique em qualquer senha para revelar</div>
+  </div>
+</div>
+<!-- RESULTADOS OPERADOR -->
+<div id="o-res" class="scr">
+  <div class="topbar"><div><div class="tb-t">Meus resultados</div><div class="tb-s">Resumo de redes sociais dos seus criadores · sem faturamento</div></div></div>
+  <div class="cnt">
+    <div class="mets" style="grid-template-columns:repeat(3,1fr)">
+      <div class="mc"><div class="mc-v cup">+420</div><div class="mc-l">Seguidores semana</div></div>
+      <div class="mc"><div class="mc-v cnu">87%</div><div class="mc-l">Execução média</div></div>
+      <div class="mc"><div class="mc-v cup">234k</div><div class="mc-l">Visualizações semana</div></div>
+    </div>
+    <div class="card"><div class="ch"><span class="ct">Crescimento de seguidores · seus projetos</span></div><div class="cb">
+      <div class="br"><span class="bl">Bruna S.</span><div class="bw"><div class="bf" style="width:80%;background:#2A9D7A"><span class="bv">+340 seg.</span></div></div></div>
+      <div class="br"><span class="bl">Pérola</span><div class="bw"><div class="bf" style="width:47%;background:var(--wn)"><span class="bv">+80 seg.</span></div></div></div>
+    </div></div>
+    <div class="sp"></div>
+    <div class="card"><div class="ch"><span class="ct">Execução de obrigações · seus projetos</span></div><div class="cb">
+      <div class="br"><span class="bl">Bruna S.</span><div class="bw"><div class="bf" style="width:89%;background:var(--ok)"><span class="bv">89%</span></div></div></div>
+      <div class="br"><span class="bl">Pérola</span><div class="bw"><div class="bf" style="width:72%;background:var(--wn)"><span class="bv">72%</span></div></div></div>
+    </div></div>
+    <div class="sp"></div>
+    <div class="card"><div class="ch"><span class="ct">Entrega de mídias · <span id="o-res-sem">semana atual</span></span></div><div class="cb">
+      <div class="row"><span style="flex:1">Bruna Santiny</span><span class="bdg bok">18 arquivos · entregue</span></div>
+      <div class="row"><span style="flex:1">Pérola</span><span class="bdg bur">0 arquivos · atrasado</span></div>
+    </div></div>
+  </div>
+</div>
+<!-- LOG OPERADOR -->
+<div id="o-log" class="scr">
+  <div class="topbar"><div><div class="tb-t">Log extra</div><div class="tb-s">Registre ações além da rotina padrão</div></div></div>
+  <div class="cnt">
+    <div class="fg"><label class="fl">Descrever ação extra realizada</label><input class="fi" placeholder="Ex: Substituí post do criador pois a mídia não chegou..." id="log-inp"></div>
+    <button class="btn btn-g" style="width:100%;padding:7px;margin-bottom:14px" onclick="addLog()">Registrar ação extra</button>
+    <div id="log-list">
+      <div class="row"><span style="font-size:9px;color:var(--tx3);width:80px">Hoje 15:42</span><span style="font-size:10px;flex:1">Substituí post do criador — Bruna não enviou stories a tempo</span></div>
+      <div class="row"><span style="font-size:9px;color:var(--tx3);width:80px">Hoje 14:10</span><span style="font-size:10px;flex:1">Resolvi problema de acesso ao Privacy manualmente</span></div>
+      <div class="row"><span style="font-size:9px;color:var(--tx3);width:80px">Ontem 16:30</span><span style="font-size:10px;flex:1">Configurei novo link Beacons para Bruna Santiny</span></div>
+    </div>
+  </div>
+</div>
+</div></div>
+<!-- CRIADOR PORTAL -->
+<div id="p-cri" class="portal cri-p">
+<div class="sb">
+  <div class="sb-hd"><div class="sb-logo">Raise<span>Hot</span></div><div class="sb-ver">Meu projeto</div><span class="sb-role rc">🎨 Criador</span></div>
+  <div class="sb-nav">
+    <div class="sb-sec">Meu projeto</div>
+    <button class="si on" onclick="gS('cri','c-ov',this)"><span class="si-ic">🏠</span><span class="si-txt">Visão geral</span></button>
+    <button class="si" onclick="gS('cri','c-tar',this)"><span class="si-ic">✅</span><span class="si-txt">Minhas tarefas</span></button>
+    <button class="si" onclick="gS('cri','c-mid',this)"><span class="si-ic">🎬</span><span class="si-txt">Enviar mídias</span></button>
+    <button class="si" onclick="gS('cri','c-pen',this)"><span class="si-ic">⚡</span><span class="si-txt">Pendências</span><span class="si-badge">2</span></button>
+  </div>
+  <div class="sb-ft">
+    <div style="display:flex;align-items:center;gap:8px"><div class="sb-av av-c">BS</div><div><div style="font-size:11px;font-weight:500;color:var(--tx)">Bruna Santiny</div><div style="font-size:9px;color:var(--tx3)">Criadora · 240 dias restantes</div></div></div>
+  </div>
+</div>
+<div class="main">
+<!-- VISAO GERAL CRIADOR -->
+<div id="c-ov" class="scr on">
+  <div class="topbar"><div><div class="tb-t" id="c-greet">Olá, Bruna 👋</div><div class="tb-s">Visão geral do seu projeto</div></div><span class="bdg bbl">Criadora</span></div>
+  <div class="cnt">
+    <div class="nf nf-b"><span>💜</span><span>Lembre de enviar suas mídias de ideias de conteúdo. Prazo: <b>domingo</b>.</span><span class="nf-x" onclick="this.parentElement.remove()">✕</span></div>
+    <div class="nf nf-b"><span>📸</span><span>Hora das mídias +18 da semana! Envie pelo Telegram até domingo.</span><span class="nf-x" onclick="this.parentElement.remove()">✕</span></div>
+    <div class="nf nf-b"><span>📋</span><span>Lembrete: cumpra suas obrigações diárias de hoje.</span><span class="nf-x" onclick="this.parentElement.remove()">✕</span></div>
+    <!-- METRICAS MES + VENDA AVULSA -->
+    <div class="kg5">
+      <div class="kc"><div class="kv cup">R$6.1k</div><div class="kl">Faturamento</div><div class="ks cup">↑12% vs mês ant.</div></div>
+      <div class="kc"><div class="kv cnu">48.2k</div><div class="kl">Seguidores</div><div class="ks cup">+340 esta sem.</div></div>
+      <div class="kc"><div class="kv cnu">124k</div><div class="kl">Visualizações</div><div class="ks cup">↑8% vs mês ant.</div></div>
+      <div class="kc"><div class="kv cup">892</div><div class="kl">Assinantes</div><div class="ks cup">+42 esta sem.</div></div>
+      <div class="kc"><div class="kv cup">R$420</div><div class="kl">Venda avulsa</div><div class="ks cup">↑ esta sem.</div></div>
+    </div>
+    <div style="font-size:9px;color:var(--tx3);margin-bottom:12px;text-align:right" id="c-dias">Carregando...</div>
+    <div class="divider"></div>
+    <!-- STATUS PLATAFORMAS -->
+    <div class="sl">Status das suas plataformas <span class="bdg bgr" style="font-size:8px;margin-left:4px">Somente leitura · editável: Admin/Operador</span></div>
+    <div class="card" style="margin-bottom:8px"><div class="ch"><span class="ct">Redes sociais</span></div><div class="cb">
+      <div class="plr"><span class="dot dok"></span><span style="flex:1">Instagram Principal</span><span class="bdg bgr" style="margin-right:4px;font-size:8px">Rede Social</span><span class="bdg bok">Ativo</span></div>
+      <div class="plr"><span class="dot dok"></span><span style="flex:1">Instagram Reserva 1</span><span class="bdg bgr" style="margin-right:4px;font-size:8px">Rede Social</span><span class="bdg bok">Ativo</span></div>
+      <div class="plr"><span class="dot dok"></span><span style="flex:1">Canal WhatsApp</span><span class="bdg bgr" style="margin-right:4px;font-size:8px">Rede Social</span><span class="bdg bok">Ativo</span></div>
+      <div class="plr"><span class="dot dam"></span><span style="flex:1">TikTok</span><span class="bdg bgr" style="margin-right:4px;font-size:8px">Rede Social</span><span class="bdg bwa">Restrito</span></div>
+    </div></div>
+    <div class="card" style="margin-bottom:8px"><div class="ch"><span class="ct">Plataformas +18</span></div><div class="cb">
+      <div class="plr"><span class="dot dok"></span><span style="flex:1">Privacy</span><span class="bdg bur" style="margin-right:4px;font-size:8px">+18</span><span class="bdg bok">Ativo</span></div>
+      <div class="plr"><span class="dot dok"></span><span style="flex:1">OnlyFans</span><span class="bdg bur" style="margin-right:4px;font-size:8px">+18</span><span class="bdg bok">Ativo</span></div>
+      <div class="plr"><span class="dot dok"></span><span style="flex:1">Telegram VIP</span><span class="bdg bur" style="margin-right:4px;font-size:8px">+18</span><span class="bdg bok">Ativo</span></div>
+      <div class="plr"><span class="dot dok"></span><span style="flex:1">Telegram Free</span><span class="bdg bur" style="margin-right:4px;font-size:8px">+18</span><span class="bdg bok">Ativo</span></div>
+    </div></div>
+    <div class="divider"></div>
+    <!-- ANALISE DESEMPENHO -->
+    <div class="sl">Análise de constância · sua semana</div>
+    <div class="card" style="margin-bottom:8px"><div class="ch"><span class="ct">Índice de constância semanal</span></div><div class="cb">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
+        <div style="text-align:center;flex-shrink:0">
+          <div style="font-family:var(--fh);font-size:30px;font-weight:800;color:var(--ok)">86%</div>
+          <div style="font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em">Constância geral</div>
+        </div>
+        <div style="flex:1">
+          <div class="br"><span class="bl">Mídias no prazo</span><div class="bw"><div class="bf" style="width:80%;background:#2A9D7A"><span class="bv">80%</span></div></div></div>
+          <div class="br"><span class="bl">Tarefas diárias</span><div class="bw"><div class="bf" style="width:90%;background:var(--ok)"><span class="bv">90%</span></div></div></div>
+          <div class="br"><span class="bl">Lives executadas</span><div class="bw"><div class="bf" style="width:100%;background:var(--ok)"><span class="bv">100%</span></div></div></div>
+          <div class="br"><span class="bl">Stories diários</span><div class="bw"><div class="bf" style="width:75%;background:var(--wn)"><span class="bv">75%</span></div></div></div>
+        </div>
+      </div>
+      <div class="nf nf-a" style="margin:0"><span>💡</span><span><b>Ponto crítico:</b> stories diários abaixo de 80%. Manter consistência aqui impacta diretamente o alcance orgânico!</span></div>
+    </div></div>
+    <div class="divider"></div>
+    <!-- RESULTADOS DETALHADOS -->
+    <div class="sl">Faturamento por plataforma · últimos 3 meses</div>
+    <div class="card" style="margin-bottom:8px"><div class="ch"><span class="ct">Faturamento por plataforma</span></div><div class="cb">
+      <div class="mg">
+        <div class="mcard"><div class="mcard-n">Março</div><div class="mrow"><span class="ml">Privacy</span><span class="mv">R$3.8k</span></div><div class="mrow"><span class="ml">OnlyFans</span><span class="mv">R$1.9k</span></div><div class="mrow"><span class="ml">Telegram VIP</span><span class="mv">R$1.0k</span></div><div class="mrow"><span class="ml">Venda avulsa</span><span class="mv">R$290</span></div><div class="mrow" style="border-top:1px solid var(--bd2)"><span class="ml" style="font-weight:600">Total</span><span class="mv cup">R$6.99k</span></div></div>
+        <div class="mcard"><div class="mcard-n">Abril</div><div class="mrow"><span class="ml">Privacy</span><span class="mv">R$4.2k</span></div><div class="mrow"><span class="ml">OnlyFans</span><span class="mv">R$2.1k</span></div><div class="mrow"><span class="ml">Telegram VIP</span><span class="mv">R$1.1k</span></div><div class="mrow"><span class="ml">Venda avulsa</span><span class="mv">R$380</span></div><div class="mrow" style="border-top:1px solid var(--bd2)"><span class="ml" style="font-weight:600">Total</span><span class="mv cup">R$7.78k</span></div></div>
+        <div class="mcard" style="border-color:rgba(92,244,176,.3)"><div class="mcard-n" style="color:var(--ok)">Maio (parcial)</div><div class="mrow"><span class="ml">Privacy</span><span class="mv">R$4.6k</span></div><div class="mrow"><span class="ml">OnlyFans</span><span class="mv">R$2.4k</span></div><div class="mrow"><span class="ml">Telegram VIP</span><span class="mv">R$1.4k</span></div><div class="mrow"><span class="ml">Venda avulsa</span><span class="mv">R$420</span></div><div class="mrow" style="border-top:1px solid rgba(92,244,176,.3)"><span class="ml" style="font-weight:600">Total parcial</span><span class="mv cup">R$8.82k ↑</span></div></div>
+      </div>
+    </div></div>
+    <div class="sl">Seguidores · assinantes · visualizações · últimos 3 meses</div>
+    <div class="mg">
+      <div class="mcard"><div class="mcard-n">Março</div><div class="mrow"><span class="ml">Seguidores</span><span class="mv">+280</span></div><div class="mrow"><span class="ml">Assinantes</span><span class="mv">808</span></div><div class="mrow"><span class="ml">Visualizações</span><span class="mv">108k</span></div></div>
+      <div class="mcard"><div class="mcard-n">Abril</div><div class="mrow"><span class="ml">Seguidores</span><span class="mv">+390</span></div><div class="mrow"><span class="ml">Assinantes</span><span class="mv">850</span></div><div class="mrow"><span class="ml">Visualizações</span><span class="mv">115k</span></div></div>
+      <div class="mcard" style="border-color:rgba(92,244,176,.3)"><div class="mcard-n" style="color:var(--ok)">Maio (parcial)</div><div class="mrow"><span class="ml">Seguidores</span><span class="mv cup">+340 ↑</span></div><div class="mrow"><span class="ml">Assinantes</span><span class="mv cup">892 +42</span></div><div class="mrow"><span class="ml">Visualizações</span><span class="mv cup">124k ↑8%</span></div></div>
+    </div>
+  </div>
+</div>
+<!-- TAREFAS CRIADOR -->
+<div id="c-tar" class="scr">
+  <div class="topbar"><div><div class="tb-t">Minhas tarefas</div><div class="tb-s">Suas obrigações desta semana</div></div></div>
+  <div class="cnt">
+    <div class="today" id="c-today">
+      <div class="today-dt" id="c-today-dt">Carregando...</div>
+      <div class="today-title" id="c-today-title">Suas atividades de hoje:</div>
+      <div class="today-tasks" id="c-today-tasks">
+        <div class="today-t"><div class="today-cb" onclick="this.classList.toggle('ok')"></div>Enviar mídias da semana via Telegram</div>
+        <div class="today-t"><div class="today-cb ok"></div>Stories Instagram / TikTok / X ✓</div>
+      </div>
+    </div>
+    <div class="sl">Todas as obrigações da semana</div>
+    <div class="sl" style="margin-top:0">Segunda-feira</div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Enviar mídias da semana via Telegram</span><span class="tag tc">VOCÊ</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Stories Instagram / TikTok / X</span><span class="tag tc">VOCÊ</span></div>
+    <div class="sl">Terça-feira · Live</div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb"></div><span class="ckl">Anunciar a live pela manhã com autenticidade</span><span class="tag tc">VOCÊ</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb"></div><span class="ckl">Executar a live junto com a Raise</span><span class="tag ta">AMBOS</span></div>
+    <div class="sl">Quarta-feira</div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb"></div><span class="ckl">Responder caixinha de perguntas</span><span class="tag tc">VOCÊ</span></div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb"></div><span class="ckl">Storie "Sua Vez"</span><span class="tag tc">VOCÊ</span></div>
+    <div class="sl">Domingo · Prazo envio mídias</div>
+    <div class="ck" onclick="tCk(this)"><div class="ckb"></div><span class="ckl">Enviar mídias da próxima semana via Telegram</span><span class="tag tc">VOCÊ</span></div>
+  </div>
+</div>
+<!-- ENVIAR MIDIAS CRIADOR -->
+<div id="c-mid" class="scr">
+  <div class="topbar"><div><div class="tb-t">Enviar mídias</div><div class="tb-s">Prazo toda semana: domingo até 23h59</div></div></div>
+  <div class="cnt">
+    <div class="nf nf-g"><span>✅</span><span id="c-mid-s">Carregando...</span></div>
+    <div class="card" style="margin-bottom:10px"><div class="ch"><span class="ct" id="c-mid-sem">Semana atual do mês</span></div><div class="cb">
+      <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Mídias de conteúdo rotineiro</span><span class="bdg bok">Enviado</span></div>
+      <div class="ck" style="border-color:rgba(123,110,246,.4)" onclick="tCk(this)"><div class="ckb"></div><span class="ckl" style="color:var(--ac)">Mídias de ideias de conteúdo</span><span class="bdg bin">Pendente</span></div>
+      <div class="ck" onclick="tCk(this)"><div class="ckb done"><div class="ckm">✓</div></div><span class="ckl">Mídias +18</span><span class="bdg bok">Enviado</span></div>
+    </div></div>
+    <div class="sl">O que enviar toda semana</div>
+    <div class="plr"><span style="flex:1">Fotos (Instagram + prévias)</span><span style="font-size:9px;color:var(--tx3)">mínimo 8</span></div>
+    <div class="plr"><span style="flex:1">Vídeos curtos (reels / TikTok)</span><span style="font-size:9px;color:var(--tx3)">mínimo 4</span></div>
+    <div class="plr"><span style="flex:1">Conteúdo +18 (Privacy / OF)</span><span style="font-size:9px;color:var(--tx3)">mínimo 6</span></div>
+    <div class="plr"><span style="flex:1">Ideias de conteúdo (replicação)</span><span style="font-size:9px;color:var(--tx3)">mínimo 3</span></div>
+    <div class="sl">Histórico de entregas · mês atual</div>
+    <div id="c-hist-mid"></div>
+  </div>
+</div>
+<!-- PENDENCIAS CRIADOR -->
+<div id="c-pen" class="scr">
+  <div class="topbar"><div><div class="tb-t">Pendências</div><div class="tb-s" id="c-pen-s">Carregando...</div></div></div>
+  <div class="cnt">
+    <div class="nf nf-b" id="c-pen-dia"><span>📅</span><span id="c-pen-msg">Carregando...</span></div>
+    <div class="sl">Suas pendências</div>
+    <div class="cham pri"><div class="tkt">Anunciar live de terça pela manhã</div><div class="tks">🟡 Prioridade · Prazo: amanhã cedo · Status: <span class="bdg bwa">Pendente</span></div></div>
+    <div class="cham nor"><div class="tkt">Enviar mídias de ideias de conteúdo</div><div class="tks">🟢 Normal · Prazo: domingo · Status: <span class="bdg bin">Pendente</span></div></div>
+    <div class="cham nor"><div class="tkt">Responder caixinha de perguntas</div><div class="tks">🟢 Normal · Prazo: quarta · Status: <span class="bdg bgr">A fazer</span></div></div>
+    <div style="margin-top:10px;padding:9px 11px;background:var(--s1);border-radius:8px;border:1px solid var(--bd)">
+      <div style="font-size:10px;color:var(--tx2);margin-bottom:7px">Algo fora do normal aconteceu? Abra um chamado e sua equipe verá imediatamente.</div>
+      <button class="btn btn-b" style="width:100%;padding:7px;font-size:11px" onclick="oM('m-cham-cri')">⚡ Abrir chamado</button>
+    </div>
+    <div class="sl">Chamados abertos</div>
+    <div class="cham nor"><div class="tkt">Dúvida sobre live de terça</div><div class="tks">Aberto por você · Status: <span class="bdg bin">Em andamento</span> · Operador: Matheus A.</div></div>
+    <div class="sl">Resolvidas</div>
+    <div class="cham nor" style="opacity:.5"><div class="tkt">Enviar mídias semana 1</div><div class="tks">Entregue · Seg 07/04</div></div>
+  </div>
+</div>
+</div></div>
+</div><!-- /shell -->
+
+<!-- MODAIS -->
+<div id="m-cham" class="mo" style="display:none" onclick="if(event.target===this)cM('m-cham')">
+  <div class="mo-box"><div class="mo-t">⚡ Abrir chamado</div>
+    <div class="fg"><label class="fl">Criador envolvido</label><select class="fs"><option>Bruna Santiny</option><option>Pérola</option><option>Geral / Agência</option></select></div>
+    <div class="fg"><label class="fl">Tipo de chamado</label><select class="fs"><option>Perfil caído / suspenso</option><option>Queda de faturamento</option><option>Nova conta necessária</option><option>Problema com plataforma</option><option>Desempenho do criador</option><option>Marketing / Promoção</option><option>Outro</option></select></div>
+    <div class="fg"><label class="fl">Prioridade</label><select class="fs"><option>🔴 Urgente — resolver hoje</option><option>🟡 Prioridade razoável</option><option>🟢 Normal</option></select></div>
+    <div class="fg"><label class="fl">Descrição detalhada</label><textarea class="fi" rows="3" placeholder="Descreva o que está acontecendo..."></textarea></div>
+    <div class="ma"><button class="btn" onclick="cM('m-cham')">Cancelar</button><button class="btn btn-g" onclick="cM('m-cham');alert('Chamado aberto! Admin e operadores foram notificados.')">Abrir chamado</button></div>
+  </div>
 </div>
 
-<nav class="mobile-nav">
-  <button class="mob-btn active" onclick="goto('rotina')"><span>✓</span><span>Rotina</span></button>
-  <button class="mob-btn" onclick="goto('kanban')"><span>⚡</span><span>Chamados</span></button>
-  <button class="mob-btn" onclick="goto('dossie')"><span>👤</span><span>Dossiê</span></button>
-  <button class="mob-btn" onclick="goto('fin')"><span>💰</span><span>Financeiro</span></button>
-  <button class="mob-btn" onclick="goto('resumo')"><span>📊</span><span>Resumo</span></button>
-</nav>
-<div class="toast" id="toast"></div>
+<div id="m-cham-cri" class="mo" style="display:none" onclick="if(event.target===this)cM('m-cham-cri')">
+  <div class="mo-box"><div class="mo-t">⚡ Abrir chamado</div>
+    <div class="fg"><label class="fl">Tipo de problema</label><select class="fs"><option>Perfil suspenso / restrito</option><option>Problema técnico na plataforma</option><option>Dúvida operacional</option><option>Outro</option></select></div>
+    <div class="fg"><label class="fl">Descrição</label><textarea class="fi" rows="3" placeholder="Descreva o que está acontecendo..."></textarea></div>
+    <div class="ma"><button class="btn" onclick="cM('m-cham-cri')">Cancelar</button><button class="btn btn-b" onclick="cM('m-cham-cri');alert('Chamado enviado! Seu operador foi notificado.')">Enviar chamado</button></div>
+  </div>
+</div>
+
+<div id="m-int" class="mo" style="display:none" onclick="if(event.target===this)cM('m-int')">
+  <div class="mo-box"><div class="mo-t">🏢 Chamado interno</div>
+    <div class="fg"><label class="fl">Tipo</label><select class="fs"><option>Contabilidade / Fiscal</option><option>Parceria / Projeto externo</option><option>Infraestrutura / Ferramentas</option><option>RH / Equipe</option><option>Outro</option></select></div>
+    <div class="fg"><label class="fl">Prioridade</label><select class="fs"><option>🔴 Urgente</option><option>🟡 Prioridade razoável</option><option>🟢 Normal</option></select></div>
+    <div class="fg"><label class="fl">Descrição</label><textarea class="fi" rows="3" placeholder="Descreva o chamado interno..."></textarea></div>
+    <div class="ma"><button class="btn" onclick="cM('m-int')">Cancelar</button><button class="btn btn-p" onclick="cM('m-int');alert('Chamado interno registrado!')">Criar</button></div>
+  </div>
+</div>
+
+<div id="m-lead" class="mo" style="display:none" onclick="if(event.target===this)cM('m-lead')">
+  <div class="mo-box"><div class="mo-t">🔮 Novo lead</div>
+    <div class="frow"><div class="fg"><label class="fl">Nome</label><input class="fi" placeholder="Nome do criador"></div><div class="fg"><label class="fl">Etapa</label><select class="fs"><option>Atração</option><option>Qualificação</option><option>Proposta</option><option>Fechamento</option></select></div></div>
+    <div class="fg"><label class="fl">Seguidores</label><input class="fi" placeholder="Ex: 45k"></div>
+    <div class="fg"><label class="fl">Observações</label><textarea class="fi" rows="2" placeholder="Canal de entrada, nicho, observações..."></textarea></div>
+    <div class="ma"><button class="btn" onclick="cM('m-lead')">Cancelar</button><button class="btn btn-p" onclick="cM('m-lead');alert('Lead adicionado ao pipeline!')">Adicionar</button></div>
+  </div>
+</div>
+
+<div id="m-fat" class="mo" style="display:none" onclick="if(event.target===this)cM('m-fat')">
+  <div class="mo-box"><div class="mo-t">💰 Lançar faturamento</div>
+    <div class="fg"><label class="fl">Criador</label><select class="fs"><option>Bruna Santiny</option><option>Negão Rubi</option><option>Barbara Fartura</option><option>Rick Necker</option><option>Gabriela Avillar</option><option>Meck</option><option>Pérola</option><option>Alice</option><option>Luh</option></select></div>
+    <div class="fg"><label class="fl">Semana de referência</label><select class="fs" id="fat-sem"></select></div>
+    <div class="frow"><div class="fg"><label class="fl">Privacy (R$)</label><input class="fi" type="number" placeholder="0,00"></div><div class="fg"><label class="fl">OnlyFans (R$)</label><input class="fi" type="number" placeholder="0,00"></div></div>
+    <div class="frow"><div class="fg"><label class="fl">Telegram VIP (R$)</label><input class="fi" type="number" placeholder="0,00"></div><div class="fg"><label class="fl">Venda avulsa (R$)</label><input class="fi" type="number" placeholder="0,00"></div></div>
+    <div class="ma"><button class="btn" onclick="cM('m-fat')">Cancelar</button><button class="btn btn-p" onclick="cM('m-fat');alert('Faturamento registrado com sucesso!')">Salvar</button></div>
+  </div>
+</div>
+
+<div id="m-fint" class="mo" style="display:none" onclick="if(event.target===this)cM('m-fint')">
+  <div class="mo-box"><div class="mo-t">🏦 Novo lançamento financeiro</div>
+    <div class="fg"><label class="fl">Tipo</label><select class="fs"><option>Receita</option><option>Retirada Admin</option><option>Salário Operador</option><option>Custo operacional</option><option>Investimento / Reserva</option><option>Empréstimo</option><option>Pagamento de empréstimo</option></select></div>
+    <div class="fg"><label class="fl">Descrição</label><input class="fi" placeholder="Ex: Honorários criadores — maio"></div>
+    <div class="frow"><div class="fg"><label class="fl">Valor (R$)</label><input class="fi" type="number" placeholder="0,00"></div><div class="fg"><label class="fl">Mês ref.</label><input class="fi" placeholder="Ex: maio/2025"></div></div>
+    <div class="ma"><button class="btn" onclick="cM('m-fint')">Cancelar</button><button class="btn btn-p" onclick="cM('m-fint');alert('Lançamento registrado!')">Salvar</button></div>
+  </div>
+</div>
+
+<div id="m-user" class="mo" style="display:none" onclick="if(event.target===this)cM('m-user')">
+  <div class="mo-box"><div class="mo-t">👥 Adicionar usuário</div>
+    <div class="frow"><div class="fg"><label class="fl">Nome</label><input class="fi" placeholder="Nome completo"></div><div class="fg"><label class="fl">Tipo</label><select class="fs"><option>Admin</option><option>Operador</option><option>Criador</option></select></div></div>
+    <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" placeholder="email@exemplo.com"></div>
+    <div class="fg"><label class="fl">Criadores responsáveis (se Operador)</label><input class="fi" placeholder="Ex: Bruna Santiny, Pérola"></div>
+    <div class="ma"><button class="btn" onclick="cM('m-user')">Cancelar</button><button class="btn btn-p" onclick="cM('m-user');alert('Usuário adicionado! Convite enviado por e-mail.')">Adicionar</button></div>
+  </div>
+</div>
+
+<div id="m-transfer" class="mo" style="display:none" onclick="if(event.target===this)cM('m-transfer')">
+  <div class="mo-box"><div class="mo-t">🔄 Transferir criador</div>
+    <div class="fg"><label class="fl">Criador a transferir</label><select class="fs"><option>Bruna Santiny</option><option>Pérola</option><option>Negão Rubi</option><option>Alice</option><option>Luh</option></select></div>
+    <div class="fg"><label class="fl">Novo operador responsável</label><select class="fs"><option>Matheus A.</option><option>Ana C.</option><option>Lucas F.</option><option>Carla M.</option></select></div>
+    <div class="fg"><label class="fl">Motivo da transferência</label><input class="fi" placeholder="Ex: Rebalancear carga de trabalho"></div>
+    <div class="ma"><button class="btn" onclick="cM('m-transfer')">Cancelar</button><button class="btn btn-p" onclick="cM('m-transfer');alert('Transferência realizada! Ambos os operadores foram notificados.')">Confirmar</button></div>
+  </div>
+</div>
+
+<div id="m-obrig" class="mo" style="display:none" onclick="if(event.target===this)cM('m-obrig')">
+  <div class="mo-box"><div class="mo-t">✅ Nova obrigação</div>
+    <div class="fg"><label class="fl">Nome da obrigação</label><input class="fi" placeholder="Ex: Post canal do Telegram Free"></div>
+    <div class="frow"><div class="fg"><label class="fl">Responsável</label><select class="fs"><option>RAISE</option><option>CRIADOR</option><option>AMBOS</option></select></div><div class="fg"><label class="fl">Dia da semana</label><select class="fs"><option>Todos os dias</option><option>Segunda</option><option>Terça</option><option>Quarta</option><option>Quinta</option><option>Sexta</option><option>Sábado</option><option>Domingo</option></select></div></div>
+    <div class="ma"><button class="btn" onclick="cM('m-obrig')">Cancelar</button><button class="btn btn-p" onclick="cM('m-obrig');alert('Obrigação adicionada à rotina!')">Adicionar</button></div>
+  </div>
+</div>
 
 <script>
-const SURL='https://jgqetqltkmokkbbnoxts.supabase.co';
-const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpncWV0cWx0a21va2tiYm5veHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODYyNzQsImV4cCI6MjA5MjQ2MjI3NH0.duNrxbiUkzVBuuMKpdMZrCgx_bWRtPXIWrsNwdwbwSc';
+// === UTILS DATA ===
+function getNow(){return new Date()}
+function getDN(d){const D=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];return D[d.getDay()]}
+function getMN(d){const M=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];return M[d.getMonth()]}
+function getWOM(d){const f=new Date(d.getFullYear(),d.getMonth(),1);return Math.ceil((d.getDate()+f.getDay())/7)}
 
-// Minimal Supabase REST client sem biblioteca externa
-const api = {
-  async req(method, path, body, token) {
-    const headers = {'Content-Type':'application/json','apikey':SKEY,'Authorization':`Bearer ${token||SKEY}`};
-    const res = await fetch(`${SURL}${path}`, {method, headers, body: body ? JSON.stringify(body) : undefined});
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || data.error_description || JSON.stringify(data));
-    return data;
-  },
-  async signUp(email, password) { return this.req('POST','/auth/v1/signup',{email,password}); },
-  async signIn(email, password) { return this.req('POST','/auth/v1/token?grant_type=password',{email,password}); },
-  async signOut(token) { return this.req('POST','/auth/v1/logout',{},token); },
-  async select(table, query, token) { return this.req('GET',`/rest/v1/${table}?${query||''}`,null,token); },
-  async insert(table, body, token) { 
-    const headers = {'Content-Type':'application/json','apikey':SKEY,'Authorization':`Bearer ${token||SKEY}`,'Prefer':'return=representation'};
-    const res = await fetch(`${SURL}/rest/v1/${table}`, {method:'POST', headers, body: JSON.stringify(body)});
-    return res.json();
-  },
-  async update(table, query, body, token) {
-    const headers = {'Content-Type':'application/json','apikey':SKEY,'Authorization':`Bearer ${token||SKEY}`,'Prefer':'return=representation'};
-    const res = await fetch(`${SURL}/rest/v1/${table}?${query}`, {method:'PATCH', headers, body: JSON.stringify(body)});
-    return res.json();
-  },
-  async delete(table, query, token) {
-    const headers = {'Content-Type':'application/json','apikey':SKEY,'Authorization':`Bearer ${token||SKEY}`};
-    const res = await fetch(`${SURL}/rest/v1/${table}?${query}`, {method:'DELETE', headers});
-    return res.ok;
-  },
-  async upsert(table, body, token) {
-    const headers = {'Content-Type':'application/json','apikey':SKEY,'Authorization':`Bearer ${token||SKEY}`,'Prefer':'resolution=merge-duplicates,return=representation'};
-    const res = await fetch(`${SURL}/rest/v1/${table}`, {method:'POST', headers, body: JSON.stringify(body)});
-    return res.json();
+function initAll(){
+  const now=getNow();
+  const day=now.getDay();
+  const date=now.getDate();
+  const month=getMN(now);
+  const year=now.getFullYear();
+  const wom=getWOM(now);
+  const dayName=getDN(now);
+  const diasNoMes=new Date(year,now.getMonth()+1,0).getDate();
+  const mesAntNome=getMN(new Date(year,now.getMonth()-1,1));
+
+  // Clock
+  function upClock(){
+    const n=getNow();
+    const hh=String(n.getHours()).padStart(2,'0');
+    const mm=String(n.getMinutes()).padStart(2,'0');
+    const el=document.getElementById('clk');
+    if(el)el.textContent=getDN(n)+' · '+hh+':'+mm;
   }
-};
+  upClock();setInterval(upClock,1000);
 
-const CREATORS=['Bruna Santiny','Negao Rubi','Barbara Fartura','Rick Necker','Gabriela Avillar','Meck','Perola','Alice','Luh'];
-const DAYS_MAP={seg:'Segunda',ter:'Terça',qua:'Quarta',qui:'Quinta',sex:'Sexta',sab:'Sábado',dom:'Domingo'};
-const ROUTINE={
-  seg:[['Criação + postagem redes sociais','raise','Criação'],['Storie com @ do perfil de links','cri','Funil'],['Grupo Free e Twitter','raise','Funil'],['Monitoramento de engajamento','cri','Funil'],['Programar live semanal','raise','Conversão'],['Edição e postagem plataformas +18','raise','Criação']],
-  ter:[['Criação + postagem redes sociais','raise','Criação'],['Anunciar live nos stories','raise','Conversão'],['Post 2x','raise','Criação'],['Story com @ do perfil de links','cri','Funil'],['Grupo Free 1x','raise','Funil'],['Caixa de perguntas','raise','Funil'],['Monitoramento de engajamento','raise','Funil'],['Execução da live','both','Conversão']],
-  qua:[['Criação de post','raise','Criação'],['Post 2x','raise','Criação'],['Story com @ do perfil de links','cri','Funil'],['Grupo Free 1x','raise','Funil'],['Storie Sua Vez','raise','Funil'],['Monitoramento de engajamento','raise','Funil'],['Responder caixa de perguntas','cri','Funil'],['Programação TikTok','raise','Criação']],
-  qui:[['Post 2x','raise','Criação'],['Story com @ do perfil de links','cri','Funil'],['Grupo Free 1x','raise','Funil'],['Monitoramento de engajamento','raise','Funil'],['Configuração de remarketing','raise','Conversão'],['Responder mensagens automáticas','raise','Conversão'],['Post X (Twitter)','raise','Criação']],
-  sex:[['Criação de post','raise','Criação'],['Post 2x','raise','Criação'],['Story com @ do perfil de links','cri','Funil'],['Grupo Free 1x','raise','Funil'],['Monitoramento de engajamento','raise','Funil'],['Postagem e edição plataformas +18','raise','Criação'],['Post X (Twitter)','raise','Criação']],
-  sab:[['Criação de post','raise','Criação'],['Post 2x','raise','Criação'],['Story com @ do perfil de links','cri','Funil'],['Grupo Free 1x','raise','Funil'],['Monitoramento de engajamento','raise','Funil']],
-  dom:[['Criação de post','raise','Criação'],['Post 1x','raise','Criação'],['Story com @ do perfil de links','cri','Funil'],['Grupo Free 1x','raise','Funil'],['Monitoramento de engajamento','raise','Funil']],
-};
-const KB_COLS=['aberto','progresso','revisao','resolvido'];
-const KB_LABELS={aberto:'Aberto',progresso:'Em andamento',revisao:'Em revisão',resolvido:'Resolvido'};
-const KB_COLORS={aberto:'var(--red)',progresso:'var(--amber)',revisao:'var(--blue)',resolvido:'var(--green)'};
-const TIPO_LABEL={'perfil-caido':'Perfil caído','nova-conta':'Nova conta','senha':'Senha','marketing':'Marketing','plataforma':'Plataforma +18','outro':'Outro'};
-const FIN_CHECKS=['Fechamento e distribuição de lucros','Feedback de vendas e engajamento','Reunião de alinhamento de metas','Análise de desempenho global','Fechamento financeiro mensal','Configuração de remarketing','Revisão do dossiê e senhas','Avaliação dos operadores'];
+  // Admin date badge
+  const ab=document.getElementById('a-dt');
+  if(ab)ab.textContent=dayName+', '+date+' de '+month;
 
-let userToken=null,currentUser=null,filterCr='all',activeCr=CREATORS[0];
-let tasksCache={},ticketsCache=[],finCache={bruta:0,custos:0,imp:0,dist:[],checks:Array(FIN_CHECKS.length).fill(false)};
-let teamCache=[{name:'Operador 1',role:'Editor',cris:'Todos'},{name:'Operador 2',role:'Community Manager',cris:'Todos'}];
-let logsCache=[];
-let isLogin=true;
+  // Admin rotina dia
+  const ard=document.getElementById('a-rot-d');
+  if(ard)ard.selectedIndex=day===0?6:day-1;
 
-// Check saved session
-const savedSession = localStorage.getItem('raise_session');
-if(savedSession) {
-  try {
-    const s = JSON.parse(savedSession);
-    if(s.token && s.user && s.expires > Date.now()) {
-      userToken = s.token;
-      currentUser = s.user;
-      document.getElementById('auth-screen').style.display='none';
-      document.getElementById('app-screen').style.display='block';
-      const nome = currentUser.email.split('@')[0];
-      document.getElementById('user-name').textContent=nome;
-      document.getElementById('user-avatar').textContent=nome.slice(0,2).toUpperCase();
-      const dm={1:'seg',2:'ter',3:'qua',4:'qui',5:'sex',6:'sab',0:'dom'};
-      document.getElementById('day-select').value=dm[new Date().getDay()]||'seg';
-      loadTasks().then(()=>loadTickets()).then(()=>buildRotina());
-    }
-  } catch(e) { localStorage.removeItem('raise_session'); }
-}
+  // Admin mídias semana
+  const ams=document.getElementById('a-mid-s');
+  if(ams)ams.textContent='Entrega · Semana '+wom+' de '+month+' · prazo domingo';
 
-function toast(msg,col='var(--green)'){const t=document.getElementById('toast');t.textContent=msg;t.style.background=col;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+  // KPIs
+  const km=document.getElementById('kpi-msg');
+  if(km)km.textContent='Hoje é dia '+date+' de '+month+'. Resumo dos últimos '+date+' dias do mês de '+month+'.';
+  const kt=document.getElementById('kpi-card-t');
+  if(kt)kt.textContent='Vendas por plataforma · últimos '+date+' dias de '+month;
 
-function toggleMode(){
-  isLogin=!isLogin;
-  document.getElementById('auth-sub').textContent=isLogin?'Entre com sua conta da agência':'Criar conta na agência Raise';
-  document.getElementById('auth-btn').textContent=isLogin?'Entrar':'Criar conta';
-  document.getElementById('auth-toggle').innerHTML=isLogin?'Não tem conta? <span>Criar conta</span>':'Já tem conta? <span>Entrar</span>';
-  document.getElementById('auth-name-wrap').style.display=isLogin?'none':'block';
-  document.getElementById('auth-err').textContent='';
-  document.getElementById('auth-ok').textContent='';
-}
+  // Operador rotina sub
+  const ors=document.getElementById('o-rot-s');
+  if(ors)ors.textContent='Seus criadores · '+dayName+' · limite: 23:59';
 
-async function authAction(){
-  const email=document.getElementById('auth-email').value.trim();
-  const pass=document.getElementById('auth-pass').value;
-  const errEl=document.getElementById('auth-err');
-  const okEl=document.getElementById('auth-ok');
-  errEl.textContent='';okEl.textContent='';
-  if(!email||!pass){errEl.textContent='Preencha e-mail e senha.';return;}
-  if(pass.length<6){errEl.textContent='Senha mínima de 6 caracteres.';return;}
-  document.getElementById('auth-btn').textContent='Aguarde...';
-  try{
-    let data;
-    if(isLogin){
-      data = await api.signIn(email, pass);
-    } else {
-      data = await api.signUp(email, pass);
-    }
-    if(data.access_token){
-      userToken = data.access_token;
-      currentUser = data.user;
-      localStorage.setItem('raise_session', JSON.stringify({token:userToken, user:currentUser, expires: Date.now() + 3600000*24}));
-      document.getElementById('auth-screen').style.display='none';
-      document.getElementById('app-screen').style.display='block';
-      const nome = email.split('@')[0];
-      document.getElementById('user-name').textContent=nome;
-      document.getElementById('user-avatar').textContent=nome.slice(0,2).toUpperCase();
-      const dm={1:'seg',2:'ter',3:'qua',4:'qui',5:'sex',6:'sab',0:'dom'};
-      document.getElementById('day-select').value=dm[new Date().getDay()]||'seg';
-      await loadTasks(); await loadTickets(); buildRotina();
-    } else if(!isLogin && data.id){
-      okEl.textContent='Conta criada! Verifique seu e-mail ou tente fazer login.';
-    } else {
-      errEl.textContent='Resposta inesperada. Tente novamente.';
-    }
-  } catch(e){
-    console.error('Auth error:',e);
-    const msg=e.message||'';
-    if(msg.includes('Invalid login') || msg.includes('invalid_grant'))errEl.textContent='E-mail ou senha incorretos.';
-    else if(msg.includes('already registered') || msg.includes('already exists'))errEl.textContent='E-mail já cadastrado. Faça login.';
-    else if(msg.includes('Email not confirmed'))errEl.textContent='Confirme seu e-mail antes de entrar.';
-    else errEl.textContent='Erro: '+msg;
+  // Operador semana label mídias
+  const osl=document.getElementById('o-sem-label');
+  if(osl)osl.textContent='Semana '+wom+' de '+month;
+
+  // Operador resultados semana
+  const ores=document.getElementById('o-res-sem');
+  if(ores)ores.textContent='Semana '+wom+' de '+month;
+
+  // Criador dias corridos
+  const cd=document.getElementById('c-dias');
+  if(cd)cd.textContent='Dias corridos do mês: '+date+' de '+diasNoMes+' · comparado a '+mesAntNome;
+
+  // Criador saudação
+  const h=now.getHours();
+  const greet=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
+  const cg=document.getElementById('c-greet');
+  if(cg)cg.textContent=greet+', Bruna 👋';
+
+  // Criador tarefas de hoje
+  const cdt=document.getElementById('c-today-dt');
+  if(cdt)cdt.textContent=dayName.toUpperCase()+', '+date+' DE '+month.toUpperCase()+' DE '+year;
+
+  const tarefasDia={
+    0:['Enviar mídias da próxima semana via Telegram','Stories Instagram / TikTok / X'],
+    1:['Enviar mídias da semana via Telegram','Stories Instagram / TikTok / X'],
+    2:['Anunciar a live pela manhã','Executar a live junto com a Raise','Stories Instagram / TikTok / X'],
+    3:['Responder caixinha de perguntas','Storie "Sua Vez"','Stories Instagram / TikTok / X'],
+    4:['Stories Instagram / TikTok / X','Responder mensagens no grupo free'],
+    5:['Stories Instagram / TikTok / X'],
+    6:['Stories Instagram / TikTok / X','Enviar mídias da próxima semana via Telegram']
+  };
+  const ctasks=document.getElementById('c-today-tasks');
+  if(ctasks){
+    ctasks.innerHTML='';
+    (tarefasDia[day]||[]).forEach(t=>{
+      const div=document.createElement('div');
+      div.className='today-t';
+      div.innerHTML='<div class="today-cb" onclick="this.classList.toggle(\'ok\')"></div>'+t;
+      ctasks.appendChild(div);
+    });
   }
-  document.getElementById('auth-btn').textContent=isLogin?'Entrar':'Criar conta';
-}
 
-function logout(){
-  localStorage.removeItem('raise_session');
-  userToken=null;currentUser=null;
-  document.getElementById('auth-screen').style.display='flex';
-  document.getElementById('app-screen').style.display='none';
-}
+  // Criador mídias semana
+  const cms=document.getElementById('c-mid-s');
+  if(cms)cms.textContent='Semana '+wom+' de '+month+' · mídias parcialmente entregues. Próximo envio: domingo.';
+  const csem=document.getElementById('c-mid-sem');
+  if(csem)csem.textContent='Semana '+wom+' de '+month;
 
-function tk(day,cr,idx){return `${day}_${cr}_${idx}`}
-
-async function loadTasks(){
-  try{
-    const data = await api.select('tasks','select=*',userToken);
-    tasksCache={};
-    (Array.isArray(data)?data:[]).forEach(t=>{tasksCache[tk(t.day,t.creator,t.task_idx)]=t.done;});
-  }catch(e){console.error('loadTasks:',e);}
-}
-
-async function loadTickets(){
-  try{
-    const data = await api.select('tickets','select=*&order=created_at.desc',userToken);
-    ticketsCache=Array.isArray(data)?data:[];
-  }catch(e){console.error('loadTickets:',e);}
-}
-
-function buildRotina(){
-  const day=document.getElementById('day-select').value;
-  const tasks=ROUTINE[day]||[];
-  const crs=filterCr==='all'?CREATORS:[filterCr];
-  let tot=0,done=0;
-  crs.forEach(cr=>{tasks.forEach((_,i)=>{tot++;if(tasksCache[tk(day,cr,i)])done++;});});
-  const pct=tot?Math.round(done/tot*100):0;
-  document.getElementById('rotina-sub').textContent=DAYS_MAP[day]+' — '+new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long'});
-  document.getElementById('rotina-metrics').innerHTML=`
-    <div class="metric"><div class="metric-val green">${done}</div><div class="metric-lbl">Concluídas</div></div>
-    <div class="metric"><div class="metric-val ${tot-done>0?'amber':'green'}">${tot-done}</div><div class="metric-lbl">Pendentes</div></div>
-    <div class="metric"><div class="metric-val ${pct>=80?'green':pct>=50?'amber':'red'}">${pct}%</div><div class="metric-lbl">Execução</div></div>
-    <div class="metric"><div class="metric-val">${ticketsCache.filter(t=>t.status==='aberto').length}</div><div class="metric-lbl">Chamados abertos</div></div>`;
-  document.getElementById('cr-filter').innerHTML=
-    `<button class="cr-chip${filterCr==='all'?' active':''}" onclick="setFilter('all')">Todos</button>`+
-    CREATORS.map(c=>`<button class="cr-chip${filterCr===c?' active':''}" onclick="setFilter('${c.replace(/'/g,"\\'")}')">` +c.split(' ')[0]+'</button>').join('');
-  const grid=document.getElementById('task-grid');grid.innerHTML='';
-  crs.forEach(cr=>{
-    const d=tasks.filter((_,i)=>tasksCache[tk(day,cr,i)]).length;
-    const p=tasks.length?Math.round(d/tasks.length*100):0;
-    const items=tasks.map(([name,owner,pilar],i)=>{
-      const isDone=!!tasksCache[tk(day,cr,i)];
-      const bc=owner==='raise'?'badge-raise':owner==='cri'?'badge-cri':'badge-both';
-      const bl=owner==='raise'?'RAISE':owner==='cri'?'CRIADOR':'RAISE+CRIA';
-      return `<div class="task-row${isDone?' done':''}" onclick="toggleTask('${day}','${cr.replace(/'/g,"\\'")}',${i})">
-        <div class="chkbox"><span class="chk-mark">✓</span></div>
-        <div><div class="task-name">${name}</div><div class="task-meta"><span class="badge ${bc}">${bl}</span><span class="badge badge-pilar">${pilar}</span></div></div>
-      </div>`;
-    }).join('');
-    grid.innerHTML+=`<div class="creator-card"><div class="creator-card-hd"><span class="creator-name">${cr}</span><span class="creator-prog">${d}/${tasks.length}</span></div><div class="prog-bar"><div class="prog-fill" style="width:${p}%"></div></div><div class="task-list">${items}</div></div>`;
-  });
-}
-
-function setFilter(v){filterCr=v;buildRotina();}
-
-async function toggleTask(day,cr,idx){
-  const k=tk(day,cr,idx);const newVal=!tasksCache[k];tasksCache[k]=newVal;buildRotina();
-  try{
-    const existing = await api.select('tasks',`select=id&day=eq.${day}&creator=eq.${encodeURIComponent(cr)}&task_idx=eq.${idx}`,userToken);
-    if(Array.isArray(existing)&&existing.length>0){
-      await api.update('tasks',`id=eq.${existing[0].id}`,{done:newVal},userToken);
-    } else {
-      await api.insert('tasks',{day,creator:cr,task_idx:idx,done:newVal,user_id:currentUser.id},userToken);
+  // Criador histórico mídias por semana do mês
+  const hist=document.getElementById('c-hist-mid');
+  if(hist){
+    hist.innerHTML='';
+    for(let i=1;i<=wom;i++){
+      const div=document.createElement('div');
+      div.className='plr';
+      const ok=i<wom;
+      div.innerHTML='<span style="flex:1">Semana '+i+' de '+month+'</span><span class="bdg '+(ok?'bok':'bin')+'">'+(ok?'Entregue completo':'Parcial · aguardando ideias')+' </span>';
+      hist.appendChild(div);
     }
-  }catch(e){console.error('toggleTask:',e);}
+  }
+
+  // Criador pendências sub
+  const cps=document.getElementById('c-pen-s');
+  if(cps)cps.textContent='O que precisa da sua atenção agora';
+  const cpm=document.getElementById('c-pen-msg');
+  if(cpm)cpm.textContent='Hoje é '+dayName+', dia '+date+' · suas atividades de hoje estão em Minhas tarefas.';
+
+  // Modal faturamento semanas
+  const fatSem=document.getElementById('fat-sem');
+  if(fatSem){
+    fatSem.innerHTML='';
+    for(let i=1;i<=wom;i++){
+      const opt=document.createElement('option');
+      opt.value=i;opt.textContent='Semana '+i+' de '+month;
+      if(i===wom)opt.selected=true;
+      fatSem.appendChild(opt);
+    }
+  }
 }
 
-async function resetDay(){
-  if(!confirm('Reiniciar tarefas do dia?'))return;
-  const day=document.getElementById('day-select').value;
-  CREATORS.forEach(cr=>{(ROUTINE[day]||[]).forEach((_,i)=>{tasksCache[tk(day,cr,i)]=false;});});
-  buildRotina();
-  try{await api.update('tasks',`day=eq.${day}`,{done:false},userToken);}catch(e){}
-  toast('Dia reiniciado!');
+// === NAVEGAÇÃO ===
+function gP(id,btn){
+  document.querySelectorAll('.portal').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.psb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+function gS(portal,id,btn){
+  const p=document.getElementById('p-'+portal);
+  p.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  const t=document.getElementById(id);
+  if(t)t.classList.add('on');
+  p.querySelectorAll('.si').forEach(b=>b.classList.remove('on'));
+  if(btn)btn.classList.add('on');
 }
 
-async function buildKanban(){
-  await loadTickets();
-  document.getElementById('kanban-board').innerHTML=KB_COLS.map(col=>{
-    const tks=ticketsCache.filter(t=>t.status===col);
-    const items=tks.map(t=>{
-      const pc=t.prioridade==='urg'?'prio-urg':t.prioridade==='med'?'prio-med':'prio-low';
-      const pl=t.prioridade==='urg'?'Urgente':t.prioridade==='med'?'Médio':'Baixo';
-      const moves=KB_COLS.filter(c=>c!==col).map(c=>`<button class="ticket-move" onclick="moveTicket(${t.id},'${c}')">${KB_LABELS[c]}</button>`).join('');
-      return `<div class="ticket"><div class="ticket-title">${t.descricao}</div>${t.creator?`<div class="ticket-creator">${t.creator}</div>`:''}<div class="ticket-meta"><span class="prio ${pc}">${pl}</span><span class="badge badge-pilar">${TIPO_LABEL[t.tipo]||t.tipo}</span></div><div class="ticket-actions">${moves}<button class="ticket-del" onclick="delTicket(${t.id})">✕</button></div></div>`;
-    }).join('')||'<div class="empty">Nenhum chamado</div>';
-    return `<div class="kb-col"><div class="kb-col-hd"><span class="kb-col-title"><span class="kb-dot" style="background:${KB_COLORS[col]}"></span>${KB_LABELS[col]}</span><span class="kb-count">${tks.length}</span></div>${items}</div>`;
-  }).join('');
+// === INTERAÇÕES ===
+function tCk(row){
+  const b=row.querySelector('.ckb');
+  const l=row.querySelector('.ckl');
+  b.classList.toggle('done');
+  const m=b.querySelector('.ckm');
+  if(m)m.style.display=b.classList.contains('done')?'block':'none';
+  if(l)l.classList.toggle('dl',b.classList.contains('done'));
+}
+function tBlr(el){el.style.filter=el.style.filter==='none'?'blur(5px)':'none'}
+function oM(id){const m=document.getElementById(id);if(m)m.style.display='flex'}
+function cM(id){const m=document.getElementById(id);if(m)m.style.display='none'}
+function addLog(){
+  const inp=document.getElementById('log-inp');
+  const list=document.getElementById('log-list');
+  if(!inp||!inp.value.trim())return;
+  const n=getNow();
+  const hh=String(n.getHours()).padStart(2,'0');
+  const mm=String(n.getMinutes()).padStart(2,'0');
+  const div=document.createElement('div');
+  div.className='row';
+  div.innerHTML='<span style="font-size:9px;color:var(--tx3);width:80px">Hoje '+hh+':'+mm+'</span><span style="font-size:10px;flex:1">'+inp.value+'</span>';
+  list.prepend(div);
+  inp.value='';
 }
 
-async function addTicket(){
-  const desc=document.getElementById('kb-desc').value.trim();if(!desc)return;
-  try{
-    const data=await api.insert('tickets',{descricao:desc,creator:document.getElementById('kb-creator').value,tipo:document.getElementById('kb-tipo').value,prioridade:document.getElementById('kb-prio').value,status:'aberto',user_id:currentUser.id},userToken);
-    const ticket=Array.isArray(data)?data[0]:data;
-    if(ticket&&ticket.id){ticketsCache.unshift(ticket);document.getElementById('kb-desc').value='';buildKanban();toast('Chamado aberto!');}
-  }catch(e){console.error(e);}
-}
-async function moveTicket(id,status){
-  try{await api.update('tickets',`id=eq.${id}`,{status},userToken);const t=ticketsCache.find(x=>x.id===id);if(t)t.status=status;buildKanban();toast('Atualizado!');}catch(e){}
-}
-async function delTicket(id){
-  try{await api.delete('tickets',`id=eq.${id}`,userToken);ticketsCache=ticketsCache.filter(t=>t.id!==id);buildKanban();}catch(e){}
-}
-
-async function buildDossie(){
-  document.getElementById('dossie-tabs').innerHTML=CREATORS.map(c=>`<button class="cr-chip${c===activeCr?' active':''}" onclick="switchCr('${c.replace(/'/g,"\\'")}') ">${c.split(' ')[0]}</button>`).join('');
-  let d={};
-  try{
-    const data=await api.select('dossie',`select=dados&creator=eq.${encodeURIComponent(activeCr)}`,userToken);
-    if(Array.isArray(data)&&data.length>0)d=data[0].dados||{};
-  }catch(e){}
-  document.getElementById('dossie-body').innerHTML=`
-  <div class="dossie-grid">
-    <div class="card"><div class="card-header"><span class="card-title">Identificação — ${activeCr}</span></div><div class="card-body">
-      <div class="form-row"><div class="form-group"><label>CPF / CNPJ</label><input id="d-cpf" value="${d.cpf||''}"></div><div class="form-group"><label>Data de nascimento</label><input type="date" id="d-nasc" value="${d.nasc||''}"></div></div>
-      <div class="form-row"><div class="form-group"><label>Telefone</label><input id="d-tel" value="${d.tel||''}"></div><div class="form-group"><label>E-mail recuperação</label><input id="d-email" value="${d.email||''}"></div></div>
-      <div class="form-group"><label>Observações</label><textarea id="d-obs">${d.obs||''}</textarea></div>
-    </div></div>
-    <div class="card"><div class="card-header"><span class="card-title">Cofre de senhas — clique para revelar</span></div><div class="card-body">
-      ${[['IG Principal','ig_p','pw_p'],['IG Reserva','ig_r','pw_r'],['IG Links','ig_l','pw_l'],['Plataforma +18','plat','pw_plat']].map(([lbl,lk,pk])=>`
-      <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)">
-        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-bottom:5px">${lbl}</div>
-        <div class="form-row" style="margin:0">
-          <div class="form-group"><label>Login</label><input id="d-${lk}" placeholder="@usuario" value="${d[lk]||''}"></div>
-          <div class="form-group"><label>Senha</label><div style="display:flex;gap:5px;align-items:center">
-            <span class="pw-val" onclick="this.classList.toggle('show')">${d[pk]||'—'}</span>
-            <button class="pw-toggle" onclick="this.previousElementSibling.classList.toggle('show')">Ver</button>
-            <input type="password" id="d-${pk}" placeholder="Senha" value="${d[pk]||''}" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:12px;padding:6px 8px;outline:none">
-          </div></div>
-        </div>
-      </div>`).join('')}
-      <div class="form-row"><div class="form-group"><label>Tipo 2FA</label><input id="d-twofa" value="${d.twofa||''}"></div><div class="form-group"><label>E-mail 2FA</label><input id="d-email2fa" value="${d.email_2fa||''}"></div></div>
-      <button class="btn btn-primary btn-sm" onclick="saveDossie()" style="margin-top:6px;width:100%">Salvar ficha</button>
-    </div></div>
-  </div>`;
-}
-function switchCr(c){activeCr=c;buildDossie();}
-async function saveDossie(){
-  const dados={cpf:document.getElementById('d-cpf')?.value||'',nasc:document.getElementById('d-nasc')?.value||'',tel:document.getElementById('d-tel')?.value||'',email:document.getElementById('d-email')?.value||'',obs:document.getElementById('d-obs')?.value||'',ig_p:document.getElementById('d-ig_p')?.value||'',pw_p:document.getElementById('d-pw_p')?.value||'',ig_r:document.getElementById('d-ig_r')?.value||'',pw_r:document.getElementById('d-pw_r')?.value||'',ig_l:document.getElementById('d-ig_l')?.value||'',pw_l:document.getElementById('d-pw_l')?.value||'',plat:document.getElementById('d-plat')?.value||'',pw_plat:document.getElementById('d-pw_plat')?.value||'',twofa:document.getElementById('d-twofa')?.value||'',email_2fa:document.getElementById('d-email2fa')?.value||''};
-  try{await api.upsert('dossie',{creator:activeCr,dados,updated_at:new Date().toISOString()},userToken);toast('Ficha salva!');}catch(e){toast('Erro ao salvar','var(--red)');}
-}
-
-function calcFin(){
-  const b=parseFloat(document.getElementById('f-bruta').value)||0;const c=parseFloat(document.getElementById('f-custos').value)||0;const i=parseFloat(document.getElementById('f-imp').value)||0;
-  finCache.bruta=b;finCache.custos=c;finCache.imp=i;const liq=b-c-i;const fmt=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2});
-  document.getElementById('fi-bruta').textContent=fmt(b);document.getElementById('fi-custos').textContent='('+fmt(c)+')';document.getElementById('fi-imp').textContent='('+fmt(i)+')';document.getElementById('fi-lucro').textContent=fmt(liq);renderDist();
-}
-async function buildFin(){
-  try{
-    const data=await api.select('financeiro','select=*&order=created_at.desc&limit=1',userToken);
-    if(Array.isArray(data)&&data.length>0){const d=data[0];finCache={bruta:d.bruta||0,custos:d.custos||0,imp:d.impostos||0,dist:d.dist||[],checks:d.checks||Array(FIN_CHECKS.length).fill(false)};}
-  }catch(e){}
-  document.getElementById('f-bruta').value=finCache.bruta;document.getElementById('f-custos').value=finCache.custos;document.getElementById('f-imp').value=finCache.imp;calcFin();renderFinChecks();
-}
-async function saveFin(){try{await api.insert('financeiro',{periodo:new Date().toLocaleDateString('pt-BR'),bruta:finCache.bruta,custos:finCache.custos,impostos:finCache.imp,dist:finCache.dist,checks:finCache.checks},userToken);toast('Fechamento salvo!');}catch(e){toast('Erro ao salvar','var(--red)');}}
-function renderDist(){const liq=finCache.bruta-finCache.custos-finCache.imp;const fmt=v=>'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2});document.getElementById('dist-list').innerHTML=finCache.dist.map((d,i)=>`<div class="fin-row"><span class="fin-lbl">${d.nome} (${d.pct}%)</span><span class="fin-pos">${fmt(liq*d.pct/100)}</span><button onclick="finCache.dist.splice(${i},1);renderDist()" style="background:none;border:none;color:var(--text3);cursor:pointer">✕</button></div>`).join('')||'<div style="font-size:12px;color:var(--text3);padding:6px 0">Nenhuma distribuição</div>';}
-function addDist(){const n=document.getElementById('dist-nome').value.trim();const p=parseFloat(document.getElementById('dist-pct').value)||0;if(!n||!p)return;finCache.dist.push({nome:n,pct:p});document.getElementById('dist-nome').value='';document.getElementById('dist-pct').value='';renderDist();}
-function renderFinChecks(){document.getElementById('fin-checks').innerHTML=FIN_CHECKS.map((c,i)=>`<div class="task-row${finCache.checks[i]?' done':''}" onclick="finCache.checks[${i}]=!finCache.checks[${i}];renderFinChecks()" style="margin-bottom:4px"><div class="chkbox"><span class="chk-mark">✓</span></div><div class="task-name">${c}</div></div>`).join('');}
-
-async function buildEquipe(){
-  try{const data=await api.select('logs','select=*&order=created_at.desc&limit=40',userToken);logsCache=Array.isArray(data)?data:[];}catch(e){}
-  document.getElementById('team-grid').innerHTML=teamCache.map((op,i)=>`<div class="card" style="padding:14px 16px"><div style="display:flex;align-items:flex-start;gap:10px"><div style="width:38px;height:38px;border-radius:50%;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:var(--accent2);flex-shrink:0">${op.name.split(' ').map(w=>w[0]).join('').slice(0,2)}</div><div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--text)">${op.name}</div><div style="font-size:11px;color:var(--text3);margin-top:1px">${op.role}</div><div style="font-size:11px;color:var(--text2);margin-top:5px"><span style="color:var(--text3)">Criadores: </span>${op.cris}</div></div><button onclick="teamCache.splice(${i},1);buildEquipe()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px">✕</button></div></div>`).join('')||'<div class="empty" style="grid-column:1/-1">Nenhum operador</div>';
-  renderLog();
-}
-function addOp(){const n=document.getElementById('op-nome').value.trim();if(!n)return;teamCache.push({name:n,role:document.getElementById('op-func').value||'Operador',cris:document.getElementById('op-cris').value||'—'});document.getElementById('op-nome').value='';document.getElementById('op-func').value='';document.getElementById('op-cris').value='';buildEquipe();}
-async function addLog(){
-  const t=document.getElementById('log-txt').value.trim();if(!t)return;
-  const nome=document.getElementById('user-name').textContent;
-  try{await api.insert('logs',{operador:nome,acao:t},userToken);document.getElementById('log-txt').value='';const data=await api.select('logs','select=*&order=created_at.desc&limit=40',userToken);logsCache=Array.isArray(data)?data:[];renderLog();toast('Registrado!');}catch(e){}
-}
-function renderLog(){const el=document.getElementById('log-list');if(!el)return;if(!logsCache.length){el.innerHTML='<div class="empty">Nenhuma atividade</div>';return;}el.innerHTML=logsCache.map(l=>`<div style="display:flex;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);align-items:flex-start"><span style="font-size:10px;color:var(--text3);flex-shrink:0;width:90px;margin-top:1px">${new Date(l.created_at).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span><span style="font-size:11px;color:var(--accent2);flex-shrink:0;width:100px">${l.operador}</span><span style="font-size:12px;color:var(--text)">${l.acao}</span></div>`).join('');}
-
-async function buildResumo(){
-  await loadTasks();await loadTickets();
-  const allDays=Object.keys(DAYS_MAP);let tot=0,done=0;
-  allDays.forEach(d=>{CREATORS.forEach(cr=>{(ROUTINE[d]||[]).forEach((_,i)=>{tot++;if(tasksCache[tk(d,cr,i)])done++;});});});
-  const pct=tot?Math.round(done/tot*100):0;
-  const abertos=ticketsCache.filter(t=>t.status==='aberto').length;
-  const urg=ticketsCache.filter(t=>t.prioridade==='urg'&&t.status!=='resolvido').length;
-  const resolv=ticketsCache.filter(t=>t.status==='resolvido').length;
-  document.getElementById('resumo-metrics').innerHTML=`<div class="metric"><div class="metric-val ${pct>=80?'green':pct>=50?'amber':'red'}">${pct}%</div><div class="metric-lbl">Taxa execução</div></div><div class="metric"><div class="metric-val green">${done}</div><div class="metric-lbl">Tarefas feitas</div></div><div class="metric"><div class="metric-val ${urg>0?'red':'green'}">${urg}</div><div class="metric-lbl">Urgentes</div></div><div class="metric"><div class="metric-val">${abertos}</div><div class="metric-lbl">Chamados abertos</div></div><div class="metric"><div class="metric-val green">${resolv}</div><div class="metric-lbl">Resolvidos</div></div>`;
-  document.getElementById('resumo-days').innerHTML=allDays.map(d=>{const tasks=ROUTINE[d]||[];const total=tasks.length*CREATORS.length;const d2=CREATORS.reduce((a,cr)=>a+tasks.filter((_,i)=>tasksCache[tk(d,cr,i)]).length,0);const p=total?Math.round(d2/total*100):0;return `<div class="res-bar-row"><span class="res-lbl">${DAYS_MAP[d]}</span><div class="res-bar-w"><div class="res-bar" style="width:${p}%"></div></div><span class="res-pct">${p}%</span></div>`;}).join('');
-  document.getElementById('resumo-tickets').innerHTML=KB_COLS.map(col=>{const n=ticketsCache.filter(t=>t.status===col).length;const p=ticketsCache.length?Math.round(n/ticketsCache.length*100):0;return `<div class="res-bar-row"><span class="res-lbl">${KB_LABELS[col]}</span><div class="res-bar-w"><div class="res-bar" style="width:${p}%;background:${KB_COLORS[col]}"></div></div><span class="res-pct">${n}</span></div>`;}).join('');
-}
-
-function goto(id){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
-  document.querySelectorAll('.nav-item,.mob-btn').forEach(b=>b.classList.remove('active'));
-  [...document.querySelectorAll('.nav-item,.mob-btn')].filter(b=>b.getAttribute('onclick')?.includes("'"+id+"'")).forEach(b=>b.classList.add('active'));
-  if(id==='rotina')buildRotina();if(id==='kanban')buildKanban();if(id==='dossie')buildDossie();if(id==='fin')buildFin();if(id==='equipe')buildEquipe();if(id==='resumo')buildResumo();
-}
+document.addEventListener('DOMContentLoaded',initAll);
 </script>
 </body>
 </html>
