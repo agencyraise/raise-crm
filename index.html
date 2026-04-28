@@ -385,19 +385,20 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 <div id="a-fin" class="scr">
   <div class="page-top"><div><div class="page-title">Financeiro</div><div class="page-sub">Lançamento pelo Admin toda sexta · distribuição e KPIs</div></div><div class="page-actions"><button class="btn btn-p" onclick="oM('m-fat')">Lançar faturamento</button></div></div>
   <div class="cnt">
-    <div class="mets">
-      <div class="mc"><div class="mc-v cnu" id="fin-receita-total">—</div><div class="mc-l">Receita total</div><div class="mc-s" id="fin-receita-comp"></div></div>
-      <div class="mc"><div class="mc-v" id="fin-exec">—</div><div class="mc-l">Execução geral</div></div>
-      <div class="mc"><div class="mc-v cnu" id="fin-proj-fat">—</div><div class="mc-l">Projetos com fat.</div></div>
-      <div class="mc"><div class="mc-v cdn" id="fin-chamados">—</div><div class="mc-l">Chamados abertos</div></div>
-    </div>
+    <div class="mets"><div class="mc"><div class="mc-v cnu">R$42k</div><div class="mc-l">Receita total</div><div class="mc-s cup">↑9% vs mês ant.</div></div><div class="mc"><div class="mc-v cup">R$28k</div><div class="mc-l">Lucro líquido</div></div><div class="mc"><div class="mc-v cam">11%</div><div class="mc-l">Churn médio</div></div><div class="mc"><div class="mc-v cnu">R$87</div><div class="mc-l">Ticket médio</div></div></div>
     <div class="g2">
-      <div class="card"><div class="ch"><span class="ct">Faturamento por criador · <span id="fin-mes-label">mês atual</span></span></div><div class="cb" id="fin-barras-criadores"><div style="font-size:13px;color:var(--tx3);text-align:center;padding:20px 0">Nenhum faturamento lançado ainda.<br>Use "Gestão do CRM" ou o botão acima para lançar.</div></div></div>
-      <div class="card"><div class="ch"><span class="ct">Resumo financeiro</span></div><div class="cb">
-        <div class="row"><span style="flex:1">Projetos com faturamento</span><span id="fin-r-proj" style="font-weight:700">—</span></div>
-        <div class="row"><span style="flex:1">Média por criador</span><span id="fin-r-media" style="font-weight:700">—</span></div>
-        <div class="row"><span style="flex:1">Execução de rotina hoje</span><span id="fin-r-exec" style="font-weight:700">—</span></div>
-        <div class="row"><span style="flex:1">Chamados abertos</span><span id="fin-r-cham" style="font-weight:700">—</span></div>
+      <div class="card"><div class="ch"><span class="ct">Faturamento por criador · mês</span></div><div class="cb">
+        <div class="br"><span class="bl">Barbara F.</span><div class="bw"><div class="bf" style="width:90%;background:var(--ac)"><span class="bv">R$9.1k</span></div></div></div>
+        <div class="br"><span class="bl">Bruna S.</span><div class="bw"><div class="bf" style="width:83%;background:var(--ac)"><span class="bv">R$8.4k</span></div></div></div>
+        <div class="br"><span class="bl">Gabi A.</span><div class="bw"><div class="bf" style="width:61%;background:var(--ac)"><span class="bv">R$6.2k</span></div></div></div>
+        <div class="br"><span class="bl">Rick N.</span><div class="bw"><div class="bf" style="width:51%;background:var(--wn)"><span class="bv">R$5.2k</span></div></div></div>
+        <div class="br"><span class="bl">Negão R.</span><div class="bw"><div class="bf" style="width:31%;background:var(--dn)"><span class="bv">R$3.1k</span></div></div></div>
+      </div></div>
+      <div class="card"><div class="ch"><span class="ct">KPIs financeiros</span></div><div class="cb">
+        <div class="row"><span style="flex:1">Churn de assinantes</span><span class="bdg bok">11%</span></div>
+        <div class="row"><span style="flex:1">Ticket médio</span><span style="font-weight:700">R$87/ass.</span></div>
+        <div class="row"><span style="flex:1">Crescimento orgânico</span><span class="bdg bin">+18%</span></div>
+        <div class="row"><span style="flex:1">NPS médio</span><span class="bdg bok">8.4/10</span></div>
       </div></div>
     </div>
   </div>
@@ -407,17 +408,27 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 <div id="a-fint" class="scr">
   <div class="page-top"><div><div class="page-title">Controle financeiro interno</div><div class="page-sub">Receitas, retiradas, salários, custos e empréstimos</div></div><div class="page-actions"><button class="btn btn-p" onclick="oM('m-fint')">+ Novo lançamento</button></div></div>
   <div class="cnt">
-    <div class="mets">
-      <div class="mc"><div class="mc-v cup" id="fint-entradas">—</div><div class="mc-l">Entradas</div></div>
-      <div class="mc"><div class="mc-v cdn" id="fint-saidas">—</div><div class="mc-l">Saídas</div></div>
-      <div class="mc"><div class="mc-v" id="fint-saldo">—</div><div class="mc-l">Saldo</div></div>
-      <div class="mc"><div class="mc-v cnu" id="fint-reserva">—</div><div class="mc-l">Reserva</div></div>
+    <div class="mets"><div class="mc"><div class="mc-v cup">R$42k</div><div class="mc-l">Entradas</div></div><div class="mc"><div class="mc-v cdn">R$18.4k</div><div class="mc-l">Saídas</div></div><div class="mc"><div class="mc-v cup">R$23.6k</div><div class="mc-l">Saldo</div></div><div class="mc"><div class="mc-v cnu">R$8k</div><div class="mc-l">Reserva</div></div></div>
+    <div id="lista-lancamentos">
+      <div class="sl">Entradas</div>
+      <div class="fin"><span class="fin-tp ftrec">Receita</span><span class="fin-d">Honorários criadores — abril</span><span class="fin-v cup">+ R$42.000</span><div class="fin-a"><button class="btn btn-sm">Editar</button><button class="btn btn-r">✕</button></div></div>
+      <div class="sl">Retiradas dos Admins</div>
+      <div class="fin"><span class="fin-tp ftret">Retirada</span><span class="fin-d">Murilo — mensal</span><span class="fin-v cdn">- R$4.000</span><div class="fin-a"><button class="btn btn-sm">Editar</button><button class="btn btn-r">✕</button></div></div>
+      <div class="fin"><span class="fin-tp ftret">Retirada</span><span class="fin-d">João — mensal</span><span class="fin-v cdn">- R$4.000</span><div class="fin-a"><button class="btn btn-sm">Editar</button><button class="btn btn-r">✕</button></div></div>
+      <div class="sl">Salários operadores</div>
+      <div class="fin"><span class="fin-tp ftsal">Salário</span><span class="fin-d">Matheus A. — abril</span><span class="fin-v cdn">- R$2.200</span><div class="fin-a"><button class="btn btn-sm">Editar</button><button class="btn btn-r">✕</button></div></div>
+      <div class="fin"><span class="fin-tp ftsal">Salário</span><span class="fin-d">Ana C. — abril</span><span class="fin-v cdn">- R$2.200</span><div class="fin-a"><button class="btn btn-sm">Editar</button><button class="btn btn-r">✕</button></div></div>
+      <div class="sl">Custos</div>
+      <div class="fin"><span class="fin-tp ftcus">Custo</span><span class="fin-d">Ferramentas / Software</span><span class="fin-v cdn">- R$890</span><div class="fin-a"><button class="btn btn-sm">Editar</button><button class="btn btn-r">✕</button></div></div>
+      <div class="sl">Investimentos</div>
+      <div class="fin"><span class="fin-tp ftinv">Invest.</span><span class="fin-d">Reserva operacional</span><span class="fin-v cnu">R$5.000</span><div class="fin-a"><button class="btn btn-sm">Editar</button><button class="btn btn-r">✕</button></div></div>
+      <div class="sl">Empréstimos</div>
+      <div class="fin"><span class="fin-tp ftemp">Empréstimo</span><span class="fin-d">Sócio — out/24</span><span class="fin-v cam">R$10.000</span><div class="fin-a"><button class="btn btn-sm">Editar</button><button class="btn btn-r">✕</button></div></div>
     </div>
-    <div id="lista-lancamentos"><div style="font-size:13px;color:var(--tx3);text-align:center;padding:20px 0">Carregando lançamentos...</div></div>
     <div style="margin-top:12px;padding:14px 16px;background:var(--bg3);border-radius:var(--rad);border:1.5px solid var(--bd)">
-      <div class="row"><span style="flex:1;font-size:13px">Total entradas</span><span style="font-weight:700;font-family:var(--fh)" id="fint-tot-entradas">—</span></div>
-      <div class="row"><span style="flex:1;font-size:13px">Total saídas</span><span style="font-weight:700;font-family:var(--fh)" id="fint-tot-saidas">—</span></div>
-      <div class="row"><span style="flex:1;font-size:13px;font-weight:700">Saldo do mês</span><span style="font-weight:800;font-size:16px;font-family:var(--fh)" id="fint-tot-saldo">—</span></div>
+      <div class="row"><span style="flex:1;font-size:13px">Total entradas</span><span class="cup" style="font-weight:700;font-family:var(--fh)">R$42.000</span></div>
+      <div class="row"><span style="flex:1;font-size:13px">Total saídas</span><span class="cdn" style="font-weight:700;font-family:var(--fh)">- R$18.390</span></div>
+      <div class="row"><span style="flex:1;font-size:13px;font-weight:700">Saldo do mês</span><span class="cup" style="font-weight:800;font-size:16px;font-family:var(--fh)">R$23.610</span></div>
     </div>
   </div>
 </div>
@@ -425,13 +436,30 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 <!-- A-EQU -->
 <div id="a-equ" class="scr">
   <div class="page-top"><div><div class="page-title">Equipe</div><div class="page-sub">Operadores · criadores · atribuições · transferências</div></div><div class="page-actions"><button class="btn btn-p" onclick="oM('m-user')">+ Usuário</button></div></div>
-  <div class="cnt" id="equ-cnt"><div class="nf nf-b"><span>⏳</span><span>Carregando equipe...</span></div></div>
+  <div class="cnt">
+    <div class="sl">Operadores</div>
+    <div class="hrow"><div class="av avp">MA</div><div style="flex:1"><div class="hrow-n">Matheus A. <span class="bdg bgr" style="font-size:10px">Editor</span></div><div style="font-size:12px;color:var(--tx3)">Bruna Santiny, Pérola</div></div><button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button><span class="bdg bok">Ativo</span></div>
+    <div class="hrow" style="border-color:#FBBDD2"><div class="av avt">AC</div><div style="flex:1"><div class="hrow-n">Ana C. <span class="bdg bgr" style="font-size:10px">CM</span> <span class="bdg bur" style="font-size:10px">3 advertências</span></div><div style="font-size:12px;color:var(--tx3)">Rubi, Alice, Luh</div></div><button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button><span class="bdg bwa">Atenção</span></div>
+    <div class="hrow"><div class="av avb">LF</div><div style="flex:1"><div class="hrow-n">Lucas F. <span class="bdg bgr" style="font-size:10px">Gestor</span></div><div style="font-size:12px;color:var(--tx3)">Gabi, Meck, Rick, Barbara</div></div><button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button><span class="bdg bok">Ativo</span></div>
+    <div class="sl">Admins</div>
+    <div class="hrow"><div class="av av-a">MU</div><span class="hrow-n">Murilo (você)</span><span class="bdg bin">Admin</span></div>
+    <div class="hrow"><div class="av avt">JO</div><span class="hrow-n">João</span><span class="bdg bin">Admin</span><button class="btn btn-r">Remover</button></div>
+    <button class="btn btn-p" style="margin-top:8px" onclick="oM('m-user')">+ Adicionar Admin</button>
+  </div>
 </div>
 
 <!-- A-ADV -->
 <div id="a-adv" class="scr">
   <div class="page-top"><div><div class="page-title">Advertências</div><div class="page-sub">Registro mensal · penalidade definida pessoalmente pelo Admin</div></div></div>
-  <div class="cnt" id="adv-cnt"><div class="nf nf-b"><span>⏳</span><span>Carregando advertências...</span></div></div>
+  <div class="cnt">
+    <div class="sl">Resumo do mês atual</div>
+    <div class="hrow" style="border-color:#FBBDD2"><div class="av avt">AC</div><span class="hrow-n">Ana C.</span><span class="bdg bur">3 advertências</span><span style="font-size:12px;color:var(--dn);margin-left:8px">⚠️ Crítico</span></div>
+    <div class="hrow"><div class="av avp">MA</div><span class="hrow-n">Matheus A.</span><span class="bdg bwa">1 advertência</span></div>
+    <div class="hrow"><div class="av avb">LF</div><span class="hrow-n">Lucas F.</span><span class="bdg bok">0 advertências</span></div>
+    <div class="sl">Detalhes · Ana C.</div>
+    <div class="adv"><div class="adv-t">Advertência #3 · Seg 22/04 · 23:59</div><div class="adv-s">Não concluiu 100% das obrigações de Negão Rubi.</div><div class="adv-j">Justificativa: "Tive problema de acesso ao Instagram."</div></div>
+    <div class="adv"><div class="adv-t">Advertência #2 · Sex 19/04 · 23:59</div><div class="adv-s">Não concluiu post Telegram VIP — Luh.</div><div class="adv-j">Justificativa: "Conteúdo não chegou a tempo do criador."</div></div>
+  </div>
 </div>
 
 <!-- A-KPI -->
@@ -440,12 +468,16 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
   <div class="cnt">
     <div class="nf nf-b"><span>📅</span><span id="kpi-msg">Carregando...</span></div>
     <div class="kg4">
-      <div class="kc"><div class="kv" id="kpi-v-exec">—</div><div class="kl">Execução geral</div><div class="ks" id="kpi-s-exec">calculado da rotina</div></div>
-      <div class="kc"><div class="kv" id="kpi-v-receita">—</div><div class="kl">Receita total</div><div class="ks" id="kpi-s-receita">faturamento do mês</div></div>
-      <div class="kc"><div class="kv" id="kpi-v-midias">—</div><div class="kl">Mídias entregues</div><div class="ks" id="kpi-s-midias">semana atual</div></div>
-      <div class="kc"><div class="kv" id="kpi-v-cham">—</div><div class="kl">Chamados abertos</div><div class="ks" id="kpi-s-cham">em tempo real</div></div>
+      <div class="kc"><div class="kv cnu">8.4%</div><div class="kl">Engaj. médio</div><div class="ks cup">↑0.3%</div></div>
+      <div class="kc"><div class="kv cup">R$42k</div><div class="kl">Receita total</div><div class="ks cup">↑9%</div></div>
+      <div class="kc"><div class="kv cup">+2.1k</div><div class="kl">Seguidores</div><div class="ks cup">↑ período</div></div>
+      <div class="kc"><div class="kv cam">11%</div><div class="kl">Churn médio</div><div class="ks">meta: abaixo de 15%</div></div>
     </div>
-    <div class="card"><div class="ch"><span class="ct" id="kpi-card-t">Vendas por plataforma · mês atual</span></div><div class="cb" id="kpi-barras-plat"><div style="font-size:13px;color:var(--tx3);text-align:center;padding:20px 0">Nenhum faturamento lançado ainda. Lance via Gestão do CRM.</div></div></div>
+    <div class="card"><div class="ch"><span class="ct" id="kpi-card-t">Vendas por plataforma</span></div><div class="cb">
+      <div class="br"><span class="bl">Privacy</span><div class="bw"><div class="bf" style="width:55%;background:var(--ac)"><span class="bv">R$23k</span></div></div></div>
+      <div class="br"><span class="bl">OnlyFans</span><div class="bw"><div class="bf" style="width:30%;background:var(--ac)"><span class="bv">R$12.6k</span></div></div></div>
+      <div class="br"><span class="bl">Telegram VIP</span><div class="bw"><div class="bf" style="width:15%;background:var(--ok)"><span class="bv">R$6.3k</span></div></div></div>
+    </div></div>
   </div>
 </div>
 
@@ -838,327 +870,317 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
     <div class="ma"><button class="btn" onclick="cM('m-add-obrig')">Cancelar</button><button class="btn btn-p" onclick="adicionarObrigacao()">Adicionar</button></div>
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ============================================================
-// RAISE HOT CRM — MOTOR COMPLETO v4.0
-// Auditado: TODA ação persiste no Supabase
-// Padrão: SALVAR → RECARREGAR → RENDERIZAR
+// RAISE HOT CRM — MOTOR COMPLETO v4.1
+// REGRA: Toda ação → Salvar Supabase → Recarregar → Renderizar tudo
 // ============================================================
 
-const SB_URL  = 'https://jgqetqltkmokkbbnoxts.supabase.co';
-const SB_KEY  = 'sb_publishable_FZbMpNFtR90ysZcLkoj-sQ_9_CSZv3Q';
-const sb      = supabase.createClient(SB_URL, SB_KEY);
+// === SUPABASE ===
+const SUPABASE_URL='https://jgqetqltkmokkbbnoxts.supabase.co';
+const SUPABASE_ANON_KEY='sb_publishable_FZbMpNFtR90ysZcLkoj-sQ_9_CSZv3Q';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-// ── ESTADO GLOBAL (fonte única de verdade = Supabase) ──
-let DB = {
-  criadores:    [],   // tabela: criadores
-  operadores:   [],   // tabela: operadores
-  obrigacoes:   [],   // tabela: obrigacoes
-  chamados:     [],   // tabela: chamados
-  rotina:       {},   // tabela: rotina_status  (indexed by chave)
-  midias:       {},   // tabela: midias_status  (indexed by chave)
-  faturamento:  [],   // tabela: faturamento
-  fin_interno:  [],   // tabela: financeiro_interno
-  advertencias: [],   // tabela: advertencias
-  plataformas:  [],   // tabela: plataformas_status
-  leads:        [],   // tabela: leads
-};
+// === ESTADO GLOBAL — única fonte de verdade ===
+let CHAMADOS=[];
+let ROTINA_STATUS={};
+let MIDIAS_STATUS={};
+let FAT_DB=[];        // faturamento do banco
+let FIN_DB=[];        // financeiro interno
+let ADV_DB=[];        // advertências
+let PLATAFORMAS_STATUS={};
+let KPI_CACHE={};     // calculado automaticamente
+let _saving=false;    // trava durante saves de checklist
+let _selectSignature='';
 
-let operadorAtual = localStorage.getItem('raise_op')  || 'Matheus A.';
-let criadorAtual  = localStorage.getItem('raise_cri') || 'Bruna Santiny';
+let operadorAtual=localStorage.getItem('raise_op')||'Matheus A.';
+let criadorAtual=localStorage.getItem('raise_cri')||'Bruna Santiny';
 
-// ── DADOS SEMENTE (usados apenas se banco vazio) ──
-const SEED_CRIADORES = [
-  {nome:'Bruna Santiny',  operador:'Matheus A.', cta:3, inicio:'2025-01-15', duracao_meses:12},
-  {nome:'Negão Rubi',     operador:'Ana C.',      cta:2, inicio:'2025-02-01', duracao_meses:12},
-  {nome:'Barbara Fartura',operador:'Carla M.',    cta:4, inicio:'2025-01-10', duracao_meses:12},
-  {nome:'Rick Necker',    operador:'Lucas F.',    cta:3, inicio:'2025-03-01', duracao_meses:12},
-  {nome:'Gabriela Avillar',operador:'Lucas F.',   cta:2, inicio:'2025-03-15', duracao_meses:12},
-  {nome:'Meck',           operador:'Lucas F.',    cta:2, inicio:'2025-04-01', duracao_meses:12},
-  {nome:'Pérola',         operador:'Matheus A.', cta:2, inicio:'2025-02-10', duracao_meses:12},
-  {nome:'Alice',          operador:'Ana C.',      cta:1, inicio:'2025-03-01', duracao_meses:12},
-  {nome:'Luh',            operador:'Ana C.',      cta:2, inicio:'2025-02-20', duracao_meses:12},
+// === DADOS ESTRUTURAIS ===
+const CRIADORES_PADRAO=[
+  {nome:'Bruna Santiny',  operador:'Matheus A.', cta:3, inicio:'2025-01-15', duracao:12},
+  {nome:'Negão Rubi',     operador:'Ana C.',      cta:2, inicio:'2025-02-01', duracao:12},
+  {nome:'Barbara Fartura',operador:'Carla M.',    cta:4, inicio:'2025-01-10', duracao:12},
+  {nome:'Rick Necker',    operador:'Lucas F.',    cta:3, inicio:'2025-03-01', duracao:12},
+  {nome:'Gabriela Avillar',operador:'Lucas F.',   cta:2, inicio:'2025-03-15', duracao:12},
+  {nome:'Meck',           operador:'Lucas F.',    cta:2, inicio:'2025-04-01', duracao:12},
+  {nome:'Pérola',         operador:'Matheus A.', cta:2, inicio:'2025-02-10', duracao:12},
+  {nome:'Alice',          operador:'Ana C.',      cta:1, inicio:'2025-03-01', duracao:12},
+  {nome:'Luh',            operador:'Ana C.',      cta:2, inicio:'2025-02-20', duracao:12},
 ];
-const SEED_OPERADORES = [
-  {nome:'Matheus A.', funcao:'Editor'},
-  {nome:'Ana C.',     funcao:'Community Manager'},
-  {nome:'Lucas F.',   funcao:'Gestor'},
-  {nome:'Carla M.',   funcao:'Editora'},
-];
-const SEED_OBRIGACOES = [
-  {nome:'Editar + post Instagram (2x)',             responsavel:'raise',   dia:'todos'},
-  {nome:'Edição conteúdo +18 (Privacy e OnlyFans)', responsavel:'raise',   dia:'todos'},
-  {nome:'Post Privacy + OnlyFans',                  responsavel:'raise',   dia:'todos'},
-  {nome:'Post Telegram VIP',                        responsavel:'raise',   dia:'todos'},
-  {nome:'Post grupo free + canal WhatsApp',         responsavel:'raise',   dia:'todos'},
-  {nome:'Post X (Twitter)',                         responsavel:'raise',   dia:'todos'},
-  {nome:'Monitoramento engajamento + vendas',       responsavel:'raise',   dia:'todos'},
-  {nome:'Stories Instagram / TikTok / X',           responsavel:'ambos',   dia:'todos'},
-  {nome:'Anunciar a live pela manhã',               responsavel:'criador', dia:'2'},
-  {nome:'Executar a live junto com a Raise',        responsavel:'ambos',   dia:'2'},
-  {nome:'Responder caixinha de perguntas',          responsavel:'criador', dia:'3'},
-  {nome:'Storie "Sua Vez"',                         responsavel:'criador', dia:'3'},
-  {nome:'Enviar mídias da semana via Telegram',     responsavel:'criador', dia:'1'},
-  {nome:'Enviar mídias da próxima semana',          responsavel:'criador', dia:'0'},
+const OPERADORES_PADRAO=['Matheus A.','Ana C.','Lucas F.','Carla M.'];
+const OBRIGACOES_PADRAO=[
+  {nome:'Editar + post Instagram (2x)',             resp:'raise',   dia:'todos'},
+  {nome:'Edição conteúdo +18 (Privacy e OnlyFans)', resp:'raise',   dia:'todos'},
+  {nome:'Post Privacy + OnlyFans',                  resp:'raise',   dia:'todos'},
+  {nome:'Post Telegram VIP',                        resp:'raise',   dia:'todos'},
+  {nome:'Post grupo free + canal WhatsApp',         resp:'raise',   dia:'todos'},
+  {nome:'Post X (Twitter)',                         resp:'raise',   dia:'todos'},
+  {nome:'Monitoramento engajamento + vendas',       resp:'raise',   dia:'todos'},
+  {nome:'Stories Instagram / TikTok / X',           resp:'ambos',   dia:'todos'},
+  {nome:'Anunciar a live pela manhã',               resp:'criador', dia:'2'},
+  {nome:'Executar a live junto com a Raise',        resp:'ambos',   dia:'2'},
+  {nome:'Responder caixinha de perguntas',          resp:'criador', dia:'3'},
+  {nome:'Storie "Sua Vez"',                         resp:'criador', dia:'3'},
+  {nome:'Enviar mídias da semana via Telegram',     resp:'criador', dia:'1'},
+  {nome:'Enviar mídias da próxima semana',          resp:'criador', dia:'0'},
 ];
 
-// ── UTILS ──
-const getNow   = () => new Date();
-const getDN    = d  => ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'][d.getDay()];
-const getMN    = d  => ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][d.getMonth()];
-const getWOM   = d  => { const f=new Date(d.getFullYear(),d.getMonth(),1); return Math.ceil((d.getDate()+f.getDay())/7); };
-const esc      = s  => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const semKey   = (d=getNow()) => `${d.getFullYear()}-${d.getMonth()+1}-W${getWOM(d)}`;
-const diaKey   = (d=getNow()) => `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-const mesKey   = (d=getNow()) => `${d.getFullYear()}-${d.getMonth()+1}`;
-const diasRest = (ini,dur)    => { const f=new Date(ini); f.setMonth(f.getMonth()+dur); return Math.max(0,Math.ceil((f-getNow())/86400000)); };
-const fmt$     = v            => v>=1000?`R$${(v/1000).toFixed(1).replace('.0','')}k`:`R$${(+v).toFixed(0)}`;
-const set      = (id,v,cls)   => { const e=document.getElementById(id); if(!e)return; e.textContent=v; if(cls!==undefined)e.className=cls; };
+// === UTILS ===
+const getNow=()=>new Date();
+const getDN=d=>['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'][d.getDay()];
+const getMN=d=>['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'][d.getMonth()];
+const getWOM=d=>{const f=new Date(d.getFullYear(),d.getMonth(),1);return Math.ceil((d.getDate()+f.getDay())/7);};
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const getSemKey=(d=getNow())=>`${d.getFullYear()}-${d.getMonth()+1}-W${getWOM(d)}`;
+const getDiaKey=(d=getNow())=>`${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+const getMesKey=(d=getNow())=>`${d.getFullYear()}-${d.getMonth()+1}`;
+const diasRestantes=(ini,dur)=>{const f=new Date(ini);f.setMonth(f.getMonth()+dur);return Math.max(0,Math.ceil((f-getNow())/86400000));};
+const fmt$=v=>v>=1000?`R$${(v/1000).toFixed(1).replace('.0','')}k`:`R$${(+v||0).toFixed(0)}`;
+const $=(id)=>document.getElementById(id);
+const set=(id,v,cls)=>{const e=$(id);if(!e)return;e.textContent=v;if(cls!==undefined)e.className=cls;};
 
-function toast(msg, tipo='ok'){
+function toast(msg,tipo='ok'){
+  const cores={ok:'background:#E6FAF4;color:#065F46;border:1.5px solid #6EE7B7',err:'background:#FEE2E7;color:#9E0022;border:1.5px solid #FBBDD2',info:'background:#EDE9FF;color:#4C1D95;border:1.5px solid #C4B5FD'};
   const t=document.createElement('div');
-  const cores={ok:'background:#E6FAF4;color:#065F46;border:1.5px solid #6EE7B7',err:'background:#FEE2E7;color:#9E0022;border:1.5px solid #FBBDD2',info:'background:#EDE9FF;color:#4C1D95;border:1.5px solid #C4B5FD',warn:'background:#FEF3C7;color:#854D0E;border:1.5px solid #FDE68A'};
-  t.style.cssText=`position:fixed;bottom:22px;right:22px;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.12);transition:opacity .3s;font-family:var(--fb);max-width:300px;${cores[tipo]||cores.ok}`;
-  t.textContent=msg;
-  document.body.appendChild(t);
+  t.style.cssText=`position:fixed;bottom:22px;right:22px;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.12);transition:opacity .3s;font-family:var(--fb);max-width:320px;${cores[tipo]||cores.ok}`;
+  t.textContent=msg;document.body.appendChild(t);
   setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300)},3200);
 }
 
-// ── SUPABASE OPS ──
-async function sbGet(table, filters={}){
-  let q = sb.from(table).select('*');
-  Object.entries(filters).forEach(([k,v]) => { q=q.eq(k,v); });
-  const {data,error} = await q.order('created_at',{ascending:false});
-  if(error) console.error('[GET]',table,error.message);
+// === SUPABASE OPS ===
+async function dbGet(t,f={}){
+  let q=sb.from(t).select('*');
+  Object.entries(f).forEach(([k,v])=>{q=q.eq(k,v);});
+  const {data,error}=await q.order('created_at',{ascending:false});
+  if(error)console.error('[GET]',t,error.message);
   return data||[];
 }
-async function sbUpsert(table, data){
-  const {data:d,error} = await sb.from(table).upsert(data,{onConflict:'id'}).select();
-  if(error) console.error('[UPSERT]',table,error.message);
-  return d;
+async function dbUpsert(t,d){
+  const {data,error}=await sb.from(t).upsert(d,{onConflict:'id'}).select();
+  if(error)console.error('[UPSERT]',t,error.message);
+  return data;
 }
-async function sbInsert(table, data){
-  const {data:d,error} = await sb.from(table).insert(data).select();
-  if(error){ console.error('[INSERT]',table,error.message); return null; }
-  return d;
+async function dbInsert(t,d){
+  const {data,error}=await sb.from(t).insert(d).select();
+  if(error){console.error('[INSERT]',t,error.message);return null;}
+  return data;
 }
-async function sbUpdate(table, id, data){
-  const {error} = await sb.from(table).update(data).eq('id',id);
-  if(error) console.error('[UPDATE]',table,error.message);
+async function dbUpdate(t,id,d){
+  const {error}=await sb.from(t).update(d).eq('id',id);
+  if(error)console.error('[UPDATE]',t,error.message);
 }
-async function sbDelete(table, id){
-  const {error} = await sb.from(table).delete().eq('id',id);
-  if(error) console.error('[DELETE]',table,error.message);
-}
-
-// ── CARREGAR TUDO DO BANCO ──
-async function carregarTudo(){
-  try {
-    const [cri,ope,obr,cha,rot,mid,fat,fin,adv,plat,leads] = await Promise.all([
-      sbGet('criadores'),
-      sbGet('operadores'),
-      sbGet('obrigacoes'),
-      sbGet('chamados'),
-      sbGet('rotina_status'),
-      sbGet('midias_status'),
-      sbGet('faturamento'),
-      sbGet('financeiro_interno').catch(()=>[]),
-      sbGet('advertencias').catch(()=>[]),
-      sbGet('plataformas_status').catch(()=>[]),
-      sbGet('leads').catch(()=>[]),
-    ]);
-
-    // Se banco vazio, semeiar dados iniciais
-    if(!cri.length)  { await seedCriadores();  DB.criadores  = SEED_CRIADORES; }
-    else               DB.criadores    = cri;
-    if(!ope.length)  { await seedOperadores(); DB.operadores  = SEED_OPERADORES; }
-    else               DB.operadores   = ope;
-    if(!obr.length)  { await seedObrigacoes(); DB.obrigacoes  = SEED_OBRIGACOES; }
-    else               DB.obrigacoes   = obr;
-
-    DB.chamados     = cha;
-    DB.rotina       = {}; rot.forEach(r  => DB.rotina[r.chave]  = r);
-    DB.midias       = {}; mid.forEach(m  => DB.midias[m.chave]  = m);
-    DB.faturamento  = fat;
-    DB.fin_interno  = fin;
-    DB.advertencias = adv;
-    DB.plataformas  = plat;
-    DB.leads        = leads;
-  } catch(e) {
-    console.error('carregarTudo', e);
-    // fallback: usar seed local se banco inacessível
-    if(!DB.criadores.length)  DB.criadores  = SEED_CRIADORES;
-    if(!DB.operadores.length) DB.operadores = SEED_OPERADORES;
-    if(!DB.obrigacoes.length) DB.obrigacoes = SEED_OBRIGACOES;
-  }
-  recalcular();
-  renderTudo();
+async function dbDelete(t,id){
+  const {error}=await sb.from(t).delete().eq('id',id);
+  if(error)console.error('[DELETE]',t,error.message);
 }
 
-// ── SEED INICIAL ──
-async function seedCriadores(){
-  for(const c of SEED_CRIADORES){
-    await sbInsert('criadores',{...c,created_at:new Date().toISOString()}).catch(()=>{});
-  }
+function resetArray(arr,items){
+  arr.splice(0,arr.length,...items);
 }
-async function seedOperadores(){
-  for(const o of SEED_OPERADORES){
-    await sbInsert('operadores',{...o,created_at:new Date().toISOString()}).catch(()=>{});
-  }
-}
-async function seedObrigacoes(){
-  for(const o of SEED_OBRIGACOES){
-    await sbInsert('obrigacoes',{...o,created_at:new Date().toISOString()}).catch(()=>{});
-  }
-}
-
-// ── MOTOR DE CÁLCULO (KPIs automáticos) ──
-let KPI = {};
-function recalcular(){
-  const now  = getNow();
-  const mk   = mesKey(now);
-  const sk   = semKey(now);
-  const day  = now.getDay();
-
-  // Faturamento por criador no mês
-  const fatMes = {};
-  const fatSem = {};
-  DB.faturamento.forEach(f => {
-    if(f.mes_key === mk)  fatMes[f.criador] = (fatMes[f.criador]||0) + (f.total||0);
-    if(f.semana_key === sk) fatSem[f.criador] = (fatSem[f.criador]||0) + (f.total||0);
+function uniqByNome(items){
+  const map=new Map();
+  items.filter(Boolean).forEach(item=>{
+    const nome=String(item.nome||item).trim();
+    if(nome&&!map.has(nome))map.set(nome,item);
   });
-  const receitaTotal = Object.values(fatMes).reduce((a,b)=>a+b,0);
+  return [...map.values()];
+}
+function normalizarCriador(c){
+  return {
+    id:c.id||c.nome,
+    nome:c.nome,
+    operador:c.operador||'Admin',
+    cta:Number(c.cta||1),
+    inicio:c.inicio||c.created_at?.slice(0,10)||getNow().toISOString().slice(0,10),
+    duracao:Number(c.duracao||c.duracao_meses||12)
+  };
+}
+function normalizarObrigacao(o){
+  return {
+    id:o.id||o.nome,
+    nome:o.nome,
+    resp:o.resp||o.responsavel||'raise',
+    dia:String(o.dia||'todos')
+  };
+}
+function rebuildOptions(sel,items,{includeAll=false,allLabel='Todos',selected}={}){
+  if(!sel)return;
+  const current=selected??sel.value;
+  sel.innerHTML='';
+  if(includeAll){
+    const all=document.createElement('option');
+    all.value='todos';all.textContent=allLabel;sel.appendChild(all);
+  }
+  items.forEach(item=>{
+    const value=typeof item==='string'?item:item.value;
+    const label=typeof item==='string'?item:(item.label||item.value);
+    const o=document.createElement('option');
+    o.value=value;o.textContent=label;sel.appendChild(o);
+  });
+  if([...sel.options].some(o=>o.value===current))sel.value=current;
+}
+
+// === CARREGAR TUDO — busca TODAS as tabelas ===
+async function carregarTudo(){
+  try{
+    const [ch,rot,mid,fat,fin,adv,cri,ops,obs,plats]=await Promise.all([
+      dbGet('chamados'),
+      dbGet('rotina_status'),
+      dbGet('midias_status'),
+      dbGet('faturamento').catch(()=>[]),
+      dbGet('financeiro_interno').catch(()=>[]),
+      dbGet('advertencias').catch(()=>[]),
+      dbGet('criadores').catch(()=>[]),
+      dbGet('operadores').catch(()=>[]),
+      dbGet('obrigacoes').catch(()=>[]),
+      dbGet('plataformas_status').catch(()=>[]),
+    ]);
+    CHAMADOS=ch;
+    ROTINA_STATUS={};rot.forEach(r=>ROTINA_STATUS[r.chave]=r);
+    MIDIAS_STATUS={};mid.forEach(m=>MIDIAS_STATUS[m.chave]=m);
+    FAT_DB=fat;
+    FIN_DB=fin;
+    ADV_DB=adv;
+    if(cri.length){
+      resetArray(CRIADORES_PADRAO,uniqByNome([...cri.map(normalizarCriador),...CRIADORES_PADRAO]));
+    }
+    if(ops.length){
+      resetArray(OPERADORES_PADRAO,uniqByNome([...ops.map(o=>o.nome),...OPERADORES_PADRAO]));
+    }
+    if(obs.length){
+      resetArray(OBRIGACOES_PADRAO,uniqByNome([...obs.map(normalizarObrigacao),...OBRIGACOES_PADRAO]));
+    }
+    PLATAFORMAS_STATUS={};plats.forEach(p=>{PLATAFORMAS_STATUS[`${p.criador}__${p.plataforma}`]=p;});
+  }catch(e){console.error('carregarTudo',e);}
+  // Só re-renderiza se não há save ativo (evita desmarcar checklist)
+  if(!_saving){recalcular();renderAll();}
+}
+
+// === MOTOR DE CÁLCULO — KPIs automáticos ===
+function recalcular(){
+  const now=getNow();
+  const mk=getMesKey(now);
+  const sk=getSemKey(now);
+  const day=now.getDay();
+
+  // Faturamento por criador
+  const fatMes={},fatSem={};
+  FAT_DB.forEach(f=>{
+    if(f.mes_key===mk) fatMes[f.criador]=(fatMes[f.criador]||0)+(f.total||0);
+    if(f.semana_key===sk) fatSem[f.criador]=(fatSem[f.criador]||0)+(f.total||0);
+  });
+  const receitaTotal=Object.values(fatMes).reduce((a,b)=>a+b,0);
 
   // Execução de rotina por criador
-  const execPorCri = {};
-  DB.criadores.forEach(cr => {
-    const obs   = obsDoDia(day,'todos');
-    const feitas = obs.filter(o => isFeitoRot(cr.nome,o.nome)).length;
-    execPorCri[cr.nome] = obs.length ? Math.round(feitas/obs.length*100) : 0;
+  const execPorCri={};
+  CRIADORES_PADRAO.forEach(cr=>{
+    const obs=obsDoDia(day,'todos');
+    const f=obs.filter(o=>isFeitoRot(cr.nome,o.nome)).length;
+    execPorCri[cr.nome]=obs.length?Math.round(f/obs.length*100):0;
   });
-  const execGeral = DB.criadores.length
-    ? Math.round(Object.values(execPorCri).reduce((a,b)=>a+b,0)/DB.criadores.length)
-    : 0;
+  const execGeral=CRIADORES_PADRAO.length
+    ?Math.round(Object.values(execPorCri).reduce((a,b)=>a+b,0)/CRIADORES_PADRAO.length):0;
 
-  // Saúde por criador (calculada)
-  const saudePorCri = {};
-  DB.criadores.forEach(cr => {
-    const exec    = execPorCri[cr.nome]||0;
-    const temFat  = fatMes[cr.nome]>0 ? 15 : 0;
-    const midOk   = isFeitoMid(cr.nome,'rotineiro')&&isFeitoMid(cr.nome,'mais18') ? 15 : 0;
-    const chamAb  = DB.chamados.filter(c=>c.criador_nome===cr.nome&&c.status==='aberto').length;
-    saudePorCri[cr.nome] = Math.min(100, Math.max(0, Math.round(exec*0.6 + temFat + midOk - chamAb*5)));
+  // Saúde calculada
+  const saudePorCri={};
+  CRIADORES_PADRAO.forEach(cr=>{
+    const exec=execPorCri[cr.nome]||0;
+    const temFat=(fatMes[cr.nome]||0)>0?15:0;
+    const midOk=isFeitoMid(cr.nome,'rotineiro')&&isFeitoMid(cr.nome,'mais18')?15:0;
+    const cham=CHAMADOS.filter(c=>c.criador_nome===cr.nome&&c.status==='aberto').length;
+    saudePorCri[cr.nome]=Math.min(100,Math.max(0,Math.round(exec*0.6+temFat+midOk-cham*5)));
   });
 
   // Alertas automáticos
-  const alertas = [];
-  DB.criadores.forEach(cr => {
-    if((saudePorCri[cr.nome]||0)<50)
-      alertas.push({tipo:'crise',  msg:`${cr.nome} — saúde crítica (${saudePorCri[cr.nome]}%)`});
-    if(!isFeitoMid(cr.nome,'rotineiro'))
-      alertas.push({tipo:'midia',  msg:`${cr.nome} — mídias rotineiras não enviadas esta semana`});
+  const alertas=[];
+  CRIADORES_PADRAO.forEach(cr=>{
+    if((saudePorCri[cr.nome]||0)<50) alertas.push({tipo:'crise',msg:`${cr.nome} — saúde crítica (${saudePorCri[cr.nome]}%)`});
+    if(!isFeitoMid(cr.nome,'rotineiro')) alertas.push({tipo:'midia',msg:`${cr.nome} — mídias rotineiras não enviadas`});
   });
-  const advMes = DB.advertencias.filter(a=>a.mes_key===mk);
-  const advPorOpe = {};
-  advMes.forEach(a=>{ advPorOpe[a.operador]=(advPorOpe[a.operador]||0)+1; });
-  Object.entries(advPorOpe).forEach(([op,n])=>{
-    if(n>=3) alertas.push({tipo:'equipe', msg:`${op} — ${n} advertências este mês`});
-  });
+  const advPorOpe={};
+  ADV_DB.filter(a=>a.mes_key===mk).forEach(a=>{advPorOpe[a.operador]=(advPorOpe[a.operador]||0)+1;});
+  Object.entries(advPorOpe).forEach(([op,n])=>{if(n>=3)alertas.push({tipo:'equipe',msg:`${op} — ${n} advertências este mês`});});
 
-  KPI = { fatMes, fatSem, receitaTotal, execGeral, execPorCri, saudePorCri,
-          alertas, chamAbertos:DB.chamados.filter(c=>c.status==='aberto').length };
+  // Por plataforma
+  let sP=0,sO=0,sT=0,sA=0;
+  FAT_DB.filter(f=>f.mes_key===mk).forEach(f=>{sP+=(f.privacy||0);sO+=(f.onlyfans||0);sT+=(f.telegram_vip||0);sA+=(f.venda_avulsa||0);});
+
+  KPI_CACHE={fatMes,fatSem,receitaTotal,execGeral,execPorCri,saudePorCri,alertas,
+    chamAbertos:CHAMADOS.filter(c=>c.status==='aberto').length,
+    plat:{privacy:sP,onlyfans:sO,telegram:sT,avulsa:sA}};
 }
 
-// ── HELPERS ──
-function obsDoDia(day, resp){
-  return DB.obrigacoes.filter(o =>
-    (o.dia==='todos'||o.dia===String(day)) &&
-    (resp==='todos'||o.responsavel===resp||o.responsavel==='ambos')
-  );
-}
-function chaveRot(cri,obr,dk){ return `${cri}__${obr}__${dk}`; }
-function isFeitoRot(cri,obr){ return DB.rotina[chaveRot(cri,obr,diaKey())]?.feito||false; }
-function chaveMid(cri,tipo,sk){ return `mid__${cri}__${tipo}__${sk}`; }
-function isFeitoMid(cri,tipo){ return DB.midias[chaveMid(cri,tipo,semKey())]?.feito||false; }
+// === HELPERS ===
+const obsDoDia=(day,resp)=>OBRIGACOES_PADRAO.filter(o=>(o.dia==='todos'||o.dia===String(day))&&(resp==='todos'||o.resp===resp||o.resp==='ambos'));
+const chaveRot=(cri,obr,dk)=>`${cri}__${obr}__${dk}`;
+const isFeitoRot=(cri,obr)=>ROTINA_STATUS[chaveRot(cri,obr,getDiaKey())]?.feito||false;
+const chaveMid=(cri,tipo,sk)=>`mid__${cri}__${tipo}__${sk}`;
+const isFeitoMid=(cri,tipo)=>MIDIAS_STATUS[chaveMid(cri,tipo,getSemKey())]?.feito||false;
 
-// ── NAVEGAÇÃO ──
+// === NAVEGAÇÃO ===
 function gP(id,btn){
   document.querySelectorAll('.portal').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.psb').forEach(b=>b.classList.remove('on'));
-  document.getElementById('p-'+id)?.classList.add('on');
-  btn.classList.add('on');
-  if(id==='adm') renderAdm();
-  if(id==='ope') renderOpe();
-  if(id==='cri') renderCri();
+  $(('p-'+id))?.classList.add('on');btn.classList.add('on');
+  if(id==='adm')renderAdm();if(id==='ope')renderOpe();if(id==='cri')renderCri();
 }
 function gS(portal,id,btn){
-  document.getElementById('p-'+portal)?.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
-  document.getElementById(id)?.classList.add('on');
-  document.getElementById('p-'+portal)?.querySelectorAll('.si').forEach(b=>b.classList.remove('on'));
+  $('p-'+portal)?.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  $(id)?.classList.add('on');
+  $('p-'+portal)?.querySelectorAll('.si').forEach(b=>b.classList.remove('on'));
   btn?.classList.add('on');
 }
-function oM(id){ document.getElementById(id).style.display='flex'; }
-function cM(id){ document.getElementById(id).style.display='none'; }
+function oM(id){$(id).style.display='flex';}
+function cM(id){$(id).style.display='none';}
 
-// ── RENDER TUDO ──
-function renderTudo(){
-  renderDashboard(); renderProjetos(); renderRotAdm(); renderMidiasAdm();
-  renderChamadosAdm(); renderFinanceiro(); renderFinInterno(); renderKPIs();
-  renderRelatorios(); renderAdvertencias(); renderEquipe(); renderGestao();
-  renderRotOpe(); renderMidiasOpe(); renderChamadosOpe(); renderDosOpe(); renderResultOpe();
-  renderCriOV(); renderCriTar(); renderCriMid(); renderCriPen();
-  atualizarBadges(); atualizarSelects();
+// === RENDER ALL ===
+function renderAll(){
+  renderDashboard();renderProjetos();renderFinanceiro();renderKPIs();renderRelatorios();
+  renderAdvertencias();renderRotAdm();renderMidiasAdm();renderChamadosAdm();
+  renderRotOpe();renderMidiasOpe();renderChamadosOpe();renderDosOpe();renderResultOpe();
+  renderCriOV();renderCriTar();renderCriMid();renderCriPen();
+  renderGestao();renderFinInterno();atualizarBadges();initSelects();
 }
-function renderAdm(){ renderDashboard(); renderProjetos(); renderRotAdm(); renderMidiasAdm(); renderChamadosAdm(); renderFinanceiro(); renderFinInterno(); renderKPIs(); renderRelatorios(); renderAdvertencias(); renderEquipe(); renderGestao(); }
-function renderOpe(){ renderRotOpe(); renderMidiasOpe(); renderChamadosOpe(); renderDosOpe(); renderResultOpe(); }
-function renderCri(){ renderCriOV(); renderCriTar(); renderCriMid(); renderCriPen(); }
+function renderAdm(){renderDashboard();renderProjetos();renderFinanceiro();renderKPIs();renderRelatorios();renderAdvertencias();renderRotAdm();renderMidiasAdm();renderChamadosAdm();renderGestao();renderFinInterno();}
+function renderOpe(){renderRotOpe();renderMidiasOpe();renderChamadosOpe();renderDosOpe();renderResultOpe();}
+function renderCri(){renderCriOV();renderCriTar();renderCriMid();renderCriPen();}
 
-// ══════════════════════════════════════════
-// ADMIN — DASHBOARD
-// ══════════════════════════════════════════
+// ============================================================
+// DASHBOARD — 100% calculado
+// ============================================================
 function renderDashboard(){
-  const el = document.getElementById('lista-saude-projetos');
-  if(!el) return;
-  const now = getNow();
-
-  // Métricas topo
-  set('d-chamados', KPI.chamAbertos||0);
-  set('d-exec',     (KPI.execGeral||0)+'%');
-  set('d-total-proj', DB.criadores.length);
-  set('d-alertas',  (KPI.alertas||[]).length);
-  set('d-receita',  KPI.receitaTotal>0?fmt$(KPI.receitaTotal):'—');
-
-  const dtBadge = document.getElementById('a-dt2');
-  if(dtBadge) dtBadge.textContent = getDN(now)+', '+now.getDate()+' de '+getMN(now);
-  const dtSub = document.getElementById('a-dt');
-  if(dtSub) dtSub.textContent = 'Saúde consolidada de todos os projetos · '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-
-  // Notificações de alerta
-  const nfZone = document.getElementById('nf-rick');
+  const el=$('lista-saude-projetos');if(!el)return;
+  const K=KPI_CACHE;const now=getNow();
+  set('d-chamados',K.chamAbertos||0);
+  set('d-exec',(K.execGeral||0)+'%');
+  set('d-total-proj',CRIADORES_PADRAO.length);
+  set('d-alertas',(K.alertas||[]).length);
+  set('d-receita',K.receitaTotal>0?fmt$(K.receitaTotal):'—');
+  const dtEl=$('a-dt2');if(dtEl)dtEl.textContent=getDN(now)+', '+now.getDate()+' de '+getMN(now);
+  const subEl=$('a-dt');if(subEl)subEl.textContent='Saúde consolidada · '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  // Alertas automáticos
+  const nfZone=$('nf-rick');
   if(nfZone){
     nfZone.parentNode.querySelectorAll('.nf-auto').forEach(n=>n.remove());
-    (KPI.alertas||[]).slice(0,3).forEach(a=>{
-      const d = document.createElement('div');
-      d.className = `nf ${a.tipo==='crise'?'nf-r':'nf-a'} nf-auto`;
-      d.innerHTML = `<span>${a.tipo==='crise'?'🚨':'⚠️'}</span><span>${esc(a.msg)}</span><span class="nf-x" onclick="this.parentElement.remove()">✕</span>`;
+    (K.alertas||[]).slice(0,3).forEach(a=>{
+      const d=document.createElement('div');
+      d.className=`nf ${a.tipo==='crise'?'nf-r':'nf-a'} nf-auto`;
+      d.innerHTML=`<span>${a.tipo==='crise'?'🚨':'⚠️'}</span><span>${esc(a.msg)}</span><span class="nf-x" onclick="this.parentElement.remove()">✕</span>`;
       nfZone.after(d);
     });
   }
-
-  // Lista de saúde
-  el.innerHTML = DB.criadores.map(cr=>{
-    const s = KPI.saudePorCri?.[cr.nome]??50;
-    const fat = KPI.fatMes?.[cr.nome]||0;
-    const ini = cr.nome.split(' ').map(n=>n[0]).join('').slice(0,2);
-    const cor  = s>=75?'var(--ok)':s>=60?'var(--wn)':'var(--dn)';
-    const bdg  = s>=75?'bok':s>=60?'bwa':'bur';
-    const lbl  = s>=75?'Saudável':s>=60?'Atenção':'Crise';
-    const avC  = s>=75?'avt':s>=60?'avb':'avp';
+  el.innerHTML=CRIADORES_PADRAO.map(cr=>{
+    const s=K.saudePorCri?.[cr.nome]??50;
+    const fat=K.fatMes?.[cr.nome]||0;
+    const ini=cr.nome.split(' ').map(n=>n[0]).join('').slice(0,2);
+    const cor=s>=75?'var(--ok)':s>=60?'var(--wn)':'var(--dn)';
+    const bdg=s>=75?'bok':s>=60?'bwa':'bur';
+    const lbl=s>=75?'Saudável':s>=60?'Atenção':'Crise';
     return `<div class="hrow" style="${s<60?'border-color:#FBBDD2':s<75?'border-color:#FDE68A':''}">
-      <div class="av ${avC}">${ini}</div><span class="hrow-n">${esc(cr.nome)}</span>
-      <div style="font-size:12px;color:var(--tx3);margin-right:8px">Op: ${esc(cr.operador)} · ${fat>0?fmt$(fat):'Sem fat.'}</div>
+      <div class="av ${s>=75?'avt':s>=60?'avb':'avp'}">${ini}</div>
+      <span class="hrow-n">${esc(cr.nome)}</span>
+      <div style="font-size:12px;color:var(--tx3);margin-right:8px">Op: ${esc(cr.operador)} · ${fat>0?fmt$(fat):'—'}</div>
       <div class="hrow-b"><div class="hrow-f" style="width:${s}%;background:${cor}"></div></div>
       <span class="hrow-p" style="color:${cor}">${s}%</span>
       <span class="bdg ${bdg}">${lbl}</span>
@@ -1166,947 +1188,726 @@ function renderDashboard(){
   }).join('');
 }
 
-// ══════════════════════════════════════════
-// ADMIN — PROJETOS
-// ══════════════════════════════════════════
+// ============================================================
+// PROJETOS — faturamento real
+// ============================================================
 function renderProjetos(){
-  const el = document.getElementById('lista-projetos');
-  if(!el) return;
-  el.innerHTML = DB.criadores.map(cr=>{
-    const s   = KPI.saudePorCri?.[cr.nome]??50;
-    const fat = KPI.fatMes?.[cr.nome]||0;
-    const dr  = diasRest(cr.inicio, cr.duracao_meses||cr.duracao||12);
-    const ini = cr.nome.split(' ').map(n=>n[0]).join('').slice(0,2);
-    const cor  = s>=75?'var(--ok)':s>=60?'var(--wn)':'var(--dn)';
-    const bdg  = s>=75?'bok':s>=60?'bwa':'bur';
-    const lbl  = s>=75?'Saudável':s>=60?'Atenção':'Crise';
-    const avC  = s>=75?'avt':s>=60?'avb':'avp';
+  const el=$('lista-projetos');if(!el)return;
+  const K=KPI_CACHE;
+  el.innerHTML=CRIADORES_PADRAO.map(cr=>{
+    const s=K.saudePorCri?.[cr.nome]??50;
+    const fat=K.fatMes?.[cr.nome]||0;
+    const dr=diasRestantes(cr.inicio,cr.duracao||12);
+    const ini=cr.nome.split(' ').map(n=>n[0]).join('').slice(0,2);
+    const cor=s>=75?'var(--ok)':s>=60?'var(--wn)':'var(--dn)';
     return `<div class="hrow" style="${s<60?'border-color:#FBBDD2':s<75?'border-color:#FDE68A':''}">
-      <div class="av ${avC}">${ini}</div>
+      <div class="av ${s>=75?'avt':s>=60?'avb':'avp'}">${ini}</div>
       <div style="flex:1">
         <div class="hrow-n">${esc(cr.nome)}</div>
-        <div style="font-size:12px;color:var(--tx3)">Op: ${esc(cr.operador)} · CTA estágio ${cr.cta||1} · ${dr} dias restantes</div>
+        <div style="font-size:12px;color:var(--tx3)">Op: ${esc(cr.operador)} · CTA ${cr.cta||1} · ${dr} dias restantes</div>
       </div>
       <div style="text-align:right;margin-right:10px">
         <div style="font-size:14px;font-weight:700;color:${cor};font-family:var(--fh)">${fat>0?fmt$(fat):'Sem lançamento'}</div>
         <div style="font-size:11px;color:var(--tx3)">faturamento mês</div>
       </div>
-      <span class="bdg ${bdg}">${lbl}</span>
+      <span class="bdg ${s>=75?'bok':s>=60?'bwa':'bur'}">${s>=75?'Saudável':s>=60?'Atenção':'Crise'}</span>
     </div>`;
   }).join('');
 }
 
-// ══════════════════════════════════════════
-// ROTINA
-// ══════════════════════════════════════════
-async function marcarObr(cri, obr, feito, el){
-  const dk    = diaKey();
-  const chave = chaveRot(cri, obr, dk);
-  await sbUpsert('rotina_status',{id:chave,chave,criador:cri,obrigacao:obr,feito,dia:dk,created_at:new Date().toISOString()});
-  DB.rotina[chave] = {chave,feito};
-  // Atualizar visual do elemento clicado
-  const box = el?.querySelector('.ckb');
-  const lbl = el?.querySelector('.ckl');
-  if(box){ box.classList.toggle('done',feito); const m=box.querySelector('.ckm'); if(m)m.style.display=feito?'block':'none'; }
-  if(lbl) lbl.classList.toggle('dl',feito);
-  if(el)  el.classList.toggle('done-row',feito);
-  // Recalcular e atualizar contadores
-  recalcular();
-  atualizarContRotina();
-  renderDashboard();
-  renderCriOV();
-  // Advertência automática após 22h
-  const agora = getNow();
-  if(!feito && agora.getHours()>=22){
-    const op = DB.criadores.find(c=>c.nome===cri)?.operador||'';
-    if(op) await gerarAdv(op, cri, `Obrigação não cumprida: ${obr}`);
+// ============================================================
+// FINANCEIRO — calculado do banco
+// ============================================================
+function renderFinanceiro(){
+  const K=KPI_CACHE;const now=getNow();
+  set('fin-receita-total',K.receitaTotal>0?fmt$(K.receitaTotal):'—');
+  set('fin-exec',(K.execGeral||0)+'%');
+  const projFat=CRIADORES_PADRAO.filter(c=>(K.fatMes?.[c.nome]||0)>0).length;
+  set('fin-proj-fat',`${projFat}/${CRIADORES_PADRAO.length}`);
+  set('fin-chamados',K.chamAbertos||0);
+  set('fin-mes-label',getMN(now)+'/'+now.getFullYear());
+  set('fin-r-proj',`${projFat} de ${CRIADORES_PADRAO.length}`);
+  set('fin-r-media',projFat>0?fmt$(K.receitaTotal/projFat):'—');
+  set('fin-r-exec',(K.execGeral||0)+'%');
+  set('fin-r-cham',K.chamAbertos||0);
+  // Comparação mês anterior
+  const mkAnt=getMesKey(new Date(now.getFullYear(),now.getMonth()-1,1));
+  const recAnt=FAT_DB.filter(f=>f.mes_key===mkAnt).reduce((a,f)=>a+(f.total||0),0);
+  const vr=recAnt>0?Math.round((K.receitaTotal-recAnt)/recAnt*100):null;
+  const compEl=$('fin-receita-comp');
+  if(compEl){compEl.textContent=vr!=null?(vr>=0?`↑${vr}% vs ${getMN(new Date(now.getFullYear(),now.getMonth()-1,1))}`:`↓${Math.abs(vr)}% vs mês ant.`):'';compEl.className=`mc-s ${vr>=0?'cup':'cdn'}`;}
+  // Barras
+  const barEl=$('fin-barras-criadores');
+  if(barEl){
+    const sorted=CRIADORES_PADRAO.map(c=>({nome:c.nome,val:K.fatMes?.[c.nome]||0})).sort((a,b)=>b.val-a.val);
+    const max=sorted[0]?.val||0;
+    barEl.innerHTML=max>0?sorted.map(({nome,val})=>{
+      const pct=Math.round(val/max*100);
+      const cor=pct>=70?'var(--ac)':pct>=40?'var(--wn)':'var(--dn)';
+      return `<div class="br"><span class="bl">${nome.split(' ').slice(0,2).join(' ')}</span><div class="bw"><div class="bf" style="width:${Math.max(pct,2)}%;background:${cor}"><span class="bv">${val>0?fmt$(val):'—'}</span></div></div></div>`;
+    }).join(''):'<div style="font-size:13px;color:var(--tx3);text-align:center;padding:20px 0">Nenhum faturamento lançado ainda.<br>Use "Gestão do CRM" para lançar.</div>';
   }
 }
 
-function atualizarContRotina(){
-  const now=getNow(); const day=now.getDay(); let f=0,p=0;
-  DB.criadores.forEach(cr=>{ obsDoDia(day,'todos').forEach(o=>{ if(isFeitoRot(cr.nome,o.nome))f++;else p++; }); });
-  set('rot-feitas',f); set('rot-pend',p);
-  set('rot-pct',(f+p)?Math.round(f/(f+p)*100)+'%':'0%');
-  const mc=DB.criadores.filter(c=>c.operador===operadorAtual);
-  let of=0,op=0;
-  mc.forEach(cr=>{ obsDoDia(day,'todos').forEach(o=>{ if(isFeitoRot(cr.nome,o.nome))of++;else op++; }); });
-  set('o-feitas',of); set('o-pend',op);
-  set('o-pct',(of+op)?Math.round(of/(of+op)*100)+'%':'0%');
-}
-
-function buildRotina(lista, dia){
-  let html=''; let f=0,p=0;
-  lista.forEach(cr=>{
-    const obs   = obsDoDia(dia,'todos');
-    const feitas = obs.filter(o=>isFeitoRot(cr.nome,o.nome)).length;
-    f+=feitas; p+=(obs.length-feitas);
-    html+=`<div class="sl">${esc(cr.nome)} · ${feitas}/${obs.length} concluídas</div>`;
-    obs.forEach(o=>{
-      const feito  = isFeitoRot(cr.nome,o.nome);
-      const tagCls = o.responsavel==='raise'?'tr':o.responsavel==='criador'?'tc':'ta';
-      const tagLbl = o.responsavel==='raise'?'RAISE':o.responsavel==='criador'?'CRIADOR':'AMBOS';
-      html+=`<div class="ck ${feito?'done-row':''}" onclick="marcarObr('${esc(cr.nome)}','${esc(o.nome)}',${!feito},this)">
-        <div class="ckb ${feito?'done':''}"><div class="ckm" style="display:${feito?'block':'none'}">✓</div></div>
-        <span class="ckl ${feito?'dl':''}">${esc(o.nome)}</span><span class="tag ${tagCls}">${tagLbl}</span>
-      </div>`;
+// ============================================================
+// FINANCEIRO INTERNO — do banco
+// ============================================================
+function renderFinInterno(){
+  const el=$('lista-lancamentos');if(!el)return;
+  const tipoEnt={'Receita':true,'Investimento / Reserva':true};
+  const tipoCls={'Receita':'ftrec','Retirada Admin':'ftret','Salário Operador':'ftsal','Custo operacional':'ftcus','Investimento / Reserva':'ftinv','Empréstimo':'ftemp','Pagamento de empréstimo':'ftemp'};
+  if(!FIN_DB.length){
+    el.innerHTML='<div style="font-size:13px;color:var(--tx3);text-align:center;padding:20px 0">Nenhum lançamento.<br>Clique em <b>+ Novo lançamento</b>.</div>';
+    ['fint-entradas','fint-saidas','fint-saldo','fint-tot-entradas','fint-tot-saidas','fint-tot-saldo'].forEach(id=>set(id,'—'));return;
+  }
+  const grupos={};FIN_DB.forEach(l=>{if(!grupos[l.tipo])grupos[l.tipo]=[];grupos[l.tipo].push(l);});
+  let totE=0,totS=0;let html='';
+  Object.entries(grupos).forEach(([tipo,lista])=>{
+    const isE=tipoEnt[tipo]||false;const cls=tipoCls[tipo]||'bgr';
+    html+=`<div class="sl">${tipo}</div>`;
+    lista.forEach(l=>{
+      const v=parseFloat(l.valor)||0;if(isE)totE+=v;else totS+=v;
+      html+=`<div class="fin"><span class="fin-tp ${cls}">${esc(tipo)}</span><span class="fin-d">${esc(l.descricao)}${l.mes_ref?` — ${esc(l.mes_ref)}`:''}</span><span class="fin-v ${isE?'cup':'cdn'}">${isE?'+ ':'- '}${fmt$(v)}</span><div class="fin-a"><button class="btn btn-r btn-sm" onclick="excluirLancamento('${l.id}')">✕</button></div></div>`;
     });
   });
-  return {html,f,p};
+  el.innerHTML=html;
+  const saldo=totE-totS;
+  set('fint-entradas',fmt$(totE));set('fint-saidas',fmt$(totS));
+  set('fint-tot-entradas',fmt$(totE));set('fint-tot-saidas',fmt$(totS));
+  set('fint-tot-saldo',fmt$(Math.abs(saldo)));
+  const sEl=$('fint-saldo');if(sEl){sEl.textContent=fmt$(Math.abs(saldo));sEl.style.color=saldo>=0?'var(--ok)':'var(--dn)';}
+  const sEl2=$('fint-tot-saldo');if(sEl2)sEl2.style.color=saldo>=0?'var(--ok)':'var(--dn)';
+}
+
+// ============================================================
+// KPIs — automáticos
+// ============================================================
+function renderKPIs(){
+  const K=KPI_CACHE;const now=getNow();
+  set('kpi-msg',`Dia ${now.getDate()} de ${getMN(now)}. KPIs calculados automaticamente dos dados reais.`);
+  set('kpi-card-t',`Vendas por plataforma · ${getMN(now)}/${now.getFullYear()}`);
+  set('kpi-v-exec',(K.execGeral||0)+'%',K.execGeral>=70?'kv cup':'kv cam');
+  set('kpi-s-exec',K.execGeral>=70?'✅ meta atingida':'⚠️ abaixo da meta');
+  set('kpi-v-receita',K.receitaTotal>0?fmt$(K.receitaTotal):'—',K.receitaTotal>0?'kv cup':'kv');
+  set('kpi-s-receita','faturamento do mês');
+  const comMid=CRIADORES_PADRAO.filter(c=>isFeitoMid(c.nome,'rotineiro')).length;
+  set('kpi-v-midias',`${comMid}/${CRIADORES_PADRAO.length}`,comMid===CRIADORES_PADRAO.length?'kv cup':'kv cam');
+  set('kpi-s-midias','entregues esta semana');
+  set('kpi-v-cham',K.chamAbertos||0,K.chamAbertos>0?'kv cdn':'kv cup');
+  set('kpi-s-cham',K.chamAbertos>0?'requer atenção':'tudo resolvido ✅');
+  // Barras plataforma
+  const p=K.plat||{};const tot=(p.privacy||0)+(p.onlyfans||0)+(p.telegram||0)+(p.avulsa||0);
+  const barEl=$('kpi-barras-plat');
+  if(barEl){
+    if(tot>0){
+      barEl.innerHTML=[{n:'Privacy',v:p.privacy||0},{n:'OnlyFans',v:p.onlyfans||0},{n:'Telegram VIP',v:p.telegram||0},{n:'Venda avulsa',v:p.avulsa||0}]
+        .map(({n,v})=>`<div class="br"><span class="bl">${n}</span><div class="bw"><div class="bf" style="width:${tot?Math.round(v/tot*100):1}%;background:var(--ac)"><span class="bv">${v>0?fmt$(v):'—'}</span></div></div></div>`).join('');
+    }else{barEl.innerHTML='<div style="font-size:13px;color:var(--tx3);text-align:center;padding:20px 0">Nenhum faturamento lançado ainda.</div>';}
+  }
+}
+
+// ============================================================
+// RELATÓRIOS — automático
+// ============================================================
+function renderRelatorios(){
+  const K=KPI_CACHE;
+  const tot=CHAMADOS.length;const res=CHAMADOS.filter(c=>c.status==='resolvido').length;
+  const comMid=CRIADORES_PADRAO.filter(c=>isFeitoMid(c.nome,'rotineiro')).length;
+  set('rel-exec',(K.execGeral||0)+'%',K.execGeral>=70?'cup':'cam');
+  set('rel-cham',`${res} de ${tot}`);
+  set('rel-midias',`${comMid} de ${CRIADORES_PADRAO.length}`);
+  set('rel-receita',K.receitaTotal>0?fmt$(K.receitaTotal):'—');
+  set('rel-adv',ADV_DB.filter(a=>a.mes_key===getMesKey()).length||0);
+  const stEl=$('rel-status');
+  if(stEl){stEl.textContent=K.execGeral>=70?'Saudável':'Atenção';stEl.className=`bdg ${K.execGeral>=70?'bok':'bwa'}`;}
+  const decEl=$('rel-decisoes');
+  if(decEl)decEl.innerHTML=(K.alertas||[]).length
+    ?(K.alertas||[]).map(a=>`<div class="row"><span class="dot ${a.tipo==='crise'?'ddn':'dam'}"></span><span style="flex:1">${esc(a.msg)}</span></div>`).join('')
+    :'<div class="row"><span class="dot dok"></span><span style="flex:1">Nenhuma decisão urgente ✅</span></div>';
+}
+
+// ============================================================
+// ADVERTÊNCIAS — automáticas do banco
+// ============================================================
+function renderAdvertencias(){
+  const el=$('adv-cnt');if(!el)return;
+  const mk=getMesKey();const advMes=ADV_DB.filter(a=>a.mes_key===mk);
+  const porOpe={};advMes.forEach(a=>{porOpe[a.operador]=(porOpe[a.operador]||[]).concat(a);});
+  const resumo=OPERADORES_PADRAO.map(op=>{
+    const lista=porOpe[op]||[];const n=lista.length;
+    const ini=op.split(' ').map(c=>c[0]).join('').slice(0,2);
+    return `<div class="hrow" style="${n>=3?'border-color:#FBBDD2':''}"><div class="av ${n>=3?'avp':'avt'}">${ini}</div><span class="hrow-n">${esc(op)}</span><span class="bdg ${n>=3?'bur':n>=1?'bwa':'bok'}">${n>=3?`${n} advertências ⚠️`:n>=1?`${n} advertência`:'0 advertências'}</span></div>`;
+  }).join('');
+  const det=Object.entries(porOpe).flatMap(([op,lista])=>lista.slice(0,5).map((a,i)=>`<div class="adv"><div class="adv-t">Advertência #${i+1} · ${esc(op)} · ${a.dia||'—'}</div><div class="adv-s">${esc(a.motivo||'—')}</div>${a.criador?`<div class="adv-j">Criador: ${esc(a.criador)}</div>`:''}</div>`)).join('');
+  el.innerHTML=`<div class="sl">Resumo do mês</div>${resumo}<div class="sl" style="margin-top:16px">Detalhes</div>${det||'<div class="nf nf-g"><span>✅</span><span>Nenhuma advertência este mês.</span></div>'}`;
+}
+
+async function gerarAdv(operador,criador,motivo){
+  const hoje=getDiaKey();const mk=getMesKey();
+  if(ADV_DB.find(a=>a.operador===operador&&a.dia===hoje&&a.motivo===motivo))return;
+  await dbInsert('advertencias',{operador,criador,motivo,dia:hoje,mes_key:mk,created_at:new Date().toISOString()}).catch(()=>{});
+}
+
+// ============================================================
+// FATURAMENTO — salva e atualiza TUDO
+// ============================================================
+async function salvarFaturamento(){
+  const cri=$('fat-cri')?.value;
+  const priv=parseFloat($('fat-priv')?.value)||0;
+  const of=parseFloat($('fat-of')?.value)||0;
+  const tg=parseFloat($('fat-tg')?.value)||0;
+  const av=parseFloat($('fat-av')?.value)||0;
+  const tot=priv+of+tg+av;
+  if(!cri||tot===0){toast('Selecione o criador e informe pelo menos um valor.','err');return;}
+  await _salvarFatDB(cri,priv,of,tg,av,tot);
+  ['fat-priv','fat-of','fat-tg','fat-av'].forEach(id=>{const e=$(id);if(e)e.value='';});
+}
+
+async function salvarFaturamentoModal(){
+  const cri=$('mf-cri')?.value;
+  const priv=parseFloat($('mf-priv')?.value)||0;
+  const of=parseFloat($('mf-of')?.value)||0;
+  const tg=parseFloat($('mf-tg')?.value)||0;
+  const av=parseFloat($('mf-av')?.value)||0;
+  const tot=priv+of+tg+av;
+  if(!cri||tot===0){toast('Selecione o criador e informe pelo menos um valor.','err');return;}
+  cM('m-fat');
+  await _salvarFatDB(cri,priv,of,tg,av,tot);
+  ['mf-priv','mf-of','mf-tg','mf-av'].forEach(id=>{const e=$(id);if(e)e.value='';});
+}
+
+async function _salvarFatDB(cri,priv,of,tg,av,tot){
+  const now=getNow();
+  const id=`fat__${cri}__${getSemKey(now)}`;
+  const dados={id,criador:cri,semana_key:getSemKey(now),mes_key:getMesKey(now),semana:getWOM(now),mes:now.getMonth()+1,ano:now.getFullYear(),privacy:priv,onlyfans:of,telegram_vip:tg,venda_avulsa:av,total:tot,created_at:new Date().toISOString()};
+  const result=await dbUpsert('faturamento',dados);
+  if(!result){toast('Erro ao salvar. Verifique o Supabase.','err');return;}
+  // Atualizar cache local imediatamente
+  const idx=FAT_DB.findIndex(f=>f.id===id);
+  if(idx>=0)FAT_DB[idx]=dados;else FAT_DB.push(dados);
+  // Recalcular e atualizar TUDO
+  recalcular();renderAll();
+  toast(`Faturamento de ${cri}: ${fmt$(tot)} salvo! 💰`);
+}
+
+// ============================================================
+// FINANCEIRO INTERNO — salva e atualiza
+// ============================================================
+async function salvarLancamentoInterno(){
+  const tipo=$('mfi-tipo')?.value;
+  const desc=$('mfi-desc')?.value?.trim();
+  const val=parseFloat($('mfi-val')?.value)||0;
+  const mes=$('mfi-mes')?.value?.trim()||'';
+  if(!desc||val===0){toast('Preencha a descrição e o valor.','err');return;}
+  const result=await dbInsert('financeiro_interno',{tipo,descricao:desc,valor:val,mes_ref:mes,mes_key:getMesKey(),created_at:new Date().toISOString()});
+  if(!result){toast('Erro ao salvar.','err');return;}
+  FIN_DB=[...result,...FIN_DB];
+  cM('m-fint');
+  ['mfi-desc','mfi-val','mfi-mes'].forEach(id=>{const e=$(id);if(e)e.value='';});
+  renderFinInterno();
+  toast(`Lançamento registrado: ${tipo} — ${fmt$(val)}`);
+}
+
+async function excluirLancamento(id){
+  if(!confirm('Excluir este lançamento?'))return;
+  await dbDelete('financeiro_interno',id);
+  FIN_DB=FIN_DB.filter(l=>String(l.id)!==String(id));
+  renderFinInterno();
+  toast('Lançamento excluído.','info');
+}
+
+// ============================================================
+// CRIADORES — salva e atualiza
+// ============================================================
+async function adicionarCriador(){
+  const nome=$('mac-nome')?.value?.trim();
+  const ope=$('mac-ope')?.value;
+  const cta=parseInt($('mac-cta')?.value)||1;
+  const inicio=$('mac-inicio')?.value||getNow().toISOString().slice(0,10);
+  const dur=parseInt($('mac-dur')?.value)||12;
+  if(!nome){toast('Informe o nome do criador.','err');return;}
+  const id=`cri__${nome}`;
+  await dbUpsert('criadores',{id,nome,operador:ope,cta,inicio,duracao_meses:dur,created_at:new Date().toISOString()}).catch(()=>{});
+  CRIADORES_PADRAO.push({id,nome,operador:ope,cta,inicio,duracao:dur});
+  cM('m-add-criador');
+  ['mac-nome','mac-inicio','mac-dur'].forEach(id=>{const e=$(id);if(e)e.value='';});
+  recalcular();renderAll();
+  toast(`Criador ${nome} adicionado!`);
+}
+
+function editarCriador(nome){toast(`Para editar ${nome}, use os campos de faturamento e plataformas abaixo.`,'info');}
+
+async function removerCriador(nome){
+  if(!confirm(`Remover ${nome}?`))return;
+  const i=CRIADORES_PADRAO.findIndex(c=>c.nome===nome);
+  const id=CRIADORES_PADRAO[i]?.id||`cri__${nome}`;
+  await dbDelete('criadores',id).catch(()=>{});
+  if(i>=0)CRIADORES_PADRAO.splice(i,1);
+  recalcular();renderAll();
+  toast(`${nome} removido.`,'info');
+}
+
+// ============================================================
+// OPERADORES — salva e atualiza
+// ============================================================
+async function adicionarOperador(){
+  const nome=$('mao-nome')?.value?.trim();
+  const funcao=$('mao-func')?.value?.trim()||'Operador';
+  if(!nome){toast('Informe o nome.','err');return;}
+  await dbUpsert('operadores',{id:`op__${nome}`,nome,funcao,created_at:new Date().toISOString()}).catch(()=>{});
+  if(!OPERADORES_PADRAO.includes(nome))OPERADORES_PADRAO.push(nome);
+  cM('m-add-operador');
+  ['mao-nome','mao-func'].forEach(id=>{const e=$(id);if(e)e.value='';});
+  renderGestao();
+  toast(`Operador ${nome} adicionado!`);
+}
+
+// ============================================================
+// OBRIGAÇÕES — salva e atualiza rotina imediatamente
+// ============================================================
+async function adicionarObrigacao(){
+  const nome=$('mao2-nome')?.value?.trim();
+  const resp=$('mao2-resp')?.value||'raise';
+  const dia=$('mao2-dia')?.value||'todos';
+  if(!nome){toast('Informe o nome da obrigação.','err');return;}
+  const id=`obr__${nome}`;
+  await dbUpsert('obrigacoes',{id,nome,responsavel:resp,dia,created_at:new Date().toISOString()}).catch(()=>{});
+  OBRIGACOES_PADRAO.push({id,nome,resp,dia});
+  cM('m-add-obrig');
+  const e=$('mao2-nome');if(e)e.value='';
+  renderGestao();renderRotAdm();renderRotOpe();renderCriTar();
+  toast(`"${nome}" adicionada! Já aparece na rotina.`);
+}
+
+async function removerObrigacao(i){
+  const nome=OBRIGACOES_PADRAO[i]?.nome;
+  if(!nome||!confirm(`Remover "${nome}"?`))return;
+  await dbDelete('obrigacoes',OBRIGACOES_PADRAO[i]?.id||`obr__${nome}`).catch(()=>{});
+  OBRIGACOES_PADRAO.splice(i,1);
+  renderGestao();renderRotAdm();renderRotOpe();renderCriTar();
+  toast('Obrigação removida.','info');
+}
+
+// ============================================================
+// PLATAFORMAS — salva e reflete no criador
+// ============================================================
+async function salvarPlataforma(){
+  const cri=$('plat-cri-sel')?.value;
+  const plat=$('plat-nome')?.value;
+  const status=$('plat-status')?.value;
+  const tipo=$('plat-tipo')?.value||'Rede Social';
+  if(!cri||!plat){toast('Selecione o criador e a plataforma.','err');return;}
+  const id=`plat__${cri}__${plat}`;
+  const dados={id,criador:cri,plataforma:plat,status,tipo,updated_at:new Date().toISOString(),created_at:new Date().toISOString()};
+  const result=await dbUpsert('plataformas_status',dados).catch(()=>null);
+  if(!result){toast('Erro ao atualizar plataforma.','err');return;}
+  PLATAFORMAS_STATUS[`${cri}__${plat}`]=dados;
+  renderCriOV();renderDossie(cri);renderGestao();
+  toast(`${plat} de ${cri} → ${status}`);
+}
+
+function salvarKPI(){toast('KPIs são calculados automaticamente do faturamento e rotina.','info');}
+
+// ============================================================
+// ROTINA — marcar com trava anti-toggle e anti-polling
+// ============================================================
+function obrigacoesDoDia(day,resp){return OBRIGACOES_PADRAO.filter(o=>(o.dia==='todos'||o.dia===String(day))&&(resp==='todos'||o.resp===resp||o.resp==='ambos'));}
+function isFeitoRotina(cri,obr){return isFeitoRot(cri,obr);}
+
+async function marcarObrigacao(cri,obr,el,event){
+  if(event)event.stopPropagation();
+  if(el._ck)return;
+  el._ck=true;_saving=true;
+  const dk=getDiaKey();
+  const chave=chaveRot(cri,obr,dk);
+  const atual=ROTINA_STATUS[chave]?.feito||false;
+  const novo=!atual;
+  _aplicarCk(el,novo);
+  try{
+    await dbUpsert('rotina_status',{id:chave,chave,criador:cri,obrigacao:obr,feito:novo,dia:dk,created_at:new Date().toISOString()});
+    ROTINA_STATUS[chave]={chave,feito:novo};
+    // Gerar advertência automática após 22h
+    if(!novo&&getNow().getHours()>=22){
+      const op=CRIADORES_PADRAO.find(c=>c.nome===cri)?.operador||'';
+      if(op)await gerarAdv(op,cri,`Obrigação não cumprida: ${obr}`);
+    }
+  }catch(e){_aplicarCk(el,atual);console.error(e);}
+  el._ck=false;_saving=false;
+  atualizarContadores();
+  recalcular();
+  renderDashboard();renderCriOV();
+}
+
+function _aplicarCk(el,feito){
+  if(!el)return;
+  if(el.classList.contains('today-t')){
+    const cb=el.querySelector('.today-cb');if(cb)cb.classList.toggle('ok',feito);return;
+  }
+  const box=el.querySelector('.ckb');const lbl=el.querySelector('.ckl');
+  if(box){box.classList.toggle('done',feito);const m=box.querySelector('.ckm');if(m)m.style.display=feito?'block':'none';}
+  if(lbl)lbl.classList.toggle('dl',feito);
+  el.classList.toggle('done-row',feito);
+}
+
+async function marcarCriadorOb(cri,obr,el,event){
+  await marcarObrigacao(cri,obr,el,event);
+  renderCriTar();renderCriOV();
+}
+
+function atualizarContadores(){
+  const now=getNow();const day=now.getDay();let f=0,p=0;
+  CRIADORES_PADRAO.forEach(cr=>{obsDoDia(day,'todos').forEach(o=>{if(isFeitoRot(cr.nome,o.nome))f++;else p++;});});
+  set('rot-feitas',f);set('rot-pend',p);set('rot-pct',(f+p)?Math.round(f/(f+p)*100)+'%':'0%');
+  const mc=CRIADORES_PADRAO.filter(c=>c.operador===operadorAtual);let of=0,op=0;
+  mc.forEach(cr=>{obsDoDia(day,'todos').forEach(o=>{if(isFeitoRot(cr.nome,o.nome))of++;else op++;});});
+  set('o-feitas',of);set('o-pend',op);set('o-pct',(of+op)?Math.round(of/(of+op)*100)+'%':'0%');
+}
+
+function buildCkHTML(cri,obs){
+  return obs.map(o=>{
+    const feito=isFeitoRot(cri,o.nome);
+    const tc=o.resp==='raise'?'tr':o.resp==='criador'?'tc':'ta';
+    const tl=o.resp==='raise'?'RAISE':o.resp==='criador'?'CRIADOR':'AMBOS';
+    return `<div class="ck ${feito?'done-row':''}" onclick="marcarObrigacao('${esc(cri)}','${esc(o.nome)}',this,event)">
+      <div class="ckb ${feito?'done':''}"><div class="ckm" style="display:${feito?'block':'none'}">✓</div></div>
+      <span class="ckl ${feito?'dl':''}">${esc(o.nome)}</span><span class="tag ${tc}">${tl}</span>
+    </div>`;
+  }).join('');
 }
 
 function renderRotAdm(){
-  const el = document.getElementById('lista-rotina-adm');
-  if(!el) return;
-  const now = getNow();
-  const dSel = document.getElementById('a-rot-d');
-  const cSel = document.getElementById('a-rot-cri');
+  const el=$('lista-rotina-adm');if(!el)return;
+  const now=getNow();const day=now.getDay();
+  const dSel=$('a-rot-d');const cSel=$('a-rot-cri');
   if(dSel&&!dSel.hasAttribute('data-init')){
-    ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'].forEach((d,i)=>{
-      const o=document.createElement('option'); const val=i===6?0:i+1;
-      o.value=val; o.textContent=d; if(val===now.getDay())o.selected=true; dSel.appendChild(o);
-    });
-    dSel.setAttribute('data-init','1'); dSel.onchange=renderRotAdm;
+    ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'].forEach((d,i)=>{const o=document.createElement('option');const val=i===6?0:i+1;o.value=val;o.textContent=d;if(val===now.getDay())o.selected=true;dSel.appendChild(o);});
+    dSel.setAttribute('data-init','1');dSel.onchange=renderRotAdm;
   }
   if(cSel&&!cSel.hasAttribute('data-init')){
-    const all=document.createElement('option'); all.value='todos'; all.textContent='Todos os criadores'; cSel.appendChild(all);
-    DB.criadores.forEach(cr=>{ const o=document.createElement('option'); o.value=cr.nome; o.textContent=cr.nome; cSel.appendChild(o); });
-    cSel.setAttribute('data-init','1'); cSel.onchange=renderRotAdm;
+    const all=document.createElement('option');all.value='todos';all.textContent='Todos os criadores';cSel.appendChild(all);
+    CRIADORES_PADRAO.forEach(cr=>{const o=document.createElement('option');o.value=cr.nome;o.textContent=cr.nome;cSel.appendChild(o);});
+    cSel.setAttribute('data-init','1');cSel.onchange=renderRotAdm;
   }
-  const day   = dSel?Number(dSel.value):now.getDay();
-  const filCri= cSel?cSel.value:'todos';
-  const lista = filCri==='todos'?DB.criadores:DB.criadores.filter(c=>c.nome===filCri);
-  const {html,f,p} = buildRotina(lista,day);
-  el.innerHTML = html;
-  set('rot-feitas',f); set('rot-pend',p);
-  set('rot-pct',(f+p)?Math.round(f/(f+p)*100)+'%':'0%');
+  const filtroDay=dSel?Number(dSel.value):day;
+  const filtroCri=cSel?cSel.value:'todos';
+  const lista=filtroCri==='todos'?CRIADORES_PADRAO:CRIADORES_PADRAO.filter(c=>c.nome===filtroCri);
+  let html='';let f=0,p=0;
+  lista.forEach(cr=>{
+    const obs=obsDoDia(filtroDay,'todos');
+    const feitas=obs.filter(o=>isFeitoRot(cr.nome,o.nome)).length;
+    f+=feitas;p+=(obs.length-feitas);
+    html+=`<div class="sl">${esc(cr.nome)} · ${feitas}/${obs.length} concluídas</div>${buildCkHTML(cr.nome,obs)}`;
+  });
+  el.innerHTML=html;
+  set('rot-feitas',f);set('rot-pend',p);set('rot-pct',(f+p)?Math.round(f/(f+p)*100)+'%':'0%');
 }
 
-// ── ROTINA OPERADOR ──
 function renderRotOpe(){
-  const el = document.getElementById('lista-rotina-ope');
-  if(!el) return;
-  const now = getNow(); const day=now.getDay();
-  const sub = document.getElementById('o-rot-s');
-  if(sub) sub.textContent=`Seus criadores · ${getDN(now)} · limite: 23:59`;
-  const meusCri = DB.criadores.filter(c=>c.operador===operadorAtual);
-  let html=''; let f=0,p=0;
-  meusCri.forEach(cr=>{
-    const obsR  = obsDoDia(day,'todos').filter(o=>o.responsavel==='raise'||o.responsavel==='ambos');
-    const obsC  = obsDoDia(day,'todos').filter(o=>o.responsavel==='criador'||o.responsavel==='ambos');
-    const feitas= obsR.filter(o=>isFeitoRot(cr.nome,o.nome)).length;
-    f+=feitas; p+=(obsR.length-feitas);
-    html+=`<div class="sl">${esc(cr.nome)} · obrigações RAISE (${feitas}/${obsR.length})</div>`;
-    obsR.forEach(o=>{
-      const feito=isFeitoRot(cr.nome,o.nome);
-      const tc=o.responsavel==='raise'?'tr':'ta';
-      html+=`<div class="ck ${feito?'done-row':''}" onclick="marcarObr('${esc(cr.nome)}','${esc(o.nome)}',${!feito},this)">
-        <div class="ckb ${feito?'done':''}"><div class="ckm" style="display:${feito?'block':'none'}">✓</div></div>
-        <span class="ckl ${feito?'dl':''}">${esc(o.nome)}</span><span class="tag ${tc}">${o.responsavel==='raise'?'RAISE':'AMBOS'}</span>
-      </div>`;
-    });
+  const el=$('lista-rotina-ope');if(!el)return;
+  const now=getNow();const day=now.getDay();
+  const sub=$('o-rot-s');if(sub)sub.textContent=`Seus criadores · ${getDN(now)} · limite: 23:59`;
+  const mc=CRIADORES_PADRAO.filter(c=>c.operador===operadorAtual);
+  let html='';let f=0,p=0;
+  mc.forEach(cr=>{
+    const obsR=obsDoDia(day,'todos').filter(o=>o.resp==='raise'||o.resp==='ambos');
+    const obsC=obsDoDia(day,'todos').filter(o=>o.resp==='criador'||o.resp==='ambos');
+    const feitas=obsR.filter(o=>isFeitoRot(cr.nome,o.nome)).length;
+    f+=feitas;p+=(obsR.length-feitas);
+    html+=`<div class="sl">${esc(cr.nome)} · RAISE (${feitas}/${obsR.length})</div>${buildCkHTML(cr.nome,obsR)}`;
     if(obsC.length){
-      html+=`<div class="sl" style="margin-top:10px">${esc(cr.nome)} · obrigações CRIADOR</div>`;
+      html+=`<div class="sl" style="margin-top:10px">${esc(cr.nome)} · CRIADOR (acompanhe)</div>`;
       obsC.forEach(o=>{
         const feito=isFeitoRot(cr.nome,o.nome);
-        html+=`<div class="ck ${feito?'done-row':''}">
-          <div class="ckb ${feito?'done':''}"><div class="ckm" style="display:${feito?'block':'none'}">✓</div></div>
-          <span class="ckl ${feito?'dl':''}" style="${!feito?'color:var(--wn)':''}">${esc(o.nome)}</span>
-          <span class="tag tc">CRIADOR</span>
-          ${!feito?`<button class="btn btn-sm" onclick="event.stopPropagation();notifCri('${esc(cr.nome)}','${esc(o.nome)}')">Notificar</button>`:''}
-        </div>`;
+        html+=`<div class="ck ${feito?'done-row':''}"><div class="ckb ${feito?'done':''}"><div class="ckm" style="display:${feito?'block':'none'}">✓</div></div><span class="ckl ${feito?'dl':''}" style="${!feito?'color:var(--wn)':''}">${esc(o.nome)}</span><span class="tag tc">CRIADOR</span>${!feito?`<button class="btn btn-sm" onclick="event.stopPropagation();toast('Notificação enviada para ${esc(cr.nome)}','info')">Notificar</button>`:''}</div>`;
       });
     }
   });
-  el.innerHTML = html||'<div class="nf nf-b"><span>ℹ️</span><span>Nenhum criador atribuído a você.</span></div>';
-  set('o-feitas',f); set('o-pend',p);
-  set('o-pct',(f+p)?Math.round(f/(f+p)*100)+'%':'0%');
+  el.innerHTML=html||'<div class="nf nf-b"><span>ℹ️</span><span>Nenhum criador atribuído a você.</span></div>';
+  set('o-feitas',f);set('o-pend',p);set('o-pct',(f+p)?Math.round(f/(f+p)*100)+'%':'0%');
 }
-function notifCri(cri,obr){ toast(`Notificação enviada para ${cri}: "${obr}" pendente.`,'info'); }
 
-// ══════════════════════════════════════════
+// ============================================================
 // MÍDIAS
-// ══════════════════════════════════════════
-async function marcarMidia(tipo, el){
-  const sk    = semKey();
-  const chave = chaveMid(criadorAtual, tipo, sk);
-  const feito = !DB.midias[chave]?.feito;
-  await sbUpsert('midias_status',{id:chave,chave,criador:criadorAtual,tipo,feito,semana:sk,created_at:new Date().toISOString()});
-  DB.midias[chave] = {chave,feito};
-  const box=el?.querySelector('.ckb'); const lbl=el?.querySelector('.ckl'); const bdg=el?.querySelector('.bdg');
-  if(box){ box.classList.toggle('done',feito); const m=box.querySelector('.ckm'); if(m)m.style.display=feito?'block':'none'; }
-  if(lbl) lbl.classList.toggle('dl',feito);
-  if(el)  el.classList.toggle('done-row',feito);
-  if(bdg){ bdg.className=`bdg ${feito?'bok':'bgr'}`; bdg.textContent=feito?'Enviado':'Não enviado'; }
-  recalcular();
-  renderMidiasAdm(); renderMidiasOpe(); renderCriOV();
-  if(feito) toast('Mídia marcada como enviada ✅');
+// ============================================================
+async function marcarMidia(tipo,el){
+  if(el._ck)return;el._ck=true;_saving=true;
+  const sk=getSemKey();const chave=chaveMid(criadorAtual,tipo,sk);
+  const atual=MIDIAS_STATUS[chave]?.feito||false;const feito=!atual;
+  const box=el.querySelector('.ckb');const lbl=el.querySelector('.ckl');const bdg=el.querySelector('.bdg');
+  if(box){box.classList.toggle('done',feito);const m=box.querySelector('.ckm');if(m)m.style.display=feito?'block':'none';}
+  if(lbl)lbl.classList.toggle('dl',feito);
+  el.classList.toggle('done-row',feito);
+  if(bdg){bdg.className=`bdg ${feito?'bok':'bgr'}`;bdg.textContent=feito?'Enviado':'Não enviado';}
+  try{
+    await dbUpsert('midias_status',{id:chave,chave,criador:criadorAtual,tipo,feito,semana:sk,created_at:new Date().toISOString()});
+    MIDIAS_STATUS[chave]={chave,feito};
+  }catch(e){
+    if(box){box.classList.toggle('done',atual);const m=box.querySelector('.ckm');if(m)m.style.display=atual?'block':'none';}
+    if(lbl)lbl.classList.toggle('dl',atual);el.classList.toggle('done-row',atual);
+    if(bdg){bdg.className=`bdg ${atual?'bok':'bgr'}`;bdg.textContent=atual?'Enviado':'Não enviado';}
+  }
+  el._ck=false;_saving=false;
+  renderMidiasAdm();renderMidiasOpe();renderCriOV();
+  if(feito)toast('Mídia marcada como enviada ✅');
 }
+
+function isFeitoMidia(cri,tipo){return isFeitoMid(cri,tipo);}
 
 function renderMidiasAdm(){
-  const el = document.getElementById('lista-midias-adm');
-  if(!el) return;
-  const now=getNow(); const wom=getWOM(now);
-  set('a-mid-s',`Semana ${wom} de ${getMN(now)} · prazo domingo`);
-  el.innerHTML = DB.criadores.map(cr=>{
-    const r=isFeitoMid(cr.nome,'rotineiro'), i=isFeitoMid(cr.nome,'ideias'), m=isFeitoMid(cr.nome,'mais18');
-    const todas=r&&i&&m; const nenhuma=!r&&!i&&!m;
+  const el=$('lista-midias-adm');if(!el)return;
+  const now=getNow();const wom=getWOM(now);
+  const subEl=$('a-mid-s');if(subEl)subEl.textContent=`Semana ${wom} de ${getMN(now)} · prazo domingo`;
+  el.innerHTML=CRIADORES_PADRAO.map(cr=>{
+    const r=isFeitoMid(cr.nome,'rotineiro'),i=isFeitoMid(cr.nome,'ideias'),m=isFeitoMid(cr.nome,'mais18');
+    const todas=r&&i&&m;const nenhuma=!r&&!i&&!m;
     const ini=cr.nome.split(' ').map(n=>n[0]).join('').slice(0,2);
     return `<div class="hrow" style="${nenhuma?'border-color:#FBBDD2':todas?'':'border-color:#FDE68A'}">
       <div class="av ${todas?'avt':nenhuma?'avp':'avb'}">${ini}</div>
       <span class="hrow-n">${esc(cr.nome)}</span>
       <div style="font-size:12px;color:var(--tx3);margin-right:8px">${r?'✅':'⬜'} Rotineiro · ${i?'✅':'⬜'} Ideias · ${m?'✅':'⬜'} +18</div>
-      <span class="bdg ${todas?'bok':nenhuma?'bur':'bwa'}">${todas?'Entregue completo':nenhuma?'Não enviou':'Parcial'}</span>
+      <span class="bdg ${todas?'bok':nenhuma?'bur':'bwa'}">${todas?'Entregue':nenhuma?'Não enviou':'Parcial'}</span>
     </div>`;
   }).join('');
 }
 
 function renderMidiasOpe(){
-  const el = document.getElementById('o-mid-status');
-  if(!el) return;
-  const now=getNow(); const wom=getWOM(now);
-  const slEl=document.getElementById('o-sem-label');
-  if(slEl) slEl.textContent=`Semana ${wom} de ${getMN(now)}`;
-  const meusCri = DB.criadores.filter(c=>c.operador===operadorAtual);
-  el.innerHTML = meusCri.map(cr=>{
-    const r=isFeitoMid(cr.nome,'rotineiro'), i=isFeitoMid(cr.nome,'ideias'), m=isFeitoMid(cr.nome,'mais18');
-    const todas=r&&i&&m; const nenhuma=!r&&!i&&!m;
+  const el=$('o-mid-status');if(!el)return;
+  const now=getNow();const wom=getWOM(now);
+  const slEl=$('o-sem-label');if(slEl)slEl.textContent=`Semana ${wom} de ${getMN(now)}`;
+  const mc=CRIADORES_PADRAO.filter(c=>c.operador===operadorAtual);
+  el.innerHTML=mc.map(cr=>{
+    const r=isFeitoMid(cr.nome,'rotineiro'),i=isFeitoMid(cr.nome,'ideias'),m=isFeitoMid(cr.nome,'mais18');
+    const todas=r&&i&&m;const nenhuma=!r&&!i&&!m;
     return `<div class="hrow" style="${nenhuma?'border-color:#FBBDD2':''}">
       <span class="hrow-n">${esc(cr.nome)}</span>
       <div style="font-size:12px;color:var(--tx3);margin-right:8px">${r?'✅':'⬜'} Rotineiro · ${i?'✅':'⬜'} Ideias · ${m?'✅':'⬜'} +18</div>
       <span class="bdg ${todas?'bok':nenhuma?'bur':'bwa'}">${todas?'Entregue':nenhuma?'Não enviou':'Parcial'}</span>
-      ${nenhuma?`<button class="btn btn-r btn-sm" onclick="notifCri('${esc(cr.nome)}','envio de mídias')">Notificar</button>`:''}
+      ${nenhuma?`<button class="btn btn-r btn-sm" onclick="toast('Notificação enviada para ${esc(cr.nome)}','info')">Notificar</button>`:''}
     </div>`;
   }).join('')||'<div class="nf nf-b"><span>ℹ️</span><span>Nenhum criador atribuído.</span></div>';
+  const resEl=$('o-res-mid');
+  if(resEl)resEl.innerHTML=mc.map(cr=>{const ok=isFeitoMid(cr.nome,'rotineiro')&&isFeitoMid(cr.nome,'ideias')&&isFeitoMid(cr.nome,'mais18');return`<div class="row"><span style="flex:1">${esc(cr.nome)}</span><span class="bdg ${ok?'bok':'bur'}">${ok?'Entregue':'Pendente'}</span></div>`;}).join('');
 }
 
-// ══════════════════════════════════════════
-// FATURAMENTO — salva no Supabase
-// ══════════════════════════════════════════
-async function salvarFaturamento(){
-  const criEl=document.getElementById('fat-cri');
-  if(!criEl) return;
-  const cri  = criEl.value;
-  const priv = parseFloat(document.getElementById('fat-priv')?.value)||0;
-  const of   = parseFloat(document.getElementById('fat-of')?.value)||0;
-  const tg   = parseFloat(document.getElementById('fat-tg')?.value)||0;
-  const av   = parseFloat(document.getElementById('fat-av')?.value)||0;
-  const tot  = priv+of+tg+av;
-  if(!cri||tot===0){ toast('Selecione o criador e informe pelo menos um valor.','err'); return; }
-  const now = getNow();
-  const id  = `fat__${cri}__${semKey(now)}`;
-  await sbUpsert('faturamento',{id,criador:cri,semana_key:semKey(now),mes_key:mesKey(now),semana:getWOM(now),mes:now.getMonth()+1,ano:now.getFullYear(),privacy:priv,onlyfans:of,telegram_vip:tg,venda_avulsa:av,total:tot,created_at:new Date().toISOString()});
-  ['fat-priv','fat-of','fat-tg','fat-av'].forEach(id=>{ const e=document.getElementById(id); if(e)e.value=''; });
-  await carregarTudo();
-  toast(`Faturamento de ${cri} salvo: ${fmt$(tot)} 💰`);
-}
+// ============================================================
+// CHAMADOS — igual ao original (já funcionava)
+// ============================================================
+const statusBdg=s=>`<span class="bdg ${({aberto:'bur',andamento:'bwa',revisao:'bin',resolvido:'bok'})[s]||'bgr'}">${s}</span>`;
+const prioCls=p=>p?.includes('🔴')?'urg':p?.includes('🟡')?'pri':'nor';
 
-async function salvarFaturamentoModal(){
-  const cri  = document.getElementById('mf-cri')?.value;
-  const priv = parseFloat(document.getElementById('mf-priv')?.value)||0;
-  const of   = parseFloat(document.getElementById('mf-of')?.value)||0;
-  const tg   = parseFloat(document.getElementById('mf-tg')?.value)||0;
-  const av   = parseFloat(document.getElementById('mf-av')?.value)||0;
-  const tot  = priv+of+tg+av;
-  if(!cri||tot===0){ toast('Selecione o criador e informe pelo menos um valor.','err'); return; }
-  const now = getNow();
-  const id  = `fat__${cri}__${semKey(now)}`;
-  await sbUpsert('faturamento',{id,criador:cri,semana_key:semKey(now),mes_key:mesKey(now),semana:getWOM(now),mes:now.getMonth()+1,ano:now.getFullYear(),privacy:priv,onlyfans:of,telegram_vip:tg,venda_avulsa:av,total:tot,created_at:new Date().toISOString()});
-  cM('m-fat');
-  ['mf-priv','mf-of','mf-tg','mf-av'].forEach(id=>{ const e=document.getElementById(id); if(e)e.value=''; });
-  await carregarTudo();
-  toast(`Faturamento de ${cri} registrado: ${fmt$(tot)} 💰`);
-}
-
-// ── TELA FINANCEIRO ──
-function renderFinanceiro(){
-  const now = getNow(); const mk=mesKey(now);
-  set('fin-receita-total', KPI.receitaTotal>0?fmt$(KPI.receitaTotal):'—');
-  set('fin-exec',          (KPI.execGeral||0)+'%');
-  const projFat = DB.criadores.filter(c=>(KPI.fatMes?.[c.nome]||0)>0).length;
-  set('fin-proj-fat',    `${projFat}/${DB.criadores.length}`);
-  set('fin-chamados',    KPI.chamAbertos||0);
-  set('fin-mes-label',   getMN(now)+'/'+now.getFullYear());
-  set('fin-r-proj',      `${projFat} de ${DB.criadores.length}`);
-  set('fin-r-media',     projFat>0?fmt$(KPI.receitaTotal/projFat):'—');
-  set('fin-r-exec',      (KPI.execGeral||0)+'%');
-  set('fin-r-cham',      KPI.chamAbertos||0);
-  // Comparação mês anterior
-  const mesAnt = new Date(now.getFullYear(),now.getMonth()-1,1);
-  const mkAnt  = mesKey(mesAnt);
-  const recAnt = DB.faturamento.filter(f=>f.mes_key===mkAnt).reduce((a,f)=>a+(f.total||0),0);
-  const vr     = recAnt>0?Math.round((KPI.receitaTotal-recAnt)/recAnt*100):null;
-  const compEl = document.getElementById('fin-receita-comp');
-  if(compEl){ compEl.textContent=vr!=null?(vr>=0?`↑${vr}% vs ${getMN(mesAnt)}`:`↓${Math.abs(vr)}% vs ${getMN(mesAnt)}`):''; compEl.className=`mc-s ${vr>=0?'cup':'cdn'}`; }
-  // Barras por criador
-  const barEl = document.getElementById('fin-barras-criadores');
-  if(barEl){
-    const sorted=DB.criadores.map(c=>({nome:c.nome,val:KPI.fatMes?.[c.nome]||0})).sort((a,b)=>b.val-a.val);
-    const max=sorted[0]?.val||0;
-    barEl.innerHTML=max>0?sorted.map(({nome,val})=>{
-      const pct=Math.round(val/max*100);
-      const cor=pct>=70?'var(--ac)':pct>=40?'var(--wn)':'var(--dn)';
-      const lbl=nome.split(' ').slice(0,2).join(' ');
-      return `<div class="br"><span class="bl">${lbl}</span><div class="bw"><div class="bf" style="width:${Math.max(pct,2)}%;background:${cor}"><span class="bv">${val>0?fmt$(val):'—'}</span></div></div></div>`;
-    }).join(''):'<div style="font-size:13px;color:var(--tx3);text-align:center;padding:20px 0">Nenhum faturamento lançado ainda.<br>Use "Gestão do CRM" ou o botão acima.</div>';
-  }
-}
-
-// ══════════════════════════════════════════
-// FINANCEIRO INTERNO — salva no Supabase
-// ══════════════════════════════════════════
-async function salvarLancamentoInterno(){
-  const tipo = document.getElementById('mfi-tipo')?.value;
-  const desc = document.getElementById('mfi-desc')?.value?.trim();
-  const val  = parseFloat(document.getElementById('mfi-val')?.value)||0;
-  const mes  = document.getElementById('mfi-mes')?.value?.trim()||getMN(getNow())+'/'+getNow().getFullYear();
-  if(!desc||val===0){ toast('Preencha a descrição e o valor.','err'); return; }
-  const result = await sbInsert('financeiro_interno',{tipo,descricao:desc,valor:val,mes_ref:mes,mes_key:mesKey(),created_at:new Date().toISOString()});
-  if(!result){ toast('Erro ao salvar. Verifique o Supabase.','err'); return; }
-  cM('m-fint');
-  ['mfi-desc','mfi-val','mfi-mes'].forEach(id=>{ const e=document.getElementById(id); if(e)e.value=''; });
-  await carregarTudo();
-  toast(`Lançamento registrado: ${tipo} — ${fmt$(val)}`);
-}
-
-async function excluirLancamento(id){
-  if(!confirm('Excluir este lançamento?')) return;
-  await sbDelete('financeiro_interno', id);
-  await carregarTudo();
-  toast('Lançamento excluído.','info');
-}
-
-function renderFinInterno(){
-  const el = document.getElementById('lista-lancamentos');
-  if(!el) return;
-  const tipoEnt = {'Receita':true,'Investimento / Reserva':true};
-  const tipoCls = {'Receita':'ftrec','Retirada Admin':'ftret','Salário Operador':'ftsal','Custo operacional':'ftcus','Investimento / Reserva':'ftinv','Empréstimo':'ftemp','Pagamento de empréstimo':'ftemp'};
-  if(!DB.fin_interno.length){
-    el.innerHTML='<div style="font-size:13px;color:var(--tx3);text-align:center;padding:20px 0">Nenhum lançamento registrado.<br>Clique em <b>+ Novo lançamento</b>.</div>';
-    ['fint-entradas','fint-saidas','fint-saldo','fint-tot-entradas','fint-tot-saidas','fint-tot-saldo','fint-reserva'].forEach(id=>set(id,'—'));
-    return;
-  }
-  const grupos={};
-  DB.fin_interno.forEach(l=>{ if(!grupos[l.tipo])grupos[l.tipo]=[]; grupos[l.tipo].push(l); });
-  let totE=0,totS=0,totR=0; let html='';
-  Object.entries(grupos).forEach(([tipo,lista])=>{
-    const isEnt=tipoEnt[tipo]||false;
-    html+=`<div class="sl">${tipo}</div>`;
-    lista.forEach(l=>{
-      const v=parseFloat(l.valor)||0;
-      if(isEnt) totE+=v; else totS+=v;
-      if(tipo==='Investimento / Reserva') totR+=v;
-      html+=`<div class="fin">
-        <span class="fin-tp ${tipoCls[tipo]||'bgr'}">${esc(tipo)}</span>
-        <span class="fin-d">${esc(l.descricao)}${l.mes_ref?` — ${esc(l.mes_ref)}`:''}</span>
-        <span class="fin-v ${isEnt?'cup':'cdn'}">${isEnt?'+ ':'- '}${fmt$(v)}</span>
-        <div class="fin-a"><button class="btn btn-r btn-sm" onclick="excluirLancamento('${l.id}')">✕</button></div>
-      </div>`;
-    });
-  });
-  el.innerHTML=html;
-  const saldo=totE-totS;
-  set('fint-entradas',fmt$(totE)); set('fint-saidas',fmt$(totS));
-  set('fint-tot-entradas',fmt$(totE)); set('fint-tot-saidas',fmt$(totS));
-  set('fint-tot-saldo',fmt$(Math.abs(saldo)));
-  set('fint-reserva',fmt$(totR));
-  const sEl=document.getElementById('fint-saldo');
-  if(sEl){ sEl.textContent=fmt$(Math.abs(saldo)); sEl.style.color=saldo>=0?'var(--ok)':'var(--dn)'; }
-  const sEl2=document.getElementById('fint-tot-saldo');
-  if(sEl2) sEl2.style.color=saldo>=0?'var(--ok)':'var(--dn)';
-}
-
-// ══════════════════════════════════════════
-// KPIs — automáticos
-// ══════════════════════════════════════════
-function renderKPIs(){
-  const now=getNow(); const date=now.getDate(); const month=getMN(now);
-  set('kpi-msg',`Dia ${date} de ${month}. KPIs calculados automaticamente.`);
-  set('kpi-card-t',`Vendas por plataforma · ${month}/${now.getFullYear()}`);
-  set('kpi-v-exec',  (KPI.execGeral||0)+'%',  KPI.execGeral>=70?'kv cup':'kv cam');
-  set('kpi-s-exec',  KPI.execGeral>=70?'✅ meta atingida':'⚠️ abaixo da meta');
-  set('kpi-v-receita', KPI.receitaTotal>0?fmt$(KPI.receitaTotal):'—', KPI.receitaTotal>0?'kv cup':'kv');
-  set('kpi-s-receita', 'faturamento do mês');
-  const comMid = DB.criadores.filter(c=>isFeitoMid(c.nome,'rotineiro')).length;
-  set('kpi-v-midias', `${comMid}/${DB.criadores.length}`, comMid===DB.criadores.length?'kv cup':'kv cam');
-  set('kpi-s-midias', 'entregues esta semana');
-  set('kpi-v-cham',  KPI.chamAbertos||0, KPI.chamAbertos>0?'kv cdn':'kv cup');
-  set('kpi-s-cham',  KPI.chamAbertos>0?'requer atenção':'tudo resolvido ✅');
-  // Barras plataforma
-  const mk=mesKey(now);
-  let sP=0,sO=0,sT=0,sA=0;
-  DB.faturamento.filter(f=>f.mes_key===mk).forEach(f=>{ sP+=(f.privacy||0); sO+=(f.onlyfans||0); sT+=(f.telegram_vip||0); sA+=(f.venda_avulsa||0); });
-  const tot=sP+sO+sT+sA;
-  const barEl=document.getElementById('kpi-barras-plat');
-  if(barEl){
-    if(tot>0){
-      barEl.innerHTML=[{n:'Privacy',v:sP},{n:'OnlyFans',v:sO},{n:'Telegram VIP',v:sT},{n:'Venda avulsa',v:sA}].map(({n,v})=>{
-        const pct=Math.round(v/tot*100);
-        return `<div class="br"><span class="bl">${n}</span><div class="bw"><div class="bf" style="width:${Math.max(pct,1)}%;background:var(--ac)"><span class="bv">${v>0?fmt$(v):'—'}</span></div></div></div>`;
-      }).join('');
-    } else {
-      barEl.innerHTML='<div style="font-size:13px;color:var(--tx3);text-align:center;padding:20px 0">Nenhum faturamento lançado ainda.</div>';
-    }
-  }
-}
-
-// ══════════════════════════════════════════
-// RELATÓRIOS — automático
-// ══════════════════════════════════════════
-function renderRelatorios(){
-  const tot=DB.chamados.length; const res=DB.chamados.filter(c=>c.status==='resolvido').length;
-  const comMid=DB.criadores.filter(c=>isFeitoMid(c.nome,'rotineiro')).length;
-  set('rel-exec',   (KPI.execGeral||0)+'%', KPI.execGeral>=70?'cup':'cam');
-  set('rel-cham',   `${res} de ${tot}`);
-  set('rel-midias', `${comMid} de ${DB.criadores.length}`);
-  set('rel-receita', KPI.receitaTotal>0?fmt$(KPI.receitaTotal):'—');
-  set('rel-adv',    DB.advertencias.filter(a=>a.mes_key===mesKey()).length||0);
-  const stEl=document.getElementById('rel-status');
-  if(stEl){ stEl.textContent=KPI.execGeral>=70?'Saudável':'Atenção'; stEl.className=`bdg ${KPI.execGeral>=70?'bok':'bwa'}`; }
-  const decEl=document.getElementById('rel-decisoes');
-  if(decEl) decEl.innerHTML=(KPI.alertas||[]).length
-    ? (KPI.alertas||[]).map(a=>`<div class="row"><span class="dot ${a.tipo==='crise'?'ddn':'dam'}"></span><span style="flex:1">${esc(a.msg)}</span></div>`).join('')
-    : '<div class="row"><span class="dot dok"></span><span style="flex:1">Nenhuma decisão urgente no momento ✅</span></div>';
-}
-
-// ══════════════════════════════════════════
-// ADVERTÊNCIAS — automáticas
-// ══════════════════════════════════════════
-async function gerarAdv(operador, criador, motivo){
-  const hoje = diaKey(); const mk = mesKey();
-  const jaExiste = DB.advertencias.find(a=>a.operador===operador&&a.dia===hoje&&a.motivo===motivo);
-  if(jaExiste) return;
-  await sbInsert('advertencias',{operador,criador,motivo,dia:hoje,mes_key:mk,created_at:new Date().toISOString()}).catch(()=>{
-    DB.advertencias.push({operador,criador,motivo,dia:hoje,mes_key:mk});
-  });
-}
-
-function renderAdvertencias(){
-  const el=document.getElementById('adv-cnt'); if(!el) return;
-  const mk=mesKey(); const advMes=DB.advertencias.filter(a=>a.mes_key===mk);
-  const porOpe={};
-  advMes.forEach(a=>{ porOpe[a.operador]=(porOpe[a.operador]||[]).concat(a); });
-  const resumo=DB.operadores.map(op=>{
-    const lista=porOpe[op.nome]||[];
-    const n=lista.length;
-    const ini=op.nome.split(' ').map(c=>c[0]).join('').slice(0,2);
-    const avC=n>=3?'avp':'avt';
-    return `<div class="hrow" style="${n>=3?'border-color:#FBBDD2':''}">
-      <div class="av ${avC}">${ini}</div><span class="hrow-n">${esc(op.nome)}</span>
-      <span class="bdg ${n>=3?'bur':n>=1?'bwa':'bok'}">${n>=3?`${n} advertências ⚠️`:n>=1?`${n} advertência`:'0 advertências'}</span>
-    </div>`;
-  }).join('');
-  const detalhes=Object.entries(porOpe).flatMap(([op,lista])=>
-    lista.slice(0,5).map((a,i)=>`<div class="adv">
-      <div class="adv-t">Advertência #${i+1} · ${esc(op)} · ${a.dia||'—'}</div>
-      <div class="adv-s">${esc(a.motivo||'—')}</div>
-      ${a.criador?`<div class="adv-j">Criador: ${esc(a.criador)}</div>`:''}
-    </div>`)
-  ).join('');
-  el.innerHTML=`<div class="sl">Resumo do mês atual · gerado automaticamente</div>${resumo}
-    <div class="sl" style="margin-top:16px">Detalhes</div>
-    ${detalhes||'<div class="nf nf-g"><span>✅</span><span>Nenhuma advertência registrada este mês.</span></div>'}`;
-}
-
-// ══════════════════════════════════════════
-// EQUIPE — dinâmica
-// ══════════════════════════════════════════
-function renderEquipe(){
-  const el=document.getElementById('equ-cnt'); if(!el) return;
-  const advMes=DB.advertencias.filter(a=>a.mes_key===mesKey());
-  const advPorOpe={}; advMes.forEach(a=>{ advPorOpe[a.operador]=(advPorOpe[a.operador]||0)+1; });
-  const opeHtml=DB.operadores.map(op=>{
-    const criList=DB.criadores.filter(c=>c.operador===op.nome).map(c=>c.nome.split(' ')[0]).join(', ');
-    const nAdv=advPorOpe[op.nome]||0;
-    const ini=op.nome.split(' ').map(c=>c[0]).join('').slice(0,2);
-    const avC=nAdv>=3?'avp':'avt';
-    return `<div class="hrow" style="${nAdv>=3?'border-color:#FBBDD2':''}">
-      <div class="av ${avC}">${ini}</div>
-      <div style="flex:1">
-        <div class="hrow-n">${esc(op.nome)} <span class="bdg bgr" style="font-size:10px">${esc(op.funcao||'')}</span>${nAdv>=3?` <span class="bdg bur" style="font-size:10px">${nAdv} advertências</span>`:''}</div>
-        <div style="font-size:12px;color:var(--tx3)">${criList||'Nenhum criador'}</div>
-      </div>
-      <button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button>
-      <span class="bdg ${nAdv>=3?'bwa':'bok'}">${nAdv>=3?'Atenção':'Ativo'}</span>
-    </div>`;
-  }).join('');
-  el.innerHTML=`<div class="sl">Operadores</div>${opeHtml}
-    <div class="sl">Admins</div>
-    <div class="hrow"><div class="av av-a">MU</div><span class="hrow-n">Murilo (você)</span><span class="bdg bin">Admin</span></div>
-    <button class="btn btn-p" style="margin-top:8px" onclick="oM('m-user')">+ Adicionar Admin</button>`;
-}
-
-// ══════════════════════════════════════════
-// CHAMADOS — Supabase (já funcionava, mantido e melhorado)
-// ══════════════════════════════════════════
-const statusBdg = s => { const m={aberto:'bur',andamento:'bwa',revisao:'bin',resolvido:'bok'}; return `<span class="bdg ${m[s]||'bgr'}">${s}</span>`; };
-const prioCls   = p => p?.includes('🔴')?'urg':p?.includes('🟡')?'pri':'nor';
-
-function chamCard(c, isAdmin=false){
+function chamCard(c,adm=false){
   const desc=c.descricao?`<div class="tktip">${esc(c.descricao)}</div>`:'';
-  const ctrl=isAdmin?`<div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap">
+  const ctrl=adm?`<div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap">
     <button class="btn btn-sm" onclick="atualizarChamado('${c.id}',{status:'aberto'})">Aberto</button>
     <button class="btn btn-sm" onclick="atualizarChamado('${c.id}',{status:'andamento'})">Andamento</button>
     <button class="btn btn-sm" onclick="atualizarChamado('${c.id}',{status:'revisao'})">Revisão</button>
     <button class="btn btn-g btn-sm" onclick="atualizarChamado('${c.id}',{status:'resolvido'})">Resolver</button>
     <select class="fs" style="width:120px;font-size:11px;padding:4px 7px" onchange="atualizarChamado('${c.id}',{responsavel:this.value})">
-      ${['Admin',...DB.operadores.map(o=>o.nome)].map(o=>`<option value="${o}" ${c.responsavel===o?'selected':''}>${o}</option>`).join('')}
+      ${['Admin',...OPERADORES_PADRAO].map(o=>`<option value="${o}" ${c.responsavel===o?'selected':''}>${o}</option>`).join('')}
     </select>
     <button class="btn btn-r btn-sm" onclick="excluirChamado('${c.id}')">✕</button>
   </div>`:'';
-  return `<div class="cham ${prioCls(c.prioridade)}">
-    <div class="tkt">${esc(c.titulo)}</div>
-    <div class="tks" style="margin-bottom:4px">${c.prioridade||'🟢 Normal'} · ${esc(c.criado_por)} → ${esc(c.responsavel)} · ${statusBdg(c.status)}</div>
-    ${desc}${ctrl}
-  </div>`;
+  return`<div class="cham ${prioCls(c.prioridade)}"><div class="tkt">${esc(c.titulo)}</div><div class="tks">${c.prioridade||'🟢 Normal'} · ${esc(c.criado_por)} → ${esc(c.responsavel)} · ${statusBdg(c.status)}</div>${desc}${ctrl}</div>`;
 }
 
 function renderChamadosAdm(){
   const groups={aberto:[],andamento:[],revisao:[],resolvido:[]};
-  DB.chamados.forEach(c=>(groups[c.status]||groups.aberto).push(c));
+  CHAMADOS.forEach(c=>(groups[c.status]||groups.aberto).push(c));
   const map={aberto:'aberto',andamento:'and',revisao:'rev',resolvido:'res'};
-  Object.entries(groups).forEach(([key,lista])=>{
-    const k=map[key];
-    set(k, lista.length);
-    const lEl=document.getElementById(`k-${k}-list`);
-    if(lEl) lEl.innerHTML=lista.map(c=>chamCard(c,true)).join('')||'<div class="tks">Nenhum.</div>';
+  Object.entries(groups).forEach(([k,lista])=>{
+    set(map[k],lista.length);
+    const lEl=$(`k-${map[k]}-list`);
+    if(lEl)lEl.innerHTML=lista.map(c=>chamCard(c,true)).join('')||'<div class="tks">Nenhum.</div>';
   });
-  const intEl=document.getElementById('chamados-internos-list');
-  const int=DB.chamados.filter(c=>c.criador_nome==='Geral / Agência');
-  if(intEl) intEl.innerHTML=int.map(c=>`<div class="row"><span class="dot dnu"></span><span style="flex:1">${esc(c.titulo)}</span>${statusBdg(c.status)}</div>`).join('')||'<div class="row">Nenhum chamado interno.</div>';
+  const intEl=$('chamados-internos-list');
+  const int=CHAMADOS.filter(c=>c.criador_nome==='Geral / Agência');
+  if(intEl)intEl.innerHTML=int.map(c=>`<div class="row"><span class="dot dnu"></span><span style="flex:1">${esc(c.titulo)}</span>${statusBdg(c.status)}</div>`).join('')||'<div class="row">Nenhum chamado interno.</div>';
 }
 
 function renderChamadosOpe(){
-  const el=document.getElementById('o-cha-cnt'); if(!el) return;
-  const meus=DB.chamados.filter(c=>c.responsavel===operadorAtual);
-  el.innerHTML=meus.length?meus.map(c=>chamCard(c,false)).join(''):'<div class="nf nf-b"><span>ℹ️</span><span>Nenhum chamado atribuído a você.</span></div>';
+  const el=$('o-cha-cnt');if(!el)return;
+  const meus=CHAMADOS.filter(c=>c.responsavel===operadorAtual);
+  el.innerHTML=meus.length?meus.map(c=>chamCard(c,false)).join(''):'<div class="nf nf-b"><span>ℹ️</span><span>Nenhum chamado atribuído.</span></div>';
 }
 
 async function criarChamadoOpe(){
-  const cri  = document.getElementById('mc-cri')?.value||'Geral';
-  const tipo = document.getElementById('mc-tipo')?.value||'Outro';
-  const prio = document.getElementById('mc-prio')?.value||'🟢 Normal';
-  const desc = document.getElementById('mc-desc')?.value||'';
-  const resp = DB.criadores.find(c=>c.nome===cri)?.operador||operadorAtual;
-  await sbInsert('chamados',{titulo:`${cri} — ${tipo}`,descricao:desc,status:'aberto',prioridade:prio,criado_por:operadorAtual,responsavel:resp,criador_nome:cri,created_at:new Date().toISOString()});
-  cM('m-cham'); document.getElementById('mc-desc').value='';
-  await carregarTudo(); toast('Chamado aberto! Admin notificado.');
+  const cri=$('mc-cri')?.value||'Geral';
+  const tipo=$('mc-tipo')?.value||'Outro';
+  const prio=$('mc-prio')?.value||'🟢 Normal';
+  const desc=$('mc-desc')?.value||'';
+  const resp=CRIADORES_PADRAO.find(c=>c.nome===cri)?.operador||operadorAtual;
+  await dbInsert('chamados',{titulo:`${cri} — ${tipo}`,descricao:desc,status:'aberto',prioridade:prio,criado_por:operadorAtual,responsavel:resp,criador_nome:cri,created_at:new Date().toISOString()});
+  cM('m-cham');const e=$('mc-desc');if(e)e.value='';
+  await carregarTudo();toast('Chamado aberto! Admin notificado.');
 }
 
 async function criarChamadoCri(){
-  const tipo = document.getElementById('mcc-tipo')?.value||'Outro';
-  const desc = document.getElementById('mcc-desc')?.value||'';
-  const cri  = DB.criadores.find(c=>c.nome===criadorAtual);
-  await sbInsert('chamados',{titulo:`${criadorAtual} — ${tipo}`,descricao:desc,status:'aberto',prioridade:'🟡 Prioridade razoável',criado_por:criadorAtual,responsavel:cri?.operador||'Admin',criador_nome:criadorAtual,created_at:new Date().toISOString()});
-  cM('m-cham-cri'); document.getElementById('mcc-desc').value='';
-  await carregarTudo(); toast('Chamado enviado! Seu operador foi notificado.');
+  const tipo=$('mcc-tipo')?.value||'Outro';
+  const desc=$('mcc-desc')?.value||'';
+  const cri=CRIADORES_PADRAO.find(c=>c.nome===criadorAtual);
+  await dbInsert('chamados',{titulo:`${criadorAtual} — ${tipo}`,descricao:desc,status:'aberto',prioridade:'🟡 Prioridade razoável',criado_por:criadorAtual,responsavel:cri?.operador||'Admin',criador_nome:criadorAtual,created_at:new Date().toISOString()});
+  cM('m-cham-cri');const e=$('mcc-desc');if(e)e.value='';
+  await carregarTudo();toast('Chamado enviado! Operador notificado.');
 }
 
 async function criarChamadoInterno(){
-  const tipo = document.getElementById('mi-tipo')?.value||'Interno';
-  const prio = document.getElementById('mi-prio')?.value||'🟢 Normal';
-  const desc = document.getElementById('mi-desc')?.value||'';
-  await sbInsert('chamados',{titulo:`Interno — ${tipo}`,descricao:desc,status:'aberto',prioridade:prio,criado_por:'Admin',responsavel:'Admin',criador_nome:'Geral / Agência',created_at:new Date().toISOString()});
-  cM('m-int'); document.getElementById('mi-desc').value='';
-  await carregarTudo(); toast('Chamado interno registrado!');
+  const tipo=$('mi-tipo')?.value||'Interno';
+  const prio=$('mi-prio')?.value||'🟢 Normal';
+  const desc=$('mi-desc')?.value||'';
+  await dbInsert('chamados',{titulo:`Interno — ${tipo}`,descricao:desc,status:'aberto',prioridade:prio,criado_por:'Admin',responsavel:'Admin',criador_nome:'Geral / Agência',created_at:new Date().toISOString()});
+  cM('m-int');const e=$('mi-desc');if(e)e.value='';
+  await carregarTudo();toast('Chamado interno registrado!');
 }
 
-async function atualizarChamado(id, dados){
-  await sbUpdate('chamados', id, dados);
-  const c=DB.chamados.find(x=>x.id===id); if(c) Object.assign(c,dados);
-  recalcular(); renderChamadosAdm(); renderChamadosOpe(); renderCriPen(); atualizarBadges();
+async function atualizarChamado(id,dados){
+  await dbUpdate('chamados',id,dados);
+  const c=CHAMADOS.find(x=>x.id===id);if(c)Object.assign(c,dados);
+  renderChamadosAdm();renderChamadosOpe();renderCriPen();atualizarBadges();
   toast('Chamado atualizado!');
 }
 
 async function excluirChamado(id){
-  if(!confirm('Excluir este chamado?')) return;
-  await sbDelete('chamados', id);
-  DB.chamados=DB.chamados.filter(c=>c.id!==id);
-  recalcular(); renderChamadosAdm(); renderChamadosOpe(); atualizarBadges();
-  toast('Chamado excluído.','info');
+  if(!confirm('Excluir este chamado?'))return;
+  await dbDelete('chamados',id);
+  CHAMADOS=CHAMADOS.filter(c=>c.id!==id);
+  renderChamadosAdm();renderChamadosOpe();atualizarBadges();toast('Chamado excluído.','info');
 }
 
 function atualizarBadges(){
-  const ab=KPI.chamAbertos||0;
-  set('badge-cha', ab);
-  set('badge-cha-ope', DB.chamados.filter(c=>c.responsavel===operadorAtual&&c.status==='aberto').length||0);
-  set('d-chamados', ab);
+  const ab=CHAMADOS.filter(c=>c.status==='aberto').length;
+  set('badge-cha',ab||0);
+  set('badge-cha-ope',CHAMADOS.filter(c=>c.responsavel===operadorAtual&&c.status==='aberto').length||0);
+  set('d-chamados',ab||0);
 }
 
-// ══════════════════════════════════════════
-// GESTÃO DO CRM — tudo persiste no Supabase
-// ══════════════════════════════════════════
-async function adicionarCriador(){
-  const nome  = document.getElementById('mac-nome')?.value?.trim();
-  const ope   = document.getElementById('mac-ope')?.value;
-  const cta   = parseInt(document.getElementById('mac-cta')?.value)||1;
-  const inicio= document.getElementById('mac-inicio')?.value||new Date().toISOString().slice(0,10);
-  const dur   = parseInt(document.getElementById('mac-dur')?.value)||12;
-  if(!nome){ toast('Informe o nome do criador.','err'); return; }
-  const result=await sbInsert('criadores',{nome,operador:ope,cta,inicio,duracao_meses:dur,created_at:new Date().toISOString()});
-  if(!result){ toast('Erro ao salvar. Verifique o Supabase.','err'); return; }
-  cM('m-add-criador');
-  ['mac-nome','mac-inicio','mac-dur'].forEach(id=>{ const e=document.getElementById(id); if(e)e.value=''; });
-  await carregarTudo();
-  toast(`Criador ${nome} adicionado! Já aparece no sistema.`);
-}
-
-async function removerCriador(id, nome){
-  if(!confirm(`Remover ${nome}? Isso não apaga o histórico de rotina e mídias.`)) return;
-  await sbDelete('criadores', id);
-  await carregarTudo();
-  toast(`${nome} removido.`,'info');
-}
-
-async function adicionarOperador(){
-  const nome  = document.getElementById('mao-nome')?.value?.trim();
-  const funcao= document.getElementById('mao-func')?.value?.trim()||'Operador';
-  if(!nome){ toast('Informe o nome.','err'); return; }
-  await sbInsert('operadores',{nome,funcao,created_at:new Date().toISOString()});
-  cM('m-add-operador');
-  ['mao-nome','mao-func'].forEach(id=>{ const e=document.getElementById(id); if(e)e.value=''; });
-  await carregarTudo();
-  toast(`Operador ${nome} adicionado!`);
-}
-
-async function removerOperador(id, nome){
-  if(!confirm(`Remover ${nome}?`)) return;
-  await sbDelete('operadores', id);
-  await carregarTudo();
-  toast(`${nome} removido.`,'info');
-}
-
-async function adicionarObrigacao(){
-  const nome = document.getElementById('mao2-nome')?.value?.trim();
-  const resp = document.getElementById('mao2-resp')?.value||'raise';
-  const dia  = document.getElementById('mao2-dia')?.value||'todos';
-  if(!nome){ toast('Informe o nome da obrigação.','err'); return; }
-  await sbInsert('obrigacoes',{nome,responsavel:resp,dia,created_at:new Date().toISOString()});
-  cM('m-add-obrig');
-  const e=document.getElementById('mao2-nome'); if(e)e.value='';
-  await carregarTudo();
-  toast(`Obrigação "${nome}" adicionada! Já aparece na rotina.`);
-}
-
-async function removerObrigacao(id, nome){
-  if(!confirm(`Remover "${nome}"?`)) return;
-  await sbDelete('obrigacoes', id);
-  await carregarTudo();
-  toast(`Obrigação removida.`,'info');
-}
-
-async function confirmarTransferencia(){
-  const cri   = document.getElementById('mt-cri')?.value;
-  const novoOp= document.getElementById('mt-ope')?.value;
-  const motivo= document.getElementById('mt-motivo')?.value?.trim();
-  if(!cri||!novoOp){ toast('Selecione o criador e o novo operador.','err'); return; }
-  const cr=DB.criadores.find(c=>c.nome===cri);
-  if(!cr){ toast('Criador não encontrado.','err'); return; }
-  await sbUpdate('criadores', cr.id, {operador:novoOp});
-  cM('m-transfer');
-  await carregarTudo();
-  toast(`${cri} transferido para ${novoOp}!`);
-}
-
-async function salvarUsuario(){
-  const nome = document.getElementById('mu-nome')?.value?.trim();
-  const tipo = document.getElementById('mu-tipo')?.value||'Operador';
-  const email= document.getElementById('mu-email')?.value?.trim();
-  if(!nome){ toast('Informe o nome.','err'); return; }
-  if(tipo==='Operador') await sbInsert('operadores',{nome,funcao:'Operador',email,created_at:new Date().toISOString()});
-  cM('m-user');
-  ['mu-nome','mu-email'].forEach(id=>{ const e=document.getElementById(id); if(e)e.value=''; });
-  await carregarTudo();
-  toast(`${nome} adicionado como ${tipo}!`);
-}
-
-async function salvarLead(){
-  const nome  = document.getElementById('ml-nome')?.value?.trim();
-  const etapa = document.getElementById('ml-etapa')?.value||'Atração';
-  const obs   = document.getElementById('ml-obs')?.value?.trim()||'';
-  if(!nome){ toast('Informe o nome do lead.','err'); return; }
-  await sbInsert('leads',{nome,etapa,observacoes:obs,created_at:new Date().toISOString()}).catch(()=>{});
-  cM('m-lead');
-  ['ml-nome','ml-obs'].forEach(id=>{ const e=document.getElementById(id); if(e)e.value=''; });
-  await carregarTudo();
-  toast(`Lead ${nome} adicionado ao pipeline!`);
-}
-
-async function salvarPlataforma(){
-  const cri    = document.getElementById('plat-cri-sel')?.value;
-  const plat   = document.getElementById('plat-nome')?.value;
-  const status = document.getElementById('plat-status')?.value;
-  const tipo   = document.getElementById('plat-tipo')?.value;
-  if(!cri||!plat){ toast('Selecione o criador e a plataforma.','err'); return; }
-  const id=`plat__${cri}__${plat}`;
-  await sbUpsert('plataformas_status',{id,criador:cri,plataforma:plat,status,tipo,updated_at:new Date().toISOString(),created_at:new Date().toISOString()}).catch(()=>{});
-  await carregarTudo();
-  toast(`${plat} de ${cri} → ${status}`);
-}
-
-// ── RENDER GESTÃO ──
-function renderGestao(){
-  // Criadores
-  const gcEl=document.getElementById('gestao-criadores');
-  if(gcEl) gcEl.innerHTML=DB.criadores.map(cr=>`<div class="row">
-    <span style="flex:1;font-size:13px;font-weight:600">${esc(cr.nome)}</span>
-    <span style="font-size:12px;color:var(--tx3);margin-right:8px">Op: ${esc(cr.operador)} · CTA ${cr.cta||1} · ${diasRest(cr.inicio,cr.duracao_meses||cr.duracao||12)}d</span>
-    <button class="btn btn-r btn-sm" onclick="removerCriador('${cr.id}','${esc(cr.nome)}')">✕</button>
-  </div>`).join('')||'<div style="font-size:13px;color:var(--tx3);padding:10px 0">Nenhum criador cadastrado.</div>';
-
-  // Operadores
-  const goEl=document.getElementById('gestao-operadores');
-  if(goEl) goEl.innerHTML=DB.operadores.map(op=>`<div class="row">
-    <span style="flex:1;font-size:13px;font-weight:600">${esc(op.nome)}</span>
-    <span style="font-size:12px;color:var(--tx3);margin-right:8px">${esc(op.funcao||'')} · ${DB.criadores.filter(c=>c.operador===op.nome).length} criadores</span>
-    <button class="btn btn-r btn-sm" onclick="removerOperador('${op.id}','${esc(op.nome)}')">✕</button>
-  </div>`).join('')||'<div style="font-size:13px;color:var(--tx3);padding:10px 0">Nenhum operador cadastrado.</div>';
-
-  // Obrigações
-  const obEl=document.getElementById('gestao-obrigacoes');
-  if(obEl){
-    const dMap={todos:'Todos os dias','1':'Seg','2':'Ter','3':'Qua','4':'Qui','5':'Sex','6':'Sáb','0':'Dom'};
-    obEl.innerHTML=DB.obrigacoes.map(o=>{
-      const tc=o.responsavel==='raise'?'tr':o.responsavel==='criador'?'tc':'ta';
-      const tl=o.responsavel==='raise'?'RAISE':o.responsavel==='criador'?'CRIADOR':'AMBOS';
-      return `<div class="row">
-        <span style="flex:1;font-size:13px">${esc(o.nome)}</span>
-        <span class="tag ${tc}" style="margin-right:6px">${tl}</span>
-        <span style="font-size:11px;color:var(--tx3);margin-right:8px">${dMap[o.dia]||o.dia}</span>
-        <button class="btn btn-r btn-sm" onclick="removerObrigacao('${o.id}','${esc(o.nome)}')">✕</button>
-      </div>`;
-    }).join('')||'<div style="font-size:13px;color:var(--tx3);padding:10px 0">Nenhuma obrigação cadastrada.</div>';
-  }
-}
-
-// ── SELECTS ──
-function atualizarSelects(){
-  const now=getNow(); const wom=getWOM(now); const month=getMN(now);
-  // Selects de criadores
-  ['fat-cri','kpi-cri-sel','plat-cri-sel','mc-cri','mf-cri','mt-cri'].forEach(id=>{
-    const sel=document.getElementById(id); if(!sel||sel.hasAttribute('data-init'))return;
-    DB.criadores.forEach(c=>{ const o=document.createElement('option'); o.value=c.nome; o.textContent=c.nome; sel.appendChild(o); });
-    sel.setAttribute('data-init','1');
-  });
-  // Selects de operadores
-  ['mac-ope','mt-ope'].forEach(id=>{
-    const sel=document.getElementById(id); if(!sel||sel.hasAttribute('data-init'))return;
-    DB.operadores.forEach(o=>{ const op=document.createElement('option'); op.value=o.nome; op.textContent=o.nome; sel.appendChild(op); });
-    sel.setAttribute('data-init','1');
-  });
-  // Selects de semana
-  ['fat-sem-g','kpi-sem-sel','mf-sem'].forEach(id=>{
-    const sel=document.getElementById(id); if(!sel||sel.hasAttribute('data-init'))return;
-    for(let i=1;i<=wom;i++){ const o=document.createElement('option'); o.value=i; o.textContent=`Semana ${i} de ${month}`; if(i===wom)o.selected=true; sel.appendChild(o); }
-    sel.setAttribute('data-init','1');
-  });
-  // Selects sidebar
-  const opeSel=document.getElementById('ope-sel');
-  if(opeSel&&!opeSel.hasAttribute('data-init')){
-    DB.operadores.forEach(op=>{ const o=document.createElement('option'); o.value=op.nome; o.textContent=op.nome; if(op.nome===operadorAtual)o.selected=true; opeSel.appendChild(o); });
-    opeSel.setAttribute('data-init','1');
-  }
-  const criSel=document.getElementById('cri-sel');
-  if(criSel&&!criSel.hasAttribute('data-init')){
-    DB.criadores.forEach(cr=>{ const o=document.createElement('option'); o.value=cr.nome; o.textContent=cr.nome; if(cr.nome===criadorAtual)o.selected=true; criSel.appendChild(o); });
-    criSel.setAttribute('data-init','1');
-  }
-  // Rotina dia
-  const rotDia=document.getElementById('a-rot-d');
-  if(rotDia&&!rotDia.hasAttribute('data-init')){
-    const now2=getNow();
-    ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'].forEach((d,i)=>{
-      const o=document.createElement('option'); const val=i===6?0:i+1;
-      o.value=val; o.textContent=d; if(val===now2.getDay())o.selected=true; rotDia.appendChild(o);
-    });
-    rotDia.setAttribute('data-init','1'); rotDia.onchange=renderRotAdm;
-  }
-  // Rotina criador filtro
-  const rotCri=document.getElementById('a-rot-cri');
-  if(rotCri&&!rotCri.hasAttribute('data-init')){
-    const all=document.createElement('option'); all.value='todos'; all.textContent='Todos os criadores'; rotCri.appendChild(all);
-    DB.criadores.forEach(c=>{ const o=document.createElement('option'); o.value=c.nome; o.textContent=c.nome; rotCri.appendChild(o); });
-    rotCri.setAttribute('data-init','1'); rotCri.onchange=renderRotAdm;
-  }
-}
-
-// ══════════════════════════════════════════
+// ============================================================
 // DOSSIÊ
-// ══════════════════════════════════════════
-const DOSSIE = {
-  'Bruna Santiny': {cpf:'•••.•••.•••-62',persona:'Feminino · 25-35 · BR',senhas:[
-    {p:'IG Principal · App 2FA', v:'@bruna_santiny / Br@2025#',social:true},
-    {p:'IG Reserva 1 · App 2FA', v:'@bruna_res1 / Res@1234!',social:true},
-    {p:'Canal WhatsApp',         v:'+55 11 9xxxx-xxxx',social:true},
-    {p:'Privacy · SMS 2FA',      v:'brunasantiny / Prv#2025',social:false},
-    {p:'OnlyFans · App 2FA',     v:'bruna.hot / OF@pass!',social:false},
-    {p:'Telegram VIP',           v:'t.me/brunavip · Admin@raise',social:false},
-  ]},
-  'Negão Rubi': {cpf:'•••.•••.•••-41',persona:'Masculino · 25-40 · BR',senhas:[
-    {p:'IG Principal · App 2FA', v:'@negao_rubi / Ru@2025#',social:true},
-    {p:'Privacy · SMS 2FA',      v:'negaorubi / Prv#2025',social:false},
-  ]},
+// ============================================================
+const DOSSIE={
+  'Bruna Santiny':{cpf:'•••.•••.•••-62',persona:'Feminino · 25-35 · BR',senhas:[{p:'IG Principal · App 2FA',v:'@bruna_santiny / Br@2025#',s:true},{p:'IG Reserva 1',v:'@bruna_res1 / Res@1234!',s:true},{p:'Canal WhatsApp',v:'+55 11 9xxxx-xxxx',s:true},{p:'Privacy · SMS 2FA',v:'brunasantiny / Prv#2025',s:false},{p:'OnlyFans · App 2FA',v:'bruna.hot / OF@pass!',s:false},{p:'Telegram VIP',v:'t.me/brunavip · Admin@raise',s:false}]},
+  'Negão Rubi':{cpf:'•••.•••.•••-41',persona:'Masculino · 25-40 · BR',senhas:[{p:'IG Principal · App 2FA',v:'@negao_rubi / Ru@2025#',s:true},{p:'Privacy · SMS 2FA',v:'negaorubi / Prv#2025',s:false}]},
 };
 
 function renderDossie(nome){
-  const el=document.getElementById('dossie-content'); if(!el) return;
-  const cr=DB.criadores.find(c=>c.nome===nome)||{};
+  const el=$('dossie-content');if(!el)return;
+  const cr=CRIADORES_PADRAO.find(c=>c.nome===nome)||{};
   const d=DOSSIE[nome]||{cpf:'—',persona:'—',senhas:[]};
-  const dr=cr.inicio?diasRest(cr.inicio,cr.duracao_meses||cr.duracao||12):0;
-  const fat=KPI.fatMes?.[nome]||0;
-
-  // Plataformas do banco (se disponível)
-  const platsDB=DB.plataformas.filter(p=>p.criador===nome);
-  const platSoc=platsDB.filter(p=>p.tipo==='Rede Social').length>0?platsDB.filter(p=>p.tipo==='Rede Social'):
-    ['Instagram Principal','Instagram Reserva 1','Canal WhatsApp','TikTok'].map(n=>({plataforma:n,status:'Ativo',tipo:'Rede Social'}));
-  const plat18=platsDB.filter(p=>p.tipo==='+18').length>0?platsDB.filter(p=>p.tipo==='+18'):
-    ['Privacy','OnlyFans','Telegram VIP','Telegram Free'].map(n=>({plataforma:n,status:'Ativo',tipo:'+18'}));
-
-  const dotCor=(s)=>s==='Ativo'?'dok':s==='Restrito'?'dam':'ddn';
-  const bdgStatus=(s)=>s==='Ativo'?'bok':s==='Restrito'?'bwa':'bur';
-
+  const dr=cr.inicio?diasRestantes(cr.inicio,cr.duracao||12):0;
+  const fat=KPI_CACHE.fatMes?.[nome]||0;
+  const pSoc=['Instagram Principal','Instagram Reserva 1','Canal WhatsApp','TikTok'];
+  const p18=['Privacy','OnlyFans','Telegram VIP','Telegram Free'];
+  const statusPlat=(p,tipoPadrao)=>{
+    const dados=PLATAFORMAS_STATUS[`${nome}__${p}`]||{};
+    const status=dados.status||'Ativo';
+    const ok=status==='Ativo';
+    return `<div class="plr"><span class="dot ${ok?'dok':'dnu'}"></span><span style="flex:1">${p}</span><span class="bdg ${tipoPadrao==='+18'?'bur':'bgr'}" style="margin-right:5px;font-size:10px">${dados.tipo||tipoPadrao}</span><span class="bdg ${ok?'bok':'ber'}">${esc(status)}</span></div>`;
+  };
   el.innerHTML=`<div class="g2">
     <div class="card"><div class="ch"><span class="ct">${esc(nome)} · Cadastro</span></div><div class="cb">
       <div class="row"><span style="font-size:12px;color:var(--tx3);width:120px">CPF</span><span>${d.cpf}</span></div>
       <div class="row"><span style="font-size:12px;color:var(--tx3);width:120px">Início contrato</span><span>${cr.inicio||'—'}</span></div>
-      <div class="row"><span style="font-size:12px;color:var(--tx3);width:120px">Duração</span><span>${cr.duracao_meses||cr.duracao||12} meses</span></div>
+      <div class="row"><span style="font-size:12px;color:var(--tx3);width:120px">Duração</span><span>${cr.duracao||12} meses</span></div>
       <div class="row"><span style="font-size:12px;color:var(--tx3);width:120px">Dias restantes</span><span class="bdg bok">${dr} dias</span></div>
       <div class="row"><span style="font-size:12px;color:var(--tx3);width:120px">Persona</span><span>${d.persona}</span></div>
       <div class="row"><span style="font-size:12px;color:var(--tx3);width:120px">CTA estágio</span><span class="bdg bin">Estágio ${cr.cta||1}</span></div>
       <div class="row"><span style="font-size:12px;color:var(--tx3);width:120px">Faturamento mês</span><span class="${fat>0?'cup':''}" style="font-weight:700">${fat>0?fmt$(fat):'Sem lançamento'}</span></div>
     </div></div>
-    <div class="card"><div class="ch"><span class="ct">Plataformas</span><span class="bdg bgr" style="font-size:10px">Editável: Gestão do CRM</span></div><div class="cb">
-      ${platSoc.map(p=>`<div class="plr"><span class="dot ${dotCor(p.status)}"></span><span style="flex:1">${esc(p.plataforma)}</span><span class="bdg bgr" style="margin-right:5px;font-size:10px">Rede Social</span><span class="bdg ${bdgStatus(p.status)}">${p.status}</span></div>`).join('')}
-      ${plat18.map(p=>`<div class="plr"><span class="dot ${dotCor(p.status)}"></span><span style="flex:1">${esc(p.plataforma)}</span><span class="bdg bur" style="margin-right:5px;font-size:10px">+18</span><span class="bdg ${bdgStatus(p.status)}">${p.status}</span></div>`).join('')}
+    <div class="card"><div class="ch"><span class="ct">Plataformas</span></div><div class="cb">
+      ${pSoc.map(p=>statusPlat(p,'Rede Social')).join('')}
+      ${p18.map(p=>statusPlat(p,'+18')).join('')}
     </div></div>
   </div>
-  <div class="card"><div class="ch"><span class="ct">Cofre de senhas · clique para revelar</span><span class="bdg bur">Confidencial · Admin</span></div><div class="cb">
+  <div class="card"><div class="ch"><span class="ct">Cofre de senhas · clique para revelar</span><span class="bdg bur">Confidencial</span></div><div class="cb">
     ${d.senhas.map(s=>`<div class="row"><span style="width:160px;font-size:12px;color:var(--tx3)">${esc(s.p)}</span><span class="blr" onclick="this.style.filter=this.style.filter==='none'?'blur(5px)':'none'" style="filter:blur(5px);cursor:pointer;font-family:monospace;font-size:13px">${esc(s.v)}</span></div>`).join('')}
-    <div style="font-size:12px;color:var(--tx3);margin-top:6px">👆 Clique em qualquer senha para revelar</div>
+    <div style="font-size:12px;color:var(--tx3);margin-top:6px">👆 Clique para revelar</div>
   </div></div>`;
 }
 
 function renderDosOpe(){
-  const el=document.getElementById('o-dos-content'); if(!el) return;
-  const meusCri=DB.criadores.filter(c=>c.operador===operadorAtual);
-  el.innerHTML=meusCri.map(cr=>{
+  const el=$('o-dos-content');if(!el)return;
+  const mc=CRIADORES_PADRAO.filter(c=>c.operador===operadorAtual);
+  el.innerHTML=mc.map(cr=>{
     const d=DOSSIE[cr.nome]||{senhas:[]};
-    const dr=diasRest(cr.inicio,cr.duracao_meses||cr.duracao||12);
-    const ss=d.senhas.filter(s=>s.social!==false&&!s.p.includes('Privacy')&&!s.p.includes('OnlyFans')&&!s.p.includes('Telegram'));
-    return `<div class="sl">${esc(cr.nome)} · ${dr} dias restantes</div>
-      ${ss.map(s=>`<div class="plr"><span style="width:150px;font-size:12px;color:var(--tx3)">${esc(s.p)}</span><span class="blr" onclick="this.style.filter=this.style.filter==='none'?'blur(5px)':'none'" style="filter:blur(5px);cursor:pointer;font-family:monospace">${esc(s.v)}</span></div>`).join('')}
-      <div style="font-size:12px;color:var(--tx3);margin-bottom:12px;padding:6px 12px;background:var(--dnb);border-radius:6px;margin-top:4px">🔒 Senhas +18 visíveis somente pelo Admin.</div>`;
-  }).join('')||'<div class="nf nf-b"><span>ℹ️</span><span>Nenhum criador atribuído a você.</span></div>';
+    const dr=diasRestantes(cr.inicio,cr.duracao||12);
+    const ss=d.senhas.filter(s=>s.s!==false&&!s.p.includes('Privacy')&&!s.p.includes('OnlyFans')&&!s.p.includes('Telegram'));
+    return `<div class="sl">${esc(cr.nome)} · ${dr} dias restantes</div>${ss.map(s=>`<div class="plr"><span style="width:150px;font-size:12px;color:var(--tx3)">${esc(s.p)}</span><span class="blr" onclick="this.style.filter=this.style.filter==='none'?'blur(5px)':'none'" style="filter:blur(5px);cursor:pointer;font-family:monospace">${esc(s.v)}</span></div>`).join('')}<div style="font-size:12px;color:var(--tx3);margin-bottom:12px;padding:6px 12px;background:var(--dnb);border-radius:6px;margin-top:4px">🔒 Senhas +18 visíveis somente pelo Admin.</div>`;
+  }).join('')||'<div class="nf nf-b"><span>ℹ️</span><span>Nenhum criador atribuído.</span></div>';
 }
 
-// ══════════════════════════════════════════
-// CRIADOR — VISÃO GERAL (100% banco)
-// ══════════════════════════════════════════
+// ============================================================
+// CRIADOR — VISÃO GERAL (100% do banco)
+// ============================================================
 function renderCriOV(){
-  const now=getNow(); const date=now.getDate();
+  const now=getNow();const date=now.getDate();
   const diasNoMes=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
   const mesAntNome=getMN(new Date(now.getFullYear(),now.getMonth()-1,1));
-  const h=now.getHours(); const saud=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
-  const greet=document.getElementById('c-greet');
-  if(greet) greet.textContent=`${saud}, ${criadorAtual.split(' ')[0]}! 👋`;
-  const diasEl=document.getElementById('c-dias');
-  if(diasEl) diasEl.textContent=`Dias corridos do mês: ${date} de ${diasNoMes} · comparado a ${mesAntNome}`;
-
+  const h=now.getHours();const saud=h<12?'Bom dia':h<18?'Boa tarde':'Boa noite';
+  const greet=$('c-greet');if(greet)greet.textContent=`${saud}, ${criadorAtual.split(' ')[0]}! 👋`;
+  const diasEl=$('c-dias');if(diasEl)diasEl.textContent=`Dias corridos do mês: ${date} de ${diasNoMes} · comparado a ${mesAntNome}`;
   // Faturamento do banco
-  const mk  = mesKey(now); const sk = semKey(now);
-  const fatCri = DB.faturamento.filter(f=>f.criador===criadorAtual&&f.mes_key===mk);
-  const totMes = fatCri.reduce((a,f)=>a+(f.total||0),0);
-  const avSem  = DB.faturamento.filter(f=>f.criador===criadorAtual&&f.semana_key===sk).reduce((a,f)=>a+(f.venda_avulsa||0),0);
-  const mkAnt  = mesKey(new Date(now.getFullYear(),now.getMonth()-1,1));
-  const totAnt = DB.faturamento.filter(f=>f.criador===criadorAtual&&f.mes_key===mkAnt).reduce((a,f)=>a+(f.total||0),0);
-  const vr     = totAnt>0?Math.round((totMes-totAnt)/totAnt*100):null;
-
-  set('c-fat',    totMes>0?fmt$(totMes):'Sem lançamento');
-  const cfEl=document.getElementById('c-fat-comp');
-  if(cfEl){ cfEl.textContent=vr!=null?(vr>=0?`↑${vr}% vs ${mesAntNome}`:`↓${Math.abs(vr)}% vs ${mesAntNome}`):''; cfEl.className=`ks ${vr>=0?'cup':'cdn'}`; }
-  set('c-avulsa', avSem>0?fmt$(avSem):'—');
-
+  const mk=getMesKey(now);const sk=getSemKey(now);
+  const fatCri=FAT_DB.filter(f=>f.criador===criadorAtual&&f.mes_key===mk);
+  const totMes=fatCri.reduce((a,f)=>a+(f.total||0),0);
+  const avSem=FAT_DB.filter(f=>f.criador===criadorAtual&&f.semana_key===sk).reduce((a,f)=>a+(f.venda_avulsa||0),0);
+  const mkAnt=getMesKey(new Date(now.getFullYear(),now.getMonth()-1,1));
+  const totAnt=FAT_DB.filter(f=>f.criador===criadorAtual&&f.mes_key===mkAnt).reduce((a,f)=>a+(f.total||0),0);
+  const vr=totAnt>0?Math.round((totMes-totAnt)/totAnt*100):null;
+  set('c-fat',totMes>0?fmt$(totMes):'Sem lançamento');
+  set('c-avulsa',avSem>0?fmt$(avSem):'—');
+  const cfEl=$('c-fat-comp');if(cfEl){cfEl.textContent=vr!=null?(vr>=0?`↑${vr}% vs ${mesAntNome}`:`↓${Math.abs(vr)}% vs ${mesAntNome}`):'';cfEl.className=`ks ${vr>=0?'cup':'cdn'}`;}
   // Constância
-  const day=now.getDay();
-  const criObs=obsDoDia(day,'todos').filter(o=>o.responsavel==='criador'||o.responsavel==='ambos');
+  const day=now.getDay();const criObs=obsDoDia(day,'todos').filter(o=>o.resp==='criador'||o.resp==='ambos');
   const f=criObs.filter(o=>isFeitoRot(criadorAtual,o.nome)).length;
   const pct=criObs.length?Math.round(f/criObs.length*100):100;
-  const pctEl=document.getElementById('c-const-pct');
-  if(pctEl){ pctEl.textContent=pct+'%'; pctEl.style.color=pct>=80?'var(--ok)':pct>=60?'var(--wn)':'var(--dn)'; }
+  const pctEl=$('c-const-pct');if(pctEl){pctEl.textContent=pct+'%';pctEl.style.color=pct>=80?'var(--ok)':pct>=60?'var(--wn)':'var(--dn)';}
   const midOk=isFeitoMid(criadorAtual,'rotineiro')&&isFeitoMid(criadorAtual,'ideias')&&isFeitoMid(criadorAtual,'mais18');
-  const barsEl=document.getElementById('c-const-bars');
-  if(barsEl) barsEl.innerHTML=[
-    {l:'Mídias no prazo',    v:midOk?100:0},
-    {l:'Tarefas diárias',    v:pct},
-    {l:'Faturamento ativo',  v:totMes>0?100:0},
-    {l:'Sem chamados abertos',v:DB.chamados.filter(c=>c.criado_por===criadorAtual&&c.status==='aberto').length===0?100:40}
-  ].map(b=>`<div class="br"><span class="bl">${b.l}</span><div class="bw"><div class="bf" style="width:${b.v}%;background:${b.v>=80?'var(--ok)':'var(--wn)'}"><span class="bv">${b.v}%</span></div></div></div>`).join('');
-  const pcEl=document.getElementById('c-ponto-critico');
-  if(pcEl){
-    if(pct<80)       pcEl.textContent='Ponto crítico: tarefas diárias abaixo de 80%. Marque suas obrigações.';
-    else if(!midOk)  pcEl.textContent='Ponto crítico: mídias ainda não entregues esta semana.';
-    else if(!totMes) pcEl.textContent='Atenção: nenhum faturamento lançado este mês ainda.';
-    else             pcEl.textContent='Você está em dia! Continue mantendo a constância 🚀';
-  }
-
+  const barsEl=$('c-const-bars');
+  if(barsEl)barsEl.innerHTML=[{l:'Mídias no prazo',v:midOk?100:0},{l:'Tarefas diárias',v:pct},{l:'Faturamento ativo',v:totMes>0?100:0},{l:'Sem chamados abertos',v:CHAMADOS.filter(c=>c.criado_por===criadorAtual&&c.status==='aberto').length===0?100:40}]
+    .map(b=>`<div class="br"><span class="bl">${b.l}</span><div class="bw"><div class="bf" style="width:${b.v}%;background:${b.v>=80?'var(--ok)':'var(--wn)'}"><span class="bv">${b.v}%</span></div></div></div>`).join('');
+  const pcEl=$('c-ponto-critico');
+  if(pcEl){if(pct<80)pcEl.textContent='Ponto crítico: tarefas diárias abaixo de 80%. Marque suas obrigações.';else if(!midOk)pcEl.textContent='Ponto crítico: mídias ainda não entregues esta semana.';else if(!totMes)pcEl.textContent='Atenção: nenhum faturamento lançado este mês.';else pcEl.textContent='Você está em dia! Continue mantendo a constância 🚀';}
   // Plataformas
-  const platsDB=DB.plataformas.filter(p=>p.criador===criadorAtual);
-  const pSoc=platsDB.filter(p=>p.tipo==='Rede Social').length>0?platsDB.filter(p=>p.tipo==='Rede Social'):
-    ['Instagram Principal','Instagram Reserva 1','Canal WhatsApp','TikTok'].map(n=>({plataforma:n,status:'Ativo',tipo:'Rede Social'}));
-  const p18=platsDB.filter(p=>p.tipo==='+18').length>0?platsDB.filter(p=>p.tipo==='+18'):
-    ['Privacy','OnlyFans','Telegram VIP','Telegram Free'].map(n=>({plataforma:n,status:'Ativo',tipo:'+18'}));
-  const dotC=(s)=>s==='Ativo'?'dok':s==='Restrito'?'dam':'ddn';
-  const bdgS=(s)=>s==='Ativo'?'bok':s==='Restrito'?'bwa':'bur';
-  const pSocEl=document.getElementById('c-plat-social');
-  const p18El=document.getElementById('c-plat-18');
-  if(pSocEl) pSocEl.innerHTML=pSoc.map(p=>`<div class="plr"><span class="dot ${dotC(p.status)}"></span><span style="flex:1">${esc(p.plataforma)}</span><span class="bdg bgr" style="margin-right:6px;font-size:10px">Rede Social</span><span class="bdg ${bdgS(p.status)}">${p.status}</span></div>`).join('');
-  if(p18El)  p18El.innerHTML=p18.map(p=>`<div class="plr"><span class="dot ${dotC(p.status)}"></span><span style="flex:1">${esc(p.plataforma)}</span><span class="bdg bur" style="margin-right:6px;font-size:10px">+18</span><span class="bdg ${bdgS(p.status)}">${p.status}</span></div>`).join('');
-
+  const pSoc=['Instagram Principal','Instagram Reserva 1','Canal WhatsApp','TikTok'];
+  const p18=['Privacy','OnlyFans','Telegram VIP','Telegram Free'];
+  const pSocEl=$('c-plat-social');const p18El=$('c-plat-18');
+  const statusPlat=(p,tipoPadrao)=>{
+    const dados=PLATAFORMAS_STATUS[`${criadorAtual}__${p}`]||{};
+    const status=dados.status||'Ativo';
+    const ok=status==='Ativo';
+    return `<div class="plr"><span class="dot ${ok?'dok':'dnu'}"></span><span style="flex:1">${p}</span><span class="bdg ${tipoPadrao==='+18'?'bur':'bgr'}" style="margin-right:6px;font-size:10px">${dados.tipo||tipoPadrao}</span><span class="bdg ${ok?'bok':'ber'}">${esc(status)}</span></div>`;
+  };
+  if(pSocEl)pSocEl.innerHTML=pSoc.map(p=>statusPlat(p,'Rede Social')).join('');
+  if(p18El)p18El.innerHTML=p18.map(p=>statusPlat(p,'+18')).join('');
   // Histórico 3 meses do banco
-  const ultMeses=[-2,-1,0].map(off=>{ const d=new Date(now.getFullYear(),now.getMonth()+off,1); return {nome:getMN(d),key:mesKey(d),parcial:off===0}; });
-  const mesEl=document.getElementById('c-meses');
-  if(mesEl) mesEl.innerHTML=ultMeses.map((m,i)=>{
-    const fat=DB.faturamento.filter(f=>f.criador===criadorAtual&&f.mes_key===m.key);
-    const priv=fat.reduce((a,f)=>a+(f.privacy||0),0);
-    const of=fat.reduce((a,f)=>a+(f.onlyfans||0),0);
-    const tg=fat.reduce((a,f)=>a+(f.telegram_vip||0),0);
-    const av=fat.reduce((a,f)=>a+(f.venda_avulsa||0),0);
-    const tot=priv+of+tg+av;
-    return `<div class="mcard" ${m.parcial?'style="border-color:rgba(0,179,126,.3)"':''}>
-      <div class="mcard-n" ${m.parcial?'style="color:var(--ok)"':''}>${m.nome}${m.parcial?' (atual)':''}</div>
-      <div class="mrow"><span class="mlb">Privacy</span><span class="mvl">${priv>0?fmt$(priv):'—'}</span></div>
-      <div class="mrow"><span class="mlb">OnlyFans</span><span class="mvl">${of>0?fmt$(of):'—'}</span></div>
-      <div class="mrow"><span class="mlb">Telegram VIP</span><span class="mvl">${tg>0?fmt$(tg):'—'}</span></div>
-      <div class="mrow"><span class="mlb">Venda avulsa</span><span class="mvl">${av>0?fmt$(av):'—'}</span></div>
-      <div class="mrow" style="border-top:1px solid var(--bd2)"><span class="mlb" style="font-weight:700">Total</span><span class="mvl ${m.parcial?'cup':''}">${tot>0?fmt$(tot):'Sem dados'}</span></div>
-    </div>`;
+  const ultMeses=[-2,-1,0].map(off=>{const d=new Date(now.getFullYear(),now.getMonth()+off,1);return{nome:getMN(d),key:getMesKey(d),parcial:off===0};});
+  const mesEl=$('c-meses');
+  if(mesEl)mesEl.innerHTML=ultMeses.map(m=>{
+    const fat=FAT_DB.filter(f=>f.criador===criadorAtual&&f.mes_key===m.key);
+    const priv=fat.reduce((a,f)=>a+(f.privacy||0),0),of=fat.reduce((a,f)=>a+(f.onlyfans||0),0),tg=fat.reduce((a,f)=>a+(f.telegram_vip||0),0),av=fat.reduce((a,f)=>a+(f.venda_avulsa||0),0),tot=priv+of+tg+av;
+    return `<div class="mcard" ${m.parcial?'style="border-color:rgba(0,179,126,.3)"':''}><div class="mcard-n" ${m.parcial?'style="color:var(--ok)"':''}>${m.nome}${m.parcial?' (atual)':''}</div><div class="mrow"><span class="mlb">Privacy</span><span class="mvl">${priv>0?fmt$(priv):'—'}</span></div><div class="mrow"><span class="mlb">OnlyFans</span><span class="mvl">${of>0?fmt$(of):'—'}</span></div><div class="mrow"><span class="mlb">Telegram VIP</span><span class="mvl">${tg>0?fmt$(tg):'—'}</span></div><div class="mrow"><span class="mlb">Venda avulsa</span><span class="mvl">${av>0?fmt$(av):'—'}</span></div><div class="mrow" style="border-top:1px solid var(--bd2)"><span class="mlb" style="font-weight:700">Total</span><span class="mvl ${m.parcial?'cup':''}">${tot>0?fmt$(tot):'Sem dados'}</span></div></div>`;
   }).join('');
 }
 
-// ── CRIADOR — TAREFAS ──
 function renderCriTar(){
-  const now=getNow(); const day=now.getDay();
-  const dtEl=document.getElementById('c-today-dt');
-  if(dtEl) dtEl.textContent=`${getDN(now).toUpperCase()}, ${now.getDate()} DE ${getMN(now).toUpperCase()} DE ${now.getFullYear()}`;
-  const todayObs=obsDoDia(day,'todos').filter(o=>o.responsavel==='criador'||o.responsavel==='ambos');
-  const ttEl=document.getElementById('c-today-tasks');
-  if(ttEl) ttEl.innerHTML=todayObs.length
-    ? todayObs.map(o=>{ const feito=isFeitoRot(criadorAtual,o.nome);
-        return `<div class="today-t" onclick="marcarCriadorOb('${esc(criadorAtual)}','${esc(o.nome)}',${!feito},this)">
-          <div class="today-cb ${feito?'ok':''}"></div>${esc(o.nome)}${feito?' ✓':''}
-        </div>`; }).join('')
-    : '<div style="color:rgba(255,255,255,.7);font-size:13px">Nenhuma tarefa específica hoje.</div>';
-  const semsEl=document.getElementById('c-semana-completa'); if(!semsEl) return;
+  const now=getNow();const day=now.getDay();
+  const dtEl=$('c-today-dt');if(dtEl)dtEl.textContent=`${getDN(now).toUpperCase()}, ${now.getDate()} DE ${getMN(now).toUpperCase()} DE ${now.getFullYear()}`;
+  const todayObs=obsDoDia(day,'todos').filter(o=>o.resp==='criador'||o.resp==='ambos');
+  const ttEl=$('c-today-tasks');
+  if(ttEl)ttEl.innerHTML=todayObs.length?todayObs.map(o=>{
+    const feito=isFeitoRot(criadorAtual,o.nome);
+    return `<div class="today-t" onclick="marcarCriadorOb('${esc(criadorAtual)}','${esc(o.nome)}',this,event)"><div class="today-cb ${feito?'ok':''}"></div>${esc(o.nome)}${feito?' ✓':''}</div>`;
+  }).join(''):'<div style="color:rgba(255,255,255,.7);font-size:13px">Nenhuma tarefa específica hoje.</div>';
+  const semsEl=$('c-semana-completa');if(!semsEl)return;
   const dias=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
   let html='';
   [0,1,2,3,4,5,6].forEach(d=>{
-    const obs=obsDoDia(d,'todos').filter(o=>o.responsavel==='criador'||o.responsavel==='ambos');
-    if(!obs.length) return;
-    let lbl=dias[d]; if(d===2)lbl+=' · Live'; if(d===0||d===1)lbl+=' · Envio mídias';
+    const obs=obsDoDia(d,'todos').filter(o=>o.resp==='criador'||o.resp==='ambos');
+    if(!obs.length)return;
+    let lbl=dias[d];if(d===2)lbl+=' · Live';if(d===0||d===1)lbl+=' · Envio mídias';
     html+=`<div class="sl">${lbl}</div>`;
     obs.forEach(o=>{
       const feito=d===day?isFeitoRot(criadorAtual,o.nome):false;
-      html+=`<div class="ck ${feito?'done-row':''}" ${d===day?`onclick="marcarCriadorOb('${esc(criadorAtual)}','${esc(o.nome)}',${!feito},this)"`:''}>
+      html+=`<div class="ck ${feito?'done-row':''}" ${d===day?`onclick="marcarCriadorOb('${esc(criadorAtual)}','${esc(o.nome)}',this,event)"`:''}>
         <div class="ckb ${feito?'done':''}"><div class="ckm" style="display:${feito?'block':'none'}">✓</div></div>
         <span class="ckl ${feito?'dl':''}" ${d!==day?'style="opacity:.5"':''}>${esc(o.nome)}</span>
         <span class="tag tc">VOCÊ</span>${d!==day?'<span style="font-size:11px;color:var(--tx3)">outro dia</span>':''}
@@ -2116,127 +1917,217 @@ function renderCriTar(){
   semsEl.innerHTML=html;
 }
 
-async function marcarCriadorOb(cri, obr, feito, el){
-  await marcarObr(cri,obr,feito,el);
-  renderCriTar(); renderCriOV();
-}
-
-// ── CRIADOR — MÍDIAS ──
 function renderCriMid(){
-  const now=getNow(); const wom=getWOM(now); const month=getMN(now);
-  const tEl=document.getElementById('c-mid-sem-titulo');
-  if(tEl) tEl.textContent=`Semana ${wom} de ${month}`;
+  const now=getNow();const wom=getWOM(now);const month=getMN(now);
+  const tEl=$('c-mid-sem-titulo');if(tEl)tEl.textContent=`Semana ${wom} de ${month}`;
   [['rotineiro','ck-mid-rot'],['ideias','ck-mid-ide'],['mais18','ck-mid-18']].forEach(([tipo,id])=>{
-    const feito=isFeitoMid(criadorAtual,tipo); const el=document.getElementById(id); if(!el) return;
-    const box=el.querySelector('.ckb'); const lbl=el.querySelector('.ckl'); const bdg=el.querySelector('.bdg');
-    if(box){ box.classList.toggle('done',feito); const m=box.querySelector('.ckm'); if(m)m.style.display=feito?'block':'none'; }
-    if(lbl) lbl.classList.toggle('dl',feito);
-    el.classList.toggle('done-row',feito);
-    if(bdg){ bdg.className=`bdg ${feito?'bok':'bgr'}`; bdg.textContent=feito?'Enviado':'Não enviado'; }
+    const feito=isFeitoMid(criadorAtual,tipo);const el=$(id);if(!el)return;
+    const box=el.querySelector('.ckb');const lbl=el.querySelector('.ckl');const bdg=el.querySelector('.bdg');
+    if(box){box.classList.toggle('done',feito);const m=box.querySelector('.ckm');if(m)m.style.display=feito?'block':'none';}
+    if(lbl)lbl.classList.toggle('dl',feito);el.classList.toggle('done-row',feito);
+    if(bdg){bdg.className=`bdg ${feito?'bok':'bgr'}`;bdg.textContent=feito?'Enviado':'Não enviado';}
   });
-  const r=isFeitoMid(criadorAtual,'rotineiro'); const i=isFeitoMid(criadorAtual,'ideias'); const m=isFeitoMid(criadorAtual,'mais18');
-  const msgEl=document.getElementById('c-mid-status-msg');
-  if(msgEl) msgEl.textContent=(r&&i&&m)?`Semana ${wom} de ${month} · todas as mídias entregues! ✅`:`Semana ${wom} de ${month} · marque as mídias enviadas. Prazo: domingo.`;
-  const hist=document.getElementById('c-hist-mid');
-  if(hist){ hist.innerHTML=''; for(let k=1;k<=wom;k++){ const ok=k<wom||(k===wom&&r&&i&&m); const div=document.createElement('div'); div.className='plr'; div.innerHTML=`<span style="flex:1">Semana ${k} de ${month}</span><span class="bdg ${ok?'bok':'bin'}">${k<wom?'Entregue':ok?'Entregue completo':'Pendente · marque acima'}</span>`; hist.appendChild(div); } }
+  const r=isFeitoMid(criadorAtual,'rotineiro');const i=isFeitoMid(criadorAtual,'ideias');const m=isFeitoMid(criadorAtual,'mais18');
+  const msgEl=$('c-mid-status-msg');
+  if(msgEl)msgEl.textContent=(r&&i&&m)?`Semana ${wom} de ${month} · todas as mídias entregues! ✅`:`Semana ${wom} de ${month} · marque as mídias enviadas. Prazo: domingo.`;
+  const hist=$('c-hist-mid');
+  if(hist){hist.innerHTML='';for(let k=1;k<=wom;k++){const ok=k<wom||(k===wom&&r&&i&&m);const div=document.createElement('div');div.className='plr';div.innerHTML=`<span style="flex:1">Semana ${k} de ${month}</span><span class="bdg ${ok?'bok':'bin'}">${k<wom?'Entregue':ok?'Entregue completo':'Pendente'}</span>`;hist.appendChild(div);}}
 }
 
-// ── CRIADOR — PENDÊNCIAS ──
 function renderCriPen(){
   const now=getNow();
-  const penEl=document.getElementById('c-pen-s'); if(penEl) penEl.textContent='O que precisa da sua atenção agora';
-  const diaEl=document.getElementById('c-pen-msg'); if(diaEl) diaEl.textContent=`Hoje é ${getDN(now)}, dia ${now.getDate()} · suas atividades de hoje estão em Minhas tarefas.`;
-  const listEl=document.getElementById('c-chamados-list'); if(!listEl) return;
-  const meus=DB.chamados.filter(c=>c.criado_por===criadorAtual).slice(0,5);
-  listEl.innerHTML=meus.length
-    ? meus.map(c=>`<div class="cham nor"><div class="tkt">${esc(c.titulo)}</div><div class="tks">Status: <span class="bdg ${c.status==='resolvido'?'bok':c.status==='andamento'?'bwa':'bin'}">${c.status}</span> · Resp: ${esc(c.responsavel)}</div></div>`).join('')
-    : '<div class="cham nor"><div class="tkt">Nenhum chamado aberto.</div><div class="tks">Quando você abrir um chamado, ele aparece aqui.</div></div>';
+  const penEl=$('c-pen-s');if(penEl)penEl.textContent='O que precisa da sua atenção agora';
+  const diaEl=$('c-pen-msg');if(diaEl)diaEl.textContent=`Hoje é ${getDN(now)}, dia ${now.getDate()}.`;
+  const listEl=$('c-chamados-list');if(!listEl)return;
+  const meus=CHAMADOS.filter(c=>c.criado_por===criadorAtual).slice(0,5);
+  listEl.innerHTML=meus.length?meus.map(c=>`<div class="cham nor"><div class="tkt">${esc(c.titulo)}</div><div class="tks">Status: ${statusBdg(c.status)} · Resp: ${esc(c.responsavel)}</div></div>`).join(''):'<div class="cham nor"><div class="tkt">Nenhum chamado aberto.</div></div>';
 }
 
-// ── OPERADOR — RESULTADOS ──
 function renderResultOpe(){
-  const execEl=document.getElementById('o-res-exec'); if(!execEl) return;
-  const now=getNow(); const day=now.getDay(); const wom=getWOM(now);
-  const meusCri=DB.criadores.filter(c=>c.operador===operadorAtual);
-  execEl.innerHTML=meusCri.map(cr=>{
-    const obs=obsDoDia(day,'todos'); const f=obs.filter(o=>isFeitoRot(cr.nome,o.nome)).length;
-    const pct=obs.length?Math.round(f/obs.length*100):0;
-    const cor=pct>=80?'var(--ok)':pct>=60?'var(--wn)':'var(--dn)';
-    return `<div class="br"><span class="bl">${cr.nome.split(' ')[0]}</span><div class="bw"><div class="bf" style="width:${pct}%;background:${cor}"><span class="bv">${pct}%</span></div></div></div>`;
-  }).join('');
-  const semEl=document.getElementById('o-res-sem');
-  if(semEl) semEl.textContent=`Semana ${wom} de ${getMN(now)}`;
-  const midEl=document.getElementById('o-res-mid');
-  if(midEl) midEl.innerHTML=meusCri.map(cr=>{
-    const ok=isFeitoMid(cr.nome,'rotineiro')&&isFeitoMid(cr.nome,'ideias')&&isFeitoMid(cr.nome,'mais18');
-    return `<div class="row"><span style="flex:1">${esc(cr.nome)}</span><span class="bdg ${ok?'bok':'bur'}">${ok?'Entregue completo':'Pendente'}</span></div>`;
-  }).join('');
+  const execEl=$('o-res-exec');if(!execEl)return;
+  const now=getNow();const day=now.getDay();const wom=getWOM(now);
+  const mc=CRIADORES_PADRAO.filter(c=>c.operador===operadorAtual);
+  execEl.innerHTML=mc.map(cr=>{const obs=obsDoDia(day,'todos');const f=obs.filter(o=>isFeitoRot(cr.nome,o.nome)).length;const pct=obs.length?Math.round(f/obs.length*100):0;const cor=pct>=80?'var(--ok)':pct>=60?'var(--wn)':'var(--dn)';return`<div class="br"><span class="bl">${cr.nome.split(' ')[0]}</span><div class="bw"><div class="bf" style="width:${pct}%;background:${cor}"><span class="bv">${pct}%</span></div></div></div>`;}).join('');
+  const semEl=$('o-res-sem');if(semEl)semEl.textContent=`Semana ${wom} de ${getMN(now)}`;
 }
 
-// ── TROCA CRIADOR / OPERADOR ──
+// ============================================================
+// GESTÃO DO CRM
+// ============================================================
+function renderGestao(){
+  const gcEl=$('gestao-criadores');
+  if(gcEl)gcEl.innerHTML=CRIADORES_PADRAO.map(cr=>`<div class="row"><span style="flex:1;font-size:13px;font-weight:600">${esc(cr.nome)}</span><span style="font-size:12px;color:var(--tx3);margin-right:8px">Op: ${esc(cr.operador)} · CTA ${cr.cta||1} · ${diasRestantes(cr.inicio,cr.duracao||12)}d</span><button class="btn btn-sm" onclick="editarCriador('${esc(cr.nome)}')">Editar</button><button class="btn btn-r btn-sm" style="margin-left:4px" onclick="removerCriador('${esc(cr.nome)}')">✕</button></div>`).join('')||'<div style="font-size:13px;color:var(--tx3);padding:10px 0">Nenhum criador.</div>';
+  const goEl=$('gestao-operadores');
+  if(goEl)goEl.innerHTML=OPERADORES_PADRAO.map(op=>`<div class="row"><span style="flex:1;font-size:13px;font-weight:600">${esc(op)}</span><span style="font-size:12px;color:var(--tx3);margin-right:8px">${CRIADORES_PADRAO.filter(c=>c.operador===op).length} criadores</span></div>`).join('');
+  const obEl=$('gestao-obrigacoes');
+  if(obEl){const dMap={todos:'Todos','1':'Seg','2':'Ter','3':'Qua','4':'Qui','5':'Sex','6':'Sáb','0':'Dom'};obEl.innerHTML=OBRIGACOES_PADRAO.map((o,i)=>{const tc=o.resp==='raise'?'tr':o.resp==='criador'?'tc':'ta';const tl=o.resp==='raise'?'RAISE':o.resp==='criador'?'CRIADOR':'AMBOS';return`<div class="row"><span style="flex:1;font-size:13px">${esc(o.nome)}</span><span class="tag ${tc}" style="margin-right:6px">${tl}</span><span style="font-size:11px;color:var(--tx3);margin-right:8px">${dMap[o.dia]||o.dia}</span><button class="btn btn-r btn-sm" onclick="removerObrigacao(${i})">✕</button></div>`;}).join('');}
+}
+
+// ============================================================
+// SELECTS — inicializar uma vez
+// ============================================================
+function initSelects(){
+  const now=getNow();const wom=getWOM(now);const month=getMN(now);
+  const signature=JSON.stringify({
+    cri:CRIADORES_PADRAO.map(c=>c.nome),
+    ops:OPERADORES_PADRAO,
+    wom
+  });
+  if(signature===_selectSignature)return;
+  _selectSignature=signature;
+  const criadores=CRIADORES_PADRAO.map(c=>c.nome);
+  ['fat-cri','kpi-cri-sel','plat-cri-sel','mc-cri','mf-cri','mt-cri'].forEach(id=>rebuildOptions($(id),criadores));
+  ['mac-ope','mt-ope'].forEach(id=>rebuildOptions($(id),OPERADORES_PADRAO));
+  ['fat-sem-g','kpi-sem-sel','mf-sem'].forEach(id=>{
+    const semanas=[];
+    for(let i=1;i<=wom;i++)semanas.push({value:String(i),label:`Semana ${i} de ${month}`});
+    rebuildOptions($(id),semanas,{selected:String(wom)});
+  });
+  const opeSel=$('ope-sel');
+  rebuildOptions(opeSel,OPERADORES_PADRAO,{selected:operadorAtual});
+  const criSel=$('cri-sel');
+  rebuildOptions(criSel,criadores,{selected:criadorAtual});
+  const rotDia=$('a-rot-d');
+  if(rotDia){
+    const dias=['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'].map((d,i)=>({value:String(i===6?0:i+1),label:d}));
+    rebuildOptions(rotDia,dias,{selected:String(now.getDay())});
+    rotDia.onchange=renderRotAdm;
+  }
+  const rotCri=$('a-rot-cri');
+  if(rotCri){
+    rebuildOptions(rotCri,criadores,{includeAll:true,allLabel:'Todos os criadores'});
+    rotCri.onchange=renderRotAdm;
+  }
+}
+
+// ============================================================
+// TROCA CRIADOR / OPERADOR
+// ============================================================
 function trocarOperador(v){
-  operadorAtual=v; localStorage.setItem('raise_op',v);
-  const nft=document.getElementById('ope-nome-ft'); if(nft)nft.textContent=v;
+  operadorAtual=v;localStorage.setItem('raise_op',v);
+  const nft=$('ope-nome-ft');if(nft)nft.textContent=v;
   renderOpe();
 }
 function trocarCriador(v){
-  criadorAtual=v; localStorage.setItem('raise_cri',v);
-  const cr=DB.criadores.find(c=>c.nome===v);
-  const ft=document.getElementById('cri-nome-ft'); if(ft)ft.textContent=v;
-  const ct=document.getElementById('cri-contrato-ft'); if(ct&&cr) ct.textContent=`${diasRest(cr.inicio,cr.duracao_meses||cr.duracao||12)} dias de contrato`;
+  criadorAtual=v;localStorage.setItem('raise_cri',v);
+  const cr=CRIADORES_PADRAO.find(c=>c.nome===v);
+  const ft=$('cri-nome-ft');if(ft)ft.textContent=v;
+  const ct=$('cri-contrato-ft');if(ct&&cr)ct.textContent=`${diasRestantes(cr.inicio,cr.duracao||12)} dias de contrato`;
   renderCri();
 }
 
-// ── LOG EXTRA ──
+// ============================================================
+// LOG EXTRA
+// ============================================================
 function addLog(){
-  const inp=document.getElementById('log-inp'); const list=document.getElementById('log-list');
-  if(!inp||!inp.value.trim()) return;
-  const n=getNow(); const hh=String(n.getHours()).padStart(2,'0'); const mm=String(n.getMinutes()).padStart(2,'0');
-  const div=document.createElement('div'); div.className='row';
+  const inp=$('log-inp');const list=$('log-list');if(!inp||!inp.value.trim())return;
+  const n=getNow();const hh=String(n.getHours()).padStart(2,'0');const mm=String(n.getMinutes()).padStart(2,'0');
+  const div=document.createElement('div');div.className='row';
   div.innerHTML=`<span style="font-size:12px;color:var(--tx3);width:90px">Hoje ${hh}:${mm}</span><span style="font-size:13px;flex:1">${esc(inp.value)}</span>`;
-  list.prepend(div); inp.value='';
-  toast('Ação extra registrada.','info');
+  list.prepend(div);inp.value='';toast('Ação extra registrada.','info');
 }
 
-// ── CLOCK ──
+// ============================================================
+// CLOCK
+// ============================================================
 function initClock(){
-  const upClock=()=>{ const n=getNow(); const el=document.getElementById('clk'); if(el)el.textContent=getDN(n)+' · '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0'); };
-  upClock(); setInterval(upClock,1000);
+  const upClock=()=>{const n=getNow();const el=$('clk');if(el)el.textContent=getDN(n)+' · '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');};
+  upClock();setInterval(upClock,1000);
 }
 
-// ── RESTORES SESSION ──
+// ============================================================
+// RESTORE SESSION
+// ============================================================
 function restoreSession(){
   operadorAtual=localStorage.getItem('raise_op')||operadorAtual;
-  criadorAtual =localStorage.getItem('raise_cri')||criadorAtual;
-  const opeSel=document.getElementById('ope-sel'); if(opeSel)opeSel.value=operadorAtual;
-  const criSel=document.getElementById('cri-sel'); if(criSel)criSel.value=criadorAtual;
-  const nft=document.getElementById('ope-nome-ft'); if(nft)nft.textContent=operadorAtual;
-  const cft=document.getElementById('cri-nome-ft'); if(cft)cft.textContent=criadorAtual;
+  criadorAtual=localStorage.getItem('raise_cri')||criadorAtual;
+  const opeSel=$('ope-sel');if(opeSel)opeSel.value=operadorAtual;
+  const criSel=$('cri-sel');if(criSel)criSel.value=criadorAtual;
+  const nft=$('ope-nome-ft');if(nft)nft.textContent=operadorAtual;
+  const cft=$('cri-nome-ft');if(cft)cft.textContent=criadorAtual;
+  const cct=$('cri-contrato-ft');
+  const cr=CRIADORES_PADRAO.find(c=>c.nome===criadorAtual);
+  if(cct&&cr)cct.textContent=`${diasRestantes(cr.inicio,cr.duracao||12)} dias de contrato`;
 }
 
-// ── REALTIME ──
+// ============================================================
+// REALTIME — escuta TODAS as tabelas relevantes
+// ============================================================
 function iniciarRealtime(){
   try{
-    sb.channel('raise-v4')
-      .on('postgres_changes',{event:'*',schema:'public',table:'chamados'},    ()=>carregarTudo())
+    sb.channel('raise-v4.1')
+      .on('postgres_changes',{event:'*',schema:'public',table:'chamados'},()=>carregarTudo())
       .on('postgres_changes',{event:'*',schema:'public',table:'rotina_status'},()=>carregarTudo())
       .on('postgres_changes',{event:'*',schema:'public',table:'midias_status'},()=>carregarTudo())
-      .on('postgres_changes',{event:'*',schema:'public',table:'faturamento'},  ()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'faturamento'},()=>carregarTudo())
       .on('postgres_changes',{event:'*',schema:'public',table:'financeiro_interno'},()=>carregarTudo())
-      .on('postgres_changes',{event:'*',schema:'public',table:'advertencias'}, ()=>carregarTudo())
-      .on('postgres_changes',{event:'*',schema:'public',table:'criadores'},    ()=>carregarTudo())
-      .on('postgres_changes',{event:'*',schema:'public',table:'operadores'},   ()=>carregarTudo())
-      .on('postgres_changes',{event:'*',schema:'public',table:'obrigacoes'},   ()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'advertencias'},()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'criadores'},()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'operadores'},()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'obrigacoes'},()=>carregarTudo())
       .on('postgres_changes',{event:'*',schema:'public',table:'plataformas_status'},()=>carregarTudo())
       .subscribe();
-  } catch(e){ console.log('Realtime fallback'); }
-  setInterval(carregarTudo, 8000);
+  }catch(e){console.log('Realtime fallback — polling ativo');}
+  setInterval(()=>{ if(!_saving)carregarTudo(); },8000);
 }
 
-// ── INIT ──
-document.addEventListener('DOMContentLoaded', ()=>{
+
+// Funções de modal simples (lead, usuário, transferência)
+async function salvarLead(){
+  const nome=document.getElementById('ml-nome')?.value?.trim();
+  const etapa=document.getElementById('ml-etapa')?.value||'Atração';
+  const obs=document.getElementById('ml-obs')?.value?.trim()||'';
+  if(!nome){toast('Informe o nome do lead.','err');return;}
+  await dbInsert('leads',{nome,etapa,observacoes:obs,created_at:new Date().toISOString()}).catch(()=>{});
+  cM('m-lead');
+  ['ml-nome','ml-obs'].forEach(id=>{const e=$(id);if(e)e.value='';});
+  toast(`Lead ${nome} adicionado ao pipeline!`);
+}
+async function salvarUsuario(){
+  const nome=document.getElementById('mu-nome')?.value?.trim();
+  const tipo=document.getElementById('mu-tipo')?.value||'Operador';
+  if(!nome){toast('Informe o nome.','err');return;}
+  if(tipo==='Operador')await dbUpsert('operadores',{id:`op__${nome}`,nome,funcao:'Operador',created_at:new Date().toISOString()}).catch(()=>{});
+  cM('m-user');
+  const e=document.getElementById('mu-nome');if(e)e.value='';
+  if(!OPERADORES_PADRAO.includes(nome))OPERADORES_PADRAO.push(nome);
+  renderGestao();toast(`${nome} adicionado como ${tipo}!`);
+}
+async function confirmarTransferencia(){
+  const cri=document.getElementById('mt-cri')?.value;
+  const novoOp=document.getElementById('mt-ope')?.value;
+  if(!cri||!novoOp){toast('Selecione o criador e o novo operador.','err');return;}
+  const cr=CRIADORES_PADRAO.find(c=>c.nome===cri);
+  if(cr){
+    cr.operador=novoOp;
+    await dbUpdate('criadores',cr.id||`cri__${cri}`,{operador:novoOp}).catch(()=>{});
+  }
+  cM('m-transfer');
+  recalcular();renderAll();
+  toast(`${cri} transferido para ${novoOp}!`);
+}
+async function salvarLancamentoInterno(){
+  const tipo=document.getElementById('mfi-tipo')?.value;
+  const desc=document.getElementById('mfi-desc')?.value?.trim();
+  const val=parseFloat(document.getElementById('mfi-val')?.value)||0;
+  const mes=document.getElementById('mfi-mes')?.value?.trim()||'';
+  if(!desc||val===0){toast('Preencha a descrição e o valor.','err');return;}
+  const result=await dbInsert('financeiro_interno',{tipo,descricao:desc,valor:val,mes_ref:mes,mes_key:getMesKey(),created_at:new Date().toISOString()});
+  if(!result){toast('Erro ao salvar. Verifique o Supabase.','err');return;}
+  FIN_DB=[...result,...FIN_DB];
+  cM('m-fint');
+  ['mfi-desc','mfi-val','mfi-mes'].forEach(id=>{const e=$(id);if(e)e.value='';});
+  renderFinInterno();
+  toast(`Lançamento registrado: ${tipo} — ${fmt$(val)}`);
+}
+// ============================================================
+// MAIN
+// ============================================================
+document.addEventListener('DOMContentLoaded',()=>{
   initClock();
   restoreSession();
+  renderGestao();
+  renderDossie('Bruna Santiny');
   carregarTudo();
   iniciarRealtime();
 });
