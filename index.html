@@ -1007,6 +1007,9 @@ function normalizarObrigacao(o){
 function isCriadorRemovido(nome){
   return (CONFIG_DB.criadores_removidos||[]).includes(nome);
 }
+function isOperadorRemovido(nome){
+  return (CONFIG_DB.operadores_removidos||[]).includes(nome);
+}
 function motivoSaude(cr,s){
   const fat=KPI_CACHE.fatMes?.[cr.nome]||0;
   const abertas=CHAMADOS.filter(c=>c.criador_nome===cr.nome&&c.status==='aberto').length;
@@ -1101,7 +1104,7 @@ async function carregarTudo(){
         ...(local.operadores||[]),
         ...ops.map(o=>o.nome),
         ...OPERADORES_PADRAO
-      ]));
+      ]).filter(op=>!isOperadorRemovido(op)));
     }
     if(obs.length||local.obrigacoes?.length){
       resetArray(OBRIGACOES_PADRAO,uniqByNome([
@@ -1588,12 +1591,37 @@ async function adicionarOperador(){
   if(!nome){toast('Informe o nome.','err');return;}
   const result=await dbUpsert('operadores',{id:`op__${nome}`,nome,funcao,created_at:new Date().toISOString()}).catch(()=>null);
   if(!result){toast('Erro ao adicionar operador. Verifique a tabela operadores.','err');return;}
+  if(isOperadorRemovido(nome)){
+    CONFIG_DB.operadores_removidos=(CONFIG_DB.operadores_removidos||[]).filter(n=>n!==nome);
+    const cfg=await dbSetConfig('operadores_removidos',CONFIG_DB.operadores_removidos).catch(()=>null);
+    if(!cfg){toast('Operador salvo, mas houve erro ao reativar na configuração.','err');return;}
+  }
   if(!OPERADORES_PADRAO.includes(nome))OPERADORES_PADRAO.push(nome);
   salvarEstadoLocal();
   cM('m-add-operador');
   ['mao-nome','mao-func'].forEach(id=>{const e=$(id);if(e)e.value='';});
   renderGestao();renderEquipe();initSelects();
   toast(`Operador ${nome} adicionado!`);
+}
+
+async function removerOperador(nome){
+  const vinculados=CRIADORES_PADRAO.filter(c=>c.operador===nome).map(c=>c.nome);
+  if(vinculados.length){
+    toast(`Transfira primeiro os criadores deste operador: ${vinculados.join(', ')}.`,'err');
+    return;
+  }
+  if(!confirm(`Remover operador ${nome}?`))return;
+  const result=await dbDelete('operadores',`op__${nome}`).catch(()=>null);
+  if(!result){toast('Erro ao remover operador no banco.','err');return;}
+  const removidos=[...(CONFIG_DB.operadores_removidos||[]),nome].filter((v,i,a)=>a.indexOf(v)===i);
+  CONFIG_DB.operadores_removidos=removidos;
+  const cfg=await dbSetConfig('operadores_removidos',removidos).catch(()=>null);
+  if(!cfg){toast('Operador removido, mas houve erro ao gravar a configuração.','err');return;}
+  const i=OPERADORES_PADRAO.indexOf(nome);if(i>=0)OPERADORES_PADRAO.splice(i,1);
+  if(operadorAtual===nome)operadorAtual=OPERADORES_PADRAO[0]||'';
+  salvarEstadoLocal();
+  renderGestao();renderEquipe();initSelects();renderOpe();
+  toast(`Operador ${nome} removido.`,'info');
 }
 
 // ============================================================
@@ -1653,12 +1681,12 @@ async function salvarKPI(){
   const id=`kpi__${cri}__${getMesKey(now)}__W${semana}`;
   const dados={id,criador:cri,semana,semana_key:`${now.getFullYear()}-${now.getMonth()+1}-W${semana}`,mes_key:getMesKey(now),
     engajamento:parseFloat($('kpi-eng')?.value)||0,seguidores:parseInt($('kpi-seg')?.value)||0,
-    visualizacoes:parseInt($('kpi-vis')?.value)||0,assinantes:parseInt($('kpi-ass')?.value)||0,
+    visualizacoes:parseInt(($('kpi-vis')||$('kpi-view'))?.value)||0,assinantes:parseInt($('kpi-ass')?.value)||0,
     created_at:new Date().toISOString()};
   const result=await dbUpsert('kpis_manuais',dados).catch(()=>null);
   if(!result){toast('Erro ao salvar KPIs. Verifique a tabela kpis_manuais.','err');return;}
   const idx=KPIS_DB.findIndex(k=>k.id===id);if(idx>=0)KPIS_DB[idx]=dados;else KPIS_DB.push(dados);
-  ['kpi-eng','kpi-seg','kpi-vis','kpi-ass'].forEach(id=>{const e=$(id);if(e)e.value='';});
+  ['kpi-eng','kpi-seg','kpi-vis','kpi-view','kpi-ass'].forEach(id=>{const e=$(id);if(e)e.value='';});
   recalcular();renderAll();toast('KPIs salvos e análises atualizadas.');
 }
 
@@ -1815,6 +1843,20 @@ async function marcarMidia(tipo,el){
 }
 
 function isFeitoMidia(cri,tipo){return isFeitoMid(cri,tipo);}
+
+function resumoKPIManual(criador,mesKey,semKey){
+  const mes=KPIS_DB.filter(k=>k.criador===criador&&k.mes_key===mesKey);
+  const sem=KPIS_DB.find(k=>k.criador===criador&&k.semana_key===semKey);
+  const ult=[...mes].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0))[0]||{};
+  return {
+    seguidores:mes.reduce((a,k)=>a+(Number(k.seguidores)||0),0),
+    visualizacoes:mes.reduce((a,k)=>a+(Number(k.visualizacoes)||0),0),
+    assinantes:Number((sem||ult).assinantes)||0,
+    engajamento:Number((sem||ult).engajamento)||0,
+    semana:(sem||ult).semana||getWOM(getNow()),
+    temDados:mes.length>0
+  };
+}
 
 function renderMidiasAdm(){
   const el=$('lista-midias-adm');if(!el)return;
@@ -2097,6 +2139,15 @@ function renderCriOV(){
   set('c-fat',totMes>0?fmt$(totMes):'Sem lançamento');
   set('c-avulsa',avSem>0?fmt$(avSem):'—');
   const cfEl=$('c-fat-comp');if(cfEl){cfEl.textContent=vr!=null?(vr>=0?`↑${vr}% vs ${mesAntNome}`:`↓${Math.abs(vr)}% vs ${mesAntNome}`):'';cfEl.className=`ks ${vr>=0?'cup':'cdn'}`;}
+  const mkAtual=getMesKey(now);
+  const kpi=resumoKPIManual(criadorAtual,mkAtual,sk);
+  const fmtN=n=>Number(n||0).toLocaleString('pt-BR');
+  set('c-seg',kpi.seguidores?`+${fmtN(kpi.seguidores)}`:'—');
+  set('c-view',kpi.visualizacoes?fmtN(kpi.visualizacoes):'—');
+  set('c-ass',kpi.assinantes?fmtN(kpi.assinantes):'—');
+  set('c-seg-comp',kpi.temDados?'ganho no mês':'sem KPI lançado');
+  set('c-view-comp',kpi.temDados?'visualizações do mês':'sem KPI lançado');
+  set('c-ass-comp',kpi.assinantes?`semana ${kpi.semana}`:'sem KPI lançado');
   // Constância
   const day=now.getDay();const criObs=obsDoDia(day,'todos').filter(o=>o.resp==='criador'||o.resp==='ambos');
   const f=criObs.filter(o=>isFeitoRot(criadorAtual,o.nome)).length;
@@ -2228,7 +2279,7 @@ function renderEquipeConectada(){
     const cri=CRIADORES_PADRAO.filter(c=>c.operador===op).map(c=>c.nome);
     const adv=advMes.filter(a=>a.operador===op).length;
     const ini=op.split(' ').map(p=>p[0]).join('').slice(0,2);
-    return `<div class="hrow" ${adv>=3?'style="border-color:#FBBDD2"':''}><div class="av ${adv>=3?'avp':'avt'}">${ini}</div><div style="flex:1"><div class="hrow-n">${esc(op)} <span class="bdg bgr" style="font-size:10px">Colaborador</span> ${adv?`<span class="bdg ${adv>=3?'bur':'bwa'}" style="font-size:10px">${adv} advertencia(s)</span>`:''}</div><div style="font-size:12px;color:var(--tx3)">${cri.length?esc(cri.join(', ')):'Sem criadores atribuidos'}</div></div><button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button><span class="bdg ${adv>=3?'bwa':'bok'}">${adv>=3?'Atencao':'Ativo'}</span></div>`;
+    return `<div class="hrow" ${adv>=3?'style="border-color:#FBBDD2"':''}><div class="av ${adv>=3?'avp':'avt'}">${ini}</div><div style="flex:1"><div class="hrow-n">${esc(op)} <span class="bdg bgr" style="font-size:10px">Colaborador</span> ${adv?`<span class="bdg ${adv>=3?'bur':'bwa'}" style="font-size:10px">${adv} advertencia(s)</span>`:''}</div><div style="font-size:12px;color:var(--tx3)">${cri.length?esc(cri.join(', ')):'Sem criadores atribuidos'}</div></div><button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button><button class="btn btn-r btn-sm" onclick="removerOperador('${esc(op)}')">Remover</button><span class="bdg ${adv>=3?'bwa':'bok'}">${adv>=3?'Atencao':'Ativo'}</span></div>`;
   }).join('')}
   <div class="sl">Admins</div>
   ${admins.map(ad=>{const ini=ad.nome.split(' ').map(p=>p[0]).join('').slice(0,2);return `<div class="hrow"><div class="av av-a">${ini}</div><div style="flex:1"><div class="hrow-n">${esc(ad.nome)}</div>${ad.email?`<div style="font-size:12px;color:var(--tx3)">${esc(ad.email)}</div>`:''}</div><span class="bdg bin">${ad.principal?'Admin principal':'Admin'}</span>${ad.principal?'<span style="font-size:12px;color:var(--tx3)">Nao removivel</span>':`<button class="btn btn-r btn-sm" onclick="removerAdmin('${esc(ad.nome)}')">Remover</button>`}</div>`;}).join('')}
@@ -2250,7 +2301,10 @@ function renderGestao(){
   const gcEl=$('gestao-criadores');
   if(gcEl)gcEl.innerHTML=CRIADORES_PADRAO.map(cr=>`<div class="row"><span style="flex:1;font-size:13px;font-weight:600">${esc(cr.nome)}</span><span style="font-size:12px;color:var(--tx3);margin-right:8px">Op: ${esc(cr.operador)} · CTA ${cr.cta||1} · ${diasRestantes(cr.inicio,cr.duracao||12)}d</span><button class="btn btn-sm" onclick="editarCriador('${esc(cr.nome)}')">Editar</button><button class="btn btn-r btn-sm" style="margin-left:4px" onclick="removerCriador('${esc(cr.nome)}')">✕</button></div>`).join('')||'<div style="font-size:13px;color:var(--tx3);padding:10px 0">Nenhum criador.</div>';
   const goEl=$('gestao-operadores');
-  if(goEl)goEl.innerHTML=OPERADORES_PADRAO.map(op=>`<div class="row"><span style="flex:1;font-size:13px;font-weight:600">${esc(op)}</span><span style="font-size:12px;color:var(--tx3);margin-right:8px">${CRIADORES_PADRAO.filter(c=>c.operador===op).length} criadores</span></div>`).join('');
+  if(goEl)goEl.innerHTML=OPERADORES_PADRAO.map(op=>{
+    const qtd=CRIADORES_PADRAO.filter(c=>c.operador===op).length;
+    return `<div class="row"><span style="flex:1;font-size:13px;font-weight:600">${esc(op)}</span><span style="font-size:12px;color:var(--tx3);margin-right:8px">${qtd} criadores</span><button class="btn btn-r btn-sm" onclick="removerOperador('${esc(op)}')">Remover</button></div>`;
+  }).join('');
   const obEl=$('gestao-obrigacoes');
   if(obEl){const dMap={todos:'Todos','1':'Seg','2':'Ter','3':'Qua','4':'Qui','5':'Sex','6':'Sáb','0':'Dom'};obEl.innerHTML=OBRIGACOES_PADRAO.map((o,i)=>{const tc=o.resp==='raise'?'tr':o.resp==='criador'?'tc':'ta';const tl=o.resp==='raise'?'RAISE':o.resp==='criador'?'CRIADOR':'AMBOS';return`<div class="row"><span style="flex:1;font-size:13px">${esc(o.nome)}</span><span class="tag ${tc}" style="margin-right:6px">${tl}</span><span style="font-size:11px;color:var(--tx3);margin-right:8px">${dMap[o.dia]||o.dia}</span><button class="btn btn-r btn-sm" onclick="removerObrigacao(${i})">✕</button></div>`;}).join('');}
 }
