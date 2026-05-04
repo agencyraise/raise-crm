@@ -454,7 +454,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
       <div class="kc"><div class="kv cup" id="kpi-v-midias">0/0</div><div class="kl">Mídias</div><div class="ks" id="kpi-s-midias"></div></div>
       <div class="kc"><div class="kv cam" id="kpi-v-cham">0</div><div class="kl">Chamados</div><div class="ks" id="kpi-s-cham"></div></div>
     </div>
-    <div class="card"><div class="ch"><span class="ct" id="kpi-card-t">Vendas por plataforma</span></div><div class="cb">
+    <div class="card"><div class="ch"><span class="ct" id="kpi-card-t">Vendas por plataforma</span></div><div class="cb" id="kpi-barras-plat">
       <div class="br"><span class="bl">Privacy</span><div class="bw"><div class="bf" style="width:55%;background:var(--ac)"><span class="bv">R$23k</span></div></div></div>
       <div class="br"><span class="bl">OnlyFans</span><div class="bw"><div class="bf" style="width:30%;background:var(--ac)"><span class="bv">R$12.6k</span></div></div></div>
       <div class="br"><span class="bl">Telegram VIP</span><div class="bw"><div class="bf" style="width:15%;background:var(--ok)"><span class="bv">R$6.3k</span></div></div></div>
@@ -524,6 +524,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
         <div class="fg"><label class="fl">Visualizações</label><input class="fi" type="number" id="kpi-view" placeholder="0"></div>
         <div class="fg"><label class="fl">Assinantes total</label><input class="fi" type="number" id="kpi-ass" placeholder="0"></div>
       </div>
+      <div class="fg"><label class="fl">Engajamento (%)</label><input class="fi" type="number" step="0.1" id="kpi-eng" placeholder="0"></div>
       <button class="btn btn-p" onclick="salvarKPI()">Salvar KPIs</button>
     </div></div>
 
@@ -1461,6 +1462,36 @@ async function marcarDecisao(id,msg,tomada){
   renderRelatorios();toast(tomada?'Decisão marcada como tomada.':'Decisão reaberta.','info');
 }
 
+function renderRelatoriosConectado(){
+  const root=$('a-rel')?.querySelector('.cnt');if(!root)return;
+  root.innerHTML=`<div class="nf nf-g"><span>📋</span><span>Relatorio semanal calculado com os dados reais do CRM.</span></div>
+    <div class="g2">
+      <div class="card"><div class="ch"><span class="ct">Resumo semanal</span><span class="bdg bok" id="rel-status">Pronto</span></div><div class="cb">
+        <div class="row"><span style="flex:1">Execucao geral</span><span class="cup" style="font-weight:700" id="rel-exec">0%</span></div>
+        <div class="row"><span style="flex:1">Chamados resolvidos</span><span id="rel-cham">0 de 0</span></div>
+        <div class="row"><span style="flex:1">Midias no prazo</span><span id="rel-midias">0 de 0</span></div>
+        <div class="row"><span style="flex:1">Receita do mes</span><span class="cup" style="font-weight:700" id="rel-receita">—</span></div>
+        <div class="row"><span style="flex:1">Advertencias</span><span class="cam" style="font-weight:700" id="rel-adv">0</span></div>
+      </div></div>
+      <div class="card"><div class="ch"><span class="ct">Decisoes necessarias</span></div><div class="cb" id="rel-decisoes"></div></div>
+    </div>`;
+  const K=KPI_CACHE;
+  const tot=CHAMADOS.length;const res=CHAMADOS.filter(c=>c.status==='resolvido').length;
+  const comMid=CRIADORES_PADRAO.filter(c=>isFeitoMid(c.nome,'rotineiro')).length;
+  set('rel-exec',(K.execGeral||0)+'%',K.execGeral>=70?'cup':'cam');
+  set('rel-cham',`${res} de ${tot}`);
+  set('rel-midias',`${comMid} de ${CRIADORES_PADRAO.length}`);
+  set('rel-receita',K.receitaTotal>0?fmt$(K.receitaTotal):'—');
+  set('rel-adv',ADV_DB.filter(a=>a.mes_key===getMesKey()).length||0);
+  const stEl=$('rel-status');
+  if(stEl){stEl.textContent=K.execGeral>=70?'Saudavel':'Atencao';stEl.className=`bdg ${K.execGeral>=70?'bok':'bwa'}`;}
+  const decEl=$('rel-decisoes');
+  if(decEl)decEl.innerHTML=(K.alertas||[]).length
+    ?(K.alertas||[]).map(a=>{const id='dec__'+btoa(unescape(encodeURIComponent(a.msg))).replace(/=+$/,'');const feita=DECISOES_DB.find(d=>d.id===id)?.tomada;return`<div class="row"><span class="dot ${feita?'dok':a.tipo==='crise'?'ddn':'dam'}"></span><span style="flex:1">${esc(a.msg)}</span><button class="btn btn-sm ${feita?'btn-g':'btn-p'}" onclick="marcarDecisao('${id}','${esc(a.msg)}',${!feita})">${feita?'Decisao tomada':'Marcar decisao'}</button></div>`;}).join('')
+    :'<div class="row"><span class="dot dok"></span><span style="flex:1">Nenhuma decisao urgente.</span></div>';
+}
+renderRelatorios=renderRelatoriosConectado;
+
 // ============================================================
 // ADVERTÊNCIAS — automáticas do banco
 // ============================================================
@@ -1845,14 +1876,18 @@ async function marcarMidia(tipo,el){
 function isFeitoMidia(cri,tipo){return isFeitoMid(cri,tipo);}
 
 function resumoKPIManual(criador,mesKey,semKey){
-  const mes=KPIS_DB.filter(k=>k.criador===criador&&k.mes_key===mesKey);
-  const sem=KPIS_DB.find(k=>k.criador===criador&&k.semana_key===semKey);
-  const ult=[...mes].sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0))[0]||{};
+  const nomeKey=String(criador||'').trim().toLowerCase();
+  const n=v=>Number(v||0);
+  const mesmoCriador=k=>String(k.criador||k.criador_nome||k.nome||'').trim().toLowerCase()===nomeKey;
+  const mes=KPIS_DB.filter(k=>mesmoCriador(k)&&(!k.mes_key||k.mes_key===mesKey));
+  const semanaAtual=getWOM(getNow());
+  const sem=mes.find(k=>k.semana_key===semKey)||mes.find(k=>Number(k.semana)===semanaAtual);
+  const ult=[...mes].sort((a,b)=>(new Date(b.updated_at||b.created_at||0))-(new Date(a.updated_at||a.created_at||0))||n(b.semana)-n(a.semana))[0]||{};
   return {
-    seguidores:mes.reduce((a,k)=>a+(Number(k.seguidores)||0),0),
-    visualizacoes:mes.reduce((a,k)=>a+(Number(k.visualizacoes)||0),0),
-    assinantes:Number((sem||ult).assinantes)||0,
-    engajamento:Number((sem||ult).engajamento)||0,
+    seguidores:mes.reduce((a,k)=>a+n(k.seguidores||k.seguidores_ganho),0),
+    visualizacoes:mes.reduce((a,k)=>a+n(k.visualizacoes||k.views||k.visualizacoes_total),0),
+    assinantes:n((sem||ult).assinantes||(sem||ult).assinantes_total),
+    engajamento:n((sem||ult).engajamento||(sem||ult).engajamento_pct),
     semana:(sem||ult).semana||getWOM(getNow()),
     temDados:mes.length>0
   };
@@ -2146,7 +2181,7 @@ function renderCriOV(){
   set('c-view',kpi.visualizacoes?fmtN(kpi.visualizacoes):'—');
   set('c-ass',kpi.assinantes?fmtN(kpi.assinantes):'—');
   set('c-seg-comp',kpi.temDados?'ganho no mês':'sem KPI lançado');
-  set('c-view-comp',kpi.temDados?'visualizações do mês':'sem KPI lançado');
+  set('c-view-comp',kpi.engajamento?`engajamento ${String(kpi.engajamento).replace('.',',')}%`:(kpi.temDados?'visualizações do mês':'sem KPI lançado'));
   set('c-ass-comp',kpi.assinantes?`semana ${kpi.semana}`:'sem KPI lançado');
   // Constância
   const day=now.getDay();const criObs=obsDoDia(day,'todos').filter(o=>o.resp==='criador'||o.resp==='ambos');
