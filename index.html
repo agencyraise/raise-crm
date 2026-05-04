@@ -951,9 +951,9 @@ async function dbGet(t,f={}){
   if(error)console.error('[GET]',t,error.message);
   return data||[];
 }
-async function dbUpsert(t,d){
-  const {data,error}=await sb.from(t).upsert(d,{onConflict:'id'}).select();
-  if(error)console.error('[UPSERT]',t,error.message);
+async function dbUpsert(t,d,conflict='id'){
+  const {data,error}=await sb.from(t).upsert(d,{onConflict:conflict}).select();
+  if(error){console.error('[UPSERT]',t,error.message);return null;}
   return data;
 }
 async function dbInsert(t,d){
@@ -962,15 +962,17 @@ async function dbInsert(t,d){
   return data;
 }
 async function dbUpdate(t,id,d){
-  const {error}=await sb.from(t).update(d).eq('id',id);
-  if(error)console.error('[UPDATE]',t,error.message);
+  const {data,error}=await sb.from(t).update(d).eq('id',id).select();
+  if(error){console.error('[UPDATE]',t,error.message);return null;}
+  return data;
 }
 async function dbDelete(t,id){
-  const {error}=await sb.from(t).delete().eq('id',id);
-  if(error)console.error('[DELETE]',t,error.message);
+  const {data,error}=await sb.from(t).delete().eq('id',id).select();
+  if(error){console.error('[DELETE]',t,error.message);return null;}
+  return data||[];
 }
 async function dbSetConfig(chave,valor){
-  return dbUpsert('crm_config',{chave,valor,updated_at:new Date().toISOString()});
+  return dbUpsert('crm_config',{chave,valor,updated_at:new Date().toISOString(),created_at:new Date().toISOString()},'chave');
 }
 
 function resetArray(arr,items){
@@ -1378,7 +1380,9 @@ function renderFinInterno(){
   const tipoCls={'Receita':'ftrec','Retirada Admin':'ftret','Salário Operador':'ftsal','Custo operacional':'ftcus','Investimento / Reserva':'ftinv','Empréstimo':'ftemp','Pagamento de empréstimo':'ftemp'};
   if(!FIN_DB.length){
     el.innerHTML='<div style="font-size:13px;color:var(--tx3);text-align:center;padding:20px 0">Nenhum lançamento.<br>Clique em <b>+ Novo lançamento</b>.</div>';
-    ['fint-entradas','fint-saidas','fint-saldo','fint-tot-entradas','fint-tot-saidas','fint-tot-saldo'].forEach(id=>set(id,'—'));return;
+    ['fint-entradas','fint-saidas','fint-saldo','fint-tot-entradas','fint-tot-saidas','fint-tot-saldo'].forEach(id=>set(id,'—'));
+    set('fint-qtd','0');
+    return;
   }
   const grupos={};FIN_DB.forEach(l=>{if(!grupos[l.tipo])grupos[l.tipo]=[];grupos[l.tipo].push(l);});
   let totE=0,totS=0;let html='';
@@ -1473,7 +1477,8 @@ function renderAdvertencias(){
 async function gerarAdv(operador,criador,motivo){
   const hoje=getDiaKey();const mk=getMesKey();
   if(ADV_DB.find(a=>a.operador===operador&&a.dia===hoje&&a.motivo===motivo))return;
-  await dbInsert('advertencias',{operador,criador,motivo,dia:hoje,mes_key:mk,created_at:new Date().toISOString()}).catch(()=>{});
+  const result=await dbInsert('advertencias',{operador,criador,motivo,dia:hoje,mes_key:mk,created_at:new Date().toISOString()}).catch(()=>null);
+  if(result){ADV_DB=[...result,...ADV_DB];renderAdvertencias();renderEquipe();}
 }
 
 // ============================================================
@@ -1521,27 +1526,10 @@ async function _salvarFatDB(cri,priv,of,tg,av,tot){
   toast(`Faturamento de ${cri}: ${fmt$(tot)} salvo! 💰`);
 }
 
-// ============================================================
-// FINANCEIRO INTERNO — salva e atualiza
-// ============================================================
-async function salvarLancamentoInterno(){
-  const tipo=$('mfi-tipo')?.value;
-  const desc=$('mfi-desc')?.value?.trim();
-  const val=parseFloat($('mfi-val')?.value)||0;
-  const mes=$('mfi-mes')?.value?.trim()||'';
-  if(!desc||val===0){toast('Preencha a descrição e o valor.','err');return;}
-  const result=await dbInsert('financeiro_interno',{tipo,descricao:desc,valor:val,mes_ref:mes,mes_key:getMesKey(),created_at:new Date().toISOString()});
-  if(!result){toast('Erro ao salvar.','err');return;}
-  FIN_DB=[...result,...FIN_DB];
-  cM('m-fint');
-  ['mfi-desc','mfi-val','mfi-mes'].forEach(id=>{const e=$(id);if(e)e.value='';});
-  recalcular();renderFinInterno();renderFinanceiro();renderRelatorios();
-  toast(`Lançamento registrado: ${tipo} — ${fmt$(val)}`);
-}
-
 async function excluirLancamento(id){
   if(!confirm('Excluir este lançamento?'))return;
-  await dbDelete('financeiro_interno',id);
+  const result=await dbDelete('financeiro_interno',id);
+  if(!result){toast('Erro ao excluir lançamento.','err');return;}
   FIN_DB=FIN_DB.filter(l=>String(l.id)!==String(id));
   recalcular();renderFinInterno();renderFinanceiro();renderRelatorios();
   toast('Lançamento excluído.','info');
@@ -1558,10 +1546,12 @@ async function adicionarCriador(){
   const dur=parseInt($('mac-dur')?.value)||12;
   if(!nome){toast('Informe o nome do criador.','err');return;}
   const id=`cri__${nome}`;
-  await dbUpsert('criadores',{id,nome,operador:ope,cta,inicio,duracao_meses:dur,created_at:new Date().toISOString()}).catch(()=>{});
+  const result=await dbUpsert('criadores',{id,nome,operador:ope,cta,inicio,duracao_meses:dur,created_at:new Date().toISOString()}).catch(()=>null);
+  if(!result){toast('Erro ao adicionar criador. Verifique a tabela criadores.','err');return;}
   if(isCriadorRemovido(nome)){
     CONFIG_DB.criadores_removidos=(CONFIG_DB.criadores_removidos||[]).filter(n=>n!==nome);
-    await dbSetConfig('criadores_removidos',CONFIG_DB.criadores_removidos).catch(()=>{});
+    const cfg=await dbSetConfig('criadores_removidos',CONFIG_DB.criadores_removidos).catch(()=>null);
+    if(!cfg){toast('Criador salvo, mas houve erro ao reativar na configuração.','err');return;}
   }
   CRIADORES_PADRAO.push({id,nome,operador:ope,cta,inicio,duracao:dur});
   salvarEstadoLocal();
@@ -1577,11 +1567,13 @@ async function removerCriador(nome){
   if(!confirm(`Remover ${nome}?`))return;
   const i=CRIADORES_PADRAO.findIndex(c=>c.nome===nome);
   const id=CRIADORES_PADRAO[i]?.id||`cri__${nome}`;
-  await dbDelete('criadores',id).catch(()=>{});
+  const del=await dbDelete('criadores',id).catch(()=>null);
+  if(!del){toast('Erro ao remover criador no banco.','err');return;}
   if(i>=0)CRIADORES_PADRAO.splice(i,1);
   const removidos=[...(CONFIG_DB.criadores_removidos||[]),nome].filter((v,i,a)=>a.indexOf(v)===i);
   CONFIG_DB.criadores_removidos=removidos;
-  await dbSetConfig('criadores_removidos',removidos).catch(()=>{});
+  const cfg=await dbSetConfig('criadores_removidos',removidos).catch(()=>null);
+  if(!cfg){toast('Criador removido, mas houve erro ao gravar a lista de removidos.','err');return;}
   salvarEstadoLocal();
   recalcular();renderAll();
   toast(`${nome} removido.`,'info');
@@ -1594,7 +1586,8 @@ async function adicionarOperador(){
   const nome=$('mao-nome')?.value?.trim();
   const funcao=$('mao-func')?.value?.trim()||'Operador';
   if(!nome){toast('Informe o nome.','err');return;}
-  await dbUpsert('operadores',{id:`op__${nome}`,nome,funcao,created_at:new Date().toISOString()}).catch(()=>{});
+  const result=await dbUpsert('operadores',{id:`op__${nome}`,nome,funcao,created_at:new Date().toISOString()}).catch(()=>null);
+  if(!result){toast('Erro ao adicionar operador. Verifique a tabela operadores.','err');return;}
   if(!OPERADORES_PADRAO.includes(nome))OPERADORES_PADRAO.push(nome);
   salvarEstadoLocal();
   cM('m-add-operador');
@@ -1612,7 +1605,8 @@ async function adicionarObrigacao(){
   const dia=$('mao2-dia')?.value||'todos';
   if(!nome){toast('Informe o nome da obrigação.','err');return;}
   const id=`obr__${nome}`;
-  await dbUpsert('obrigacoes',{id,nome,responsavel:resp,dia,created_at:new Date().toISOString()}).catch(()=>{});
+  const result=await dbUpsert('obrigacoes',{id,nome,responsavel:resp,dia,created_at:new Date().toISOString()}).catch(()=>null);
+  if(!result){toast('Erro ao adicionar obrigação. Verifique a tabela obrigacoes.','err');return;}
   OBRIGACOES_PADRAO.push({id,nome,resp,dia});
   salvarEstadoLocal();
   cM('m-add-obrig');
@@ -1624,7 +1618,8 @@ async function adicionarObrigacao(){
 async function removerObrigacao(i){
   const nome=OBRIGACOES_PADRAO[i]?.nome;
   if(!nome||!confirm(`Remover "${nome}"?`))return;
-  await dbDelete('obrigacoes',OBRIGACOES_PADRAO[i]?.id||`obr__${nome}`).catch(()=>{});
+  const result=await dbDelete('obrigacoes',OBRIGACOES_PADRAO[i]?.id||`obr__${nome}`).catch(()=>null);
+  if(!result){toast('Erro ao remover obrigação no banco.','err');return;}
   OBRIGACOES_PADRAO.splice(i,1);
   salvarEstadoLocal();
   renderGestao();renderRotAdm();renderRotOpe();renderCriTar();
@@ -1683,14 +1678,15 @@ async function marcarObrigacao(cri,obr,el,event){
   const novo=!atual;
   _aplicarCk(el,novo);
   try{
-    await dbUpsert('rotina_status',{id:chave,chave,criador:cri,obrigacao:obr,feito:novo,dia:dk,created_at:new Date().toISOString()});
+    const result=await dbUpsert('rotina_status',{id:chave,chave,criador:cri,obrigacao:obr,feito:novo,dia:dk,created_at:new Date().toISOString()});
+    if(!result)throw new Error('Erro ao salvar rotina');
     ROTINA_STATUS[chave]={chave,feito:novo};
     // Gerar advertência automática após 22h
     if(!novo&&getNow().getHours()>=22){
       const op=CRIADORES_PADRAO.find(c=>c.nome===cri)?.operador||'';
       if(op)await gerarAdv(op,cri,`Obrigação não cumprida: ${obr}`);
     }
-  }catch(e){_aplicarCk(el,atual);console.error(e);}
+  }catch(e){_aplicarCk(el,atual);console.error(e);toast('Erro ao salvar rotina.','err');}
   el._ck=false;_saving=false;
   atualizarContadores();
   recalcular();
@@ -1805,7 +1801,8 @@ async function marcarMidia(tipo,el){
   el.classList.toggle('done-row',feito);
   if(bdg){bdg.className=`bdg ${feito?'bok':'bgr'}`;bdg.textContent=feito?'Enviado':'Não enviado';}
   try{
-    await dbUpsert('midias_status',{id:chave,chave,criador:criadorAtual,tipo,feito,semana:sk,created_at:new Date().toISOString()});
+    const result=await dbUpsert('midias_status',{id:chave,chave,criador:criadorAtual,tipo,feito,semana:sk,created_at:new Date().toISOString()});
+    if(!result)throw new Error('Erro ao salvar midia');
     MIDIAS_STATUS[chave]={chave,feito};
   }catch(e){
     if(box){box.classList.toggle('done',atual);const m=box.querySelector('.ckm');if(m)m.style.display=atual?'block':'none';}
@@ -1902,7 +1899,8 @@ async function criarChamadoOpe(){
   const prio=$('mc-prio')?.value||'🟢 Normal';
   const desc=$('mc-desc')?.value||'';
   const resp=CRIADORES_PADRAO.find(c=>c.nome===cri)?.operador||operadorAtual;
-  await dbInsert('chamados',{titulo:`${cri} — ${tipo}`,descricao:desc,status:'aberto',prioridade:prio,criado_por:operadorAtual,responsavel:resp,criador_nome:cri,created_at:new Date().toISOString()});
+  const result=await dbInsert('chamados',{titulo:`${cri} — ${tipo}`,descricao:desc,status:'aberto',prioridade:prio,criado_por:operadorAtual,responsavel:resp,criador_nome:cri,created_at:new Date().toISOString()});
+  if(!result){toast('Erro ao abrir chamado.','err');return;}
   cM('m-cham');const e=$('mc-desc');if(e)e.value='';
   await carregarTudo();toast('Chamado aberto! Admin notificado.');
 }
@@ -1911,7 +1909,8 @@ async function criarChamadoCri(){
   const tipo=$('mcc-tipo')?.value||'Outro';
   const desc=$('mcc-desc')?.value||'';
   const cri=CRIADORES_PADRAO.find(c=>c.nome===criadorAtual);
-  await dbInsert('chamados',{titulo:`${criadorAtual} — ${tipo}`,descricao:desc,status:'aberto',prioridade:'🟡 Prioridade razoável',criado_por:criadorAtual,responsavel:cri?.operador||'Admin',criador_nome:criadorAtual,created_at:new Date().toISOString()});
+  const result=await dbInsert('chamados',{titulo:`${criadorAtual} — ${tipo}`,descricao:desc,status:'aberto',prioridade:'🟡 Prioridade razoável',criado_por:criadorAtual,responsavel:cri?.operador||'Admin',criador_nome:criadorAtual,created_at:new Date().toISOString()});
+  if(!result){toast('Erro ao enviar chamado.','err');return;}
   cM('m-cham-cri');const e=$('mcc-desc');if(e)e.value='';
   await carregarTudo();toast('Chamado enviado! Operador notificado.');
 }
@@ -1920,13 +1919,15 @@ async function criarChamadoInterno(){
   const tipo=$('mi-tipo')?.value||'Interno';
   const prio=$('mi-prio')?.value||'🟢 Normal';
   const desc=$('mi-desc')?.value||'';
-  await dbInsert('chamados',{titulo:`Interno — ${tipo}`,descricao:desc,status:'aberto',prioridade:prio,criado_por:'Admin',responsavel:'Admin',criador_nome:'Geral / Agência',created_at:new Date().toISOString()});
+  const result=await dbInsert('chamados',{titulo:`Interno — ${tipo}`,descricao:desc,status:'aberto',prioridade:prio,criado_por:'Admin',responsavel:'Admin',criador_nome:'Geral / Agência',created_at:new Date().toISOString()});
+  if(!result){toast('Erro ao registrar chamado interno.','err');return;}
   cM('m-int');const e=$('mi-desc');if(e)e.value='';
   await carregarTudo();toast('Chamado interno registrado!');
 }
 
 async function atualizarChamado(id,dados){
-  await dbUpdate('chamados',id,dados);
+  const result=await dbUpdate('chamados',id,dados);
+  if(!result){toast('Erro ao atualizar chamado.','err');return;}
   const c=CHAMADOS.find(x=>x.id===id);if(c)Object.assign(c,dados);
   renderChamadosAdm();renderChamadosOpe();renderCriPen();atualizarBadges();
   toast('Chamado atualizado!');
@@ -1934,7 +1935,8 @@ async function atualizarChamado(id,dados){
 
 async function excluirChamado(id){
   if(!confirm('Excluir este chamado?'))return;
-  await dbDelete('chamados',id);
+  const result=await dbDelete('chamados',id);
+  if(!result){toast('Erro ao excluir chamado.','err');return;}
   CHAMADOS=CHAMADOS.filter(c=>c.id!==id);
   renderChamadosAdm();renderChamadosOpe();atualizarBadges();toast('Chamado excluído.','info');
 }
@@ -2019,6 +2021,64 @@ renderDosOpe=renderDosOpeBasico;
 // ============================================================
 // CRIADOR — VISÃO GERAL (100% do banco)
 // ============================================================
+function renderDossieEditavel(nome){
+  const el=$('dossie-content');if(!el)return;
+  const cr=CRIADORES_PADRAO.find(c=>c.nome===nome)||{};
+  const base=DOSSIE[nome]||{};
+  const db=(DOSSIE_DB[nome]?.dados)||{};
+  const d={...base,...db};
+  const dr=cr.inicio?diasRestantes(cr.inicio,cr.duracao||12):0;
+  const fat=KPI_CACHE.fatMes?.[nome]||0;
+  const pSoc=['Instagram Principal','Instagram Reserva 1','Instagram Reserva 2','Canal WhatsApp','TikTok','X (Twitter)'];
+  const p18=['Privacy','OnlyFans','Telegram VIP','Telegram Free'];
+  const senhasTxt=Array.isArray(d.senhas)?d.senhas.map(s=>`${s.p||''} | ${s.v||''}`).join('\n'):(d.senhas||'');
+  const statusPlat=(p,tipoPadrao)=>{
+    const dados=PLATAFORMAS_STATUS[`${nome}__${p}`]||{};
+    const status=dados.status||'Ativo';
+    const ok=status==='Ativo';
+    return `<div class="plr"><span class="dot ${ok?'dok':'dnu'}"></span><span style="flex:1">${p}</span><span class="bdg ${tipoPadrao==='+18'?'bur':'bgr'}" style="margin-right:5px;font-size:10px">${dados.tipo||tipoPadrao}</span><span class="bdg ${ok?'bok':'ber'}">${esc(status)}</span></div>`;
+  };
+  el.innerHTML=`<div class="g2">
+    <div class="card"><div class="ch"><span class="ct">${esc(nome)} · Dados editaveis</span><button class="btn btn-p btn-sm" onclick="salvarDossieAtual('${esc(nome)}')">Salvar dossie</button></div><div class="cb">
+      <div class="frow"><div class="fg"><label class="fl">CPF</label><input class="fi" id="dos-cpf" value="${esc(d.cpf||'')}"></div><div class="fg"><label class="fl">Data de nascimento</label><input class="fi" id="dos-nascimento" value="${esc(d.nascimento||'')}" placeholder="dd/mm/aaaa"></div></div>
+      <div class="frow"><div class="fg"><label class="fl">Email</label><input class="fi" id="dos-email" value="${esc(d.email||'')}"></div><div class="fg"><label class="fl">Telefone</label><input class="fi" id="dos-telefone" value="${esc(d.telefone||'')}"></div></div>
+      <div class="fg"><label class="fl">Persona / observacoes</label><input class="fi" id="dos-persona" value="${esc(d.persona||'')}"></div>
+      <div class="row"><span style="font-size:12px;color:var(--tx3);width:120px">Inicio contrato</span><span>${cr.inicio||'—'}</span></div>
+      <div class="row"><span style="font-size:12px;color:var(--tx3);width:120px">Duracao</span><span>${cr.duracao||12} meses</span></div>
+      <div class="row"><span style="font-size:12px;color:var(--tx3);width:120px">Dias restantes</span><span class="bdg bok">${dr} dias</span></div>
+      <div class="row"><span style="font-size:12px;color:var(--tx3);width:120px">CTA estagio</span><span class="bdg bin">Estagio ${cr.cta||1}</span></div>
+      <div class="row"><span style="font-size:12px;color:var(--tx3);width:120px">Faturamento mes</span><span class="${fat>0?'cup':''}" style="font-weight:700">${fat>0?fmt$(fat):'Sem lancamento'}</span></div>
+    </div></div>
+    <div class="card"><div class="ch"><span class="ct">Plataformas</span></div><div class="cb">
+      ${pSoc.map(p=>statusPlat(p,'Rede Social')).join('')}
+      ${p18.map(p=>statusPlat(p,'+18')).join('')}
+    </div></div>
+  </div>
+  <div class="card"><div class="ch"><span class="ct">Cofre de senhas editavel</span><span class="bdg bur">Admin</span></div><div class="cb">
+    <div class="fg"><label class="fl">Uma senha por linha: Plataforma | acesso</label><textarea class="fi" id="dos-senhas" style="min-height:130px">${esc(senhasTxt)}</textarea></div>
+    <button class="btn btn-p" onclick="salvarDossieAtual('${esc(nome)}')">Salvar dossie</button>
+  </div></div>`;
+}
+renderDossie=renderDossieEditavel;
+
+async function salvarDossieAtual(nome){
+  const linhas=($('dos-senhas')?.value||'').split('\n').map(l=>l.trim()).filter(Boolean);
+  const senhas=linhas.map(l=>{const parts=l.split('|');return {p:(parts[0]||'').trim(),v:parts.slice(1).join('|').trim(),s:true};});
+  const dados={
+    cpf:$('dos-cpf')?.value?.trim()||'',
+    nascimento:$('dos-nascimento')?.value?.trim()||'',
+    email:$('dos-email')?.value?.trim()||'',
+    telefone:$('dos-telefone')?.value?.trim()||'',
+    persona:$('dos-persona')?.value?.trim()||'',
+    senhas
+  };
+  const row={id:`dos__${nome}`,criador:nome,dados,updated_at:new Date().toISOString(),created_at:new Date().toISOString()};
+  const result=await dbUpsert('dossies',row).catch(()=>null);
+  if(!result){toast('Erro ao salvar dossie. Verifique a tabela dossies.','err');return;}
+  DOSSIE_DB[nome]=row;
+  renderDossie(nome);renderDosOpe();toast('Dossie salvo e atualizado para a equipe.');
+}
+
 function renderCriOV(){
   const now=getNow();const date=now.getDate();
   const diasNoMes=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
@@ -2160,6 +2220,32 @@ function renderEquipe(){
   <button class="btn btn-p" style="margin-top:8px" onclick="oM('m-user')">+ Adicionar usuário</button>`;
 }
 
+function renderEquipeConectada(){
+  const el=$('a-equ')?.querySelector('.cnt');if(!el)return;
+  const advMes=ADV_DB.filter(a=>a.mes_key===getMesKey());
+  const admins=[{nome:'Murilo',email:'',principal:true},...((CONFIG_DB.admins||[]).filter(a=>a&&a.nome&&a.nome!=='Murilo'))];
+  el.innerHTML=`<div class="sl">Operadores</div>${OPERADORES_PADRAO.map(op=>{
+    const cri=CRIADORES_PADRAO.filter(c=>c.operador===op).map(c=>c.nome);
+    const adv=advMes.filter(a=>a.operador===op).length;
+    const ini=op.split(' ').map(p=>p[0]).join('').slice(0,2);
+    return `<div class="hrow" ${adv>=3?'style="border-color:#FBBDD2"':''}><div class="av ${adv>=3?'avp':'avt'}">${ini}</div><div style="flex:1"><div class="hrow-n">${esc(op)} <span class="bdg bgr" style="font-size:10px">Colaborador</span> ${adv?`<span class="bdg ${adv>=3?'bur':'bwa'}" style="font-size:10px">${adv} advertencia(s)</span>`:''}</div><div style="font-size:12px;color:var(--tx3)">${cri.length?esc(cri.join(', ')):'Sem criadores atribuidos'}</div></div><button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button><span class="bdg ${adv>=3?'bwa':'bok'}">${adv>=3?'Atencao':'Ativo'}</span></div>`;
+  }).join('')}
+  <div class="sl">Admins</div>
+  ${admins.map(ad=>{const ini=ad.nome.split(' ').map(p=>p[0]).join('').slice(0,2);return `<div class="hrow"><div class="av av-a">${ini}</div><div style="flex:1"><div class="hrow-n">${esc(ad.nome)}</div>${ad.email?`<div style="font-size:12px;color:var(--tx3)">${esc(ad.email)}</div>`:''}</div><span class="bdg bin">${ad.principal?'Admin principal':'Admin'}</span>${ad.principal?'<span style="font-size:12px;color:var(--tx3)">Nao removivel</span>':`<button class="btn btn-r btn-sm" onclick="removerAdmin('${esc(ad.nome)}')">Remover</button>`}</div>`;}).join('')}
+  <button class="btn btn-p" style="margin-top:8px" onclick="oM('m-user')">+ Adicionar usuario</button>`;
+}
+renderEquipe=renderEquipeConectada;
+
+async function removerAdmin(nome){
+  if(nome==='Murilo'){toast('Murilo é o Admin principal e não pode ser removido.','err');return;}
+  if(!confirm(`Remover o admin ${nome}?`))return;
+  const admins=(CONFIG_DB.admins||[]).filter(a=>a.nome!==nome);
+  const result=await dbSetConfig('admins',admins).catch(()=>null);
+  if(!result){toast('Erro ao remover admin.','err');return;}
+  CONFIG_DB.admins=admins;
+  renderEquipe();toast('Admin removido.','info');
+}
+
 function renderGestao(){
   const gcEl=$('gestao-criadores');
   if(gcEl)gcEl.innerHTML=CRIADORES_PADRAO.map(cr=>`<div class="row"><span style="flex:1;font-size:13px;font-weight:600">${esc(cr.nome)}</span><span style="font-size:12px;color:var(--tx3);margin-right:8px">Op: ${esc(cr.operador)} · CTA ${cr.cta||1} · ${diasRestantes(cr.inicio,cr.duracao||12)}d</span><button class="btn btn-sm" onclick="editarCriador('${esc(cr.nome)}')">Editar</button><button class="btn btn-r btn-sm" style="margin-left:4px" onclick="removerCriador('${esc(cr.nome)}')">✕</button></div>`).join('')||'<div style="font-size:13px;color:var(--tx3);padding:10px 0">Nenhum criador.</div>';
@@ -2289,6 +2375,14 @@ function iniciarRealtime(){
       .on('postgres_changes',{event:'*',schema:'public',table:'operadores'},()=>carregarTudo())
       .on('postgres_changes',{event:'*',schema:'public',table:'obrigacoes'},()=>carregarTudo())
       .on('postgres_changes',{event:'*',schema:'public',table:'plataformas_status'},()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'leads'},()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'onboarding_status'},()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'notificacoes'},()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'logs_extra'},()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'kpis_manuais'},()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'decisoes'},()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'dossies'},()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'crm_config'},()=>carregarTudo())
       .subscribe();
   }catch(e){console.log('Realtime fallback — polling ativo');}
   setInterval(()=>{ if(!_saving)carregarTudo(); },8000);
@@ -2312,11 +2406,25 @@ async function salvarLead(){
 async function salvarUsuario(){
   const nome=document.getElementById('mu-nome')?.value?.trim();
   const tipo=document.getElementById('mu-tipo')?.value||'Operador';
+  const email=document.getElementById('mu-email')?.value?.trim()||'';
   if(!nome){toast('Informe o nome.','err');return;}
-  if(tipo==='Operador')await dbUpsert('operadores',{id:`op__${nome}`,nome,funcao:'Operador',created_at:new Date().toISOString()}).catch(()=>{});
+  if(tipo==='Operador'){
+    const result=await dbUpsert('operadores',{id:`op__${nome}`,nome,funcao:'Operador',email,created_at:new Date().toISOString()}).catch(()=>null);
+    if(!result){toast('Erro ao adicionar operador.','err');return;}
+    if(!OPERADORES_PADRAO.includes(nome))OPERADORES_PADRAO.push(nome);
+  }else if(tipo==='Admin'){
+    const admins=[...(CONFIG_DB.admins||[])].filter(a=>a&&a.nome!=='Murilo');
+    const idx=admins.findIndex(a=>a.nome===nome);
+    const admin={nome,email,principal:false};
+    if(idx>=0)admins[idx]=admin;else admins.push(admin);
+    const result=await dbSetConfig('admins',admins).catch(()=>null);
+    if(!result){toast('Erro ao salvar administrador.','err');return;}
+    CONFIG_DB.admins=admins;
+  }else{
+    toast('Para adicionar criador, use o botão + Criador na Gestão do CRM.','info');return;
+  }
   cM('m-user');
-  const e=document.getElementById('mu-nome');if(e)e.value='';
-  if(!OPERADORES_PADRAO.includes(nome))OPERADORES_PADRAO.push(nome);
+  ['mu-nome','mu-email'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   salvarEstadoLocal();
   renderGestao();renderEquipe();initSelects();toast(`${nome} adicionado como ${tipo}!`);
 }
@@ -2327,7 +2435,8 @@ async function confirmarTransferencia(){
   const cr=CRIADORES_PADRAO.find(c=>c.nome===cri);
   if(cr){
     cr.operador=novoOp;
-    await dbUpdate('criadores',cr.id||`cri__${cri}`,{operador:novoOp}).catch(()=>{});
+    const result=await dbUpdate('criadores',cr.id||`cri__${cri}`,{operador:novoOp}).catch(()=>null);
+    if(!result){toast('Erro ao transferir no banco.','err');return;}
     salvarEstadoLocal();
   }
   cM('m-transfer');
