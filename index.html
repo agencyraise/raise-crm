@@ -1190,27 +1190,27 @@ async function carregarTudo(){
     }
     if(cri.length||local.criadores?.length){
       resetArray(CRIADORES_PADRAO,uniqByNome([
-        ...(local.criadores||[]).map(normalizarCriador),
         ...cri.map(normalizarCriador),
+        ...(local.criadores||[]).map(normalizarCriador),
         ...CRIADORES_PADRAO
       ]).filter(c=>!isCriadorRemovido(c.nome)));
     }
     if(ops.length||local.operadores?.length){
       resetArray(OPERADORES_PADRAO,uniqByNome([
-        ...(local.operadores||[]),
         ...ops.map(o=>o.nome),
+        ...(local.operadores||[]),
         ...OPERADORES_PADRAO
       ]).filter(op=>!isOperadorRemovido(op)));
     }
     if(obs.length||local.obrigacoes?.length){
       resetArray(OBRIGACOES_PADRAO,uniqByNome([
-        ...(local.obrigacoes||[]).map(normalizarObrigacao),
         ...obs.map(normalizarObrigacao),
+        ...(local.obrigacoes||[]).map(normalizarObrigacao),
         ...OBRIGACOES_PADRAO
       ]));
     }
     PLATAFORMAS_STATUS={};
-    [...plats,...(local.plataformas||[])].forEach(p=>{PLATAFORMAS_STATUS[`${p.criador}__${p.plataforma}`]=p;});
+    [...(local.plataformas||[]),...plats].forEach(p=>{PLATAFORMAS_STATUS[`${p.criador}__${p.plataforma}`]=p;});
   }catch(e){console.error('carregarTudo',e);}
   // Só re-renderiza se não há save ativo (evita desmarcar checklist)
   if(!_saving){recalcular();renderAll();checarNotificacoesCriador();}
