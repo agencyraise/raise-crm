@@ -24,6 +24,22 @@ html,body{min-height:100%}
 body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;line-height:1.5}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
 #app{display:flex;flex-direction:column;min-height:100vh}
+#app.auth-locked{display:none}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#F5F6FA 0%,#EEF0F6 100%)}
+.login-card{width:min(420px,100%);background:var(--bg2);border:1.5px solid var(--bd);border-radius:14px;box-shadow:0 18px 45px rgba(26,27,46,.12);padding:24px}
+.login-brand{font-family:var(--fh);font-size:24px;font-weight:800;margin-bottom:4px}
+.login-brand span{color:var(--ac)}
+.login-sub{font-size:13px;color:var(--tx2);margin-bottom:18px}
+.login-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap}
+.login-err{display:none;margin-top:12px}.login-err.on{display:flex}
+.auth-only{display:none!important}
+.auth-admin .for-admin,.auth-operador .for-operador,.auth-criador .for-criador{display:inline-flex!important}
+.topnav-user{font-size:12px;color:var(--tx2);margin-left:auto;font-weight:600}
+.logout-btn{padding:6px 10px;border-radius:8px;border:1px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;font-size:12px;font-weight:700}
+.logout-btn:hover{border-color:var(--dn);color:var(--dn)}
+.auth-admin .psb.ope,.auth-admin .psb.cri,.auth-operador .psb.adm,.auth-operador .psb.cri,.auth-criador .psb.adm,.auth-criador .psb.ope{display:none}
 
 /* TOP NAV */
 .topnav{display:flex;gap:8px;padding:12px 20px;background:var(--bg2);border-bottom:1.5px solid var(--bd);align-items:center;position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
@@ -221,7 +237,20 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 </style>
 </head>
 <body>
-<div id="app">
+<div id="login-screen" class="login-wrap">
+  <div class="login-card">
+    <div class="login-brand">Raise<span>Hot</span></div>
+    <div class="login-sub">Entre com seu acesso para abrir apenas o painel permitido.</div>
+    <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="login-email" autocomplete="email" placeholder="seuemail@raise.com"></div>
+    <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="login-senha" autocomplete="current-password" placeholder="Sua senha"></div>
+    <div class="login-actions">
+      <button class="btn btn-p" onclick="entrarCRM()">Entrar</button>
+      <button class="btn" onclick="recuperarSenha()">Recuperar senha</button>
+    </div>
+    <div id="login-erro" class="nf nf-r login-err"><span>⚠️</span><span id="login-erro-txt">Erro ao entrar.</span></div>
+  </div>
+</div>
+<div id="app" class="auth-locked">
 
 <!-- TOP NAV -->
 <div class="topnav">
@@ -229,6 +258,8 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
   <button class="psb adm on" onclick="gP('adm',this)">🛡 Admin</button>
   <button class="psb ope" onclick="gP('ope',this)">⚙️ Operador</button>
   <button class="psb cri" onclick="gP('cri',this)">🎨 Criador</button>
+  <div class="topnav-user" id="auth-user-label"></div>
+  <button class="logout-btn" onclick="sairCRM()">Sair</button>
   <div class="topnav-clock" id="clk"></div>
 </div>
 
@@ -919,6 +950,9 @@ const NOTIF_VISTAS_KEY='raise_notificacoes_vistas';
 
 let operadorAtual=localStorage.getItem('raise_op')||'Matheus A.';
 let criadorAtual=localStorage.getItem('raise_cri')||'Bruna Santiny';
+let USUARIO_ATUAL=null;
+let PERFIL_ATUAL=null;
+let AUTH_PRONTO=false;
 
 // === DADOS ESTRUTURAIS ===
 const CRIADORES_PADRAO=[
@@ -1061,6 +1095,91 @@ async function dbDeleteWhere(t,filters=[]){
 }
 async function dbSetConfig(chave,valor){
   return dbUpsert('crm_config',{chave,valor,updated_at:new Date().toISOString(),created_at:new Date().toISOString()},'chave');
+}
+
+// === AUTENTICACAO E PERFIS ===
+function portalDoPerfil(){
+  const tipo=PERFIL_ATUAL?.tipo;
+  if(tipo==='admin')return 'adm';
+  if(tipo==='colaborador'||tipo==='operador')return 'ope';
+  if(tipo==='criador')return 'cri';
+  return null;
+}
+function perfilPodePortal(portal){
+  return portalDoPerfil()===portal;
+}
+function mostrarErroLogin(msg){
+  const box=$('login-erro'),txt=$('login-erro-txt');
+  if(txt)txt.textContent=msg;
+  box?.classList.add('on');
+}
+function esconderErroLogin(){
+  $('login-erro')?.classList.remove('on');
+}
+async function carregarPerfilUsuario(user){
+  const {data,error}=await sb.from('perfis_usuarios').select('*').eq('id',user.id).eq('ativo',true).maybeSingle();
+  if(error){console.error('[PERFIL]',error.message);return null;}
+  return data;
+}
+function aplicarPerfilUsuario(user,perfil){
+  USUARIO_ATUAL=user;PERFIL_ATUAL=perfil;AUTH_PRONTO=true;
+  const tipo=perfil.tipo==='operador'?'colaborador':perfil.tipo;
+  document.body.classList.remove('auth-admin','auth-operador','auth-criador');
+  document.body.classList.add(`auth-${tipo==='colaborador'?'operador':tipo}`);
+  if(tipo==='colaborador'&&perfil.operador){
+    operadorAtual=perfil.operador;localStorage.setItem('raise_op',operadorAtual);
+  }
+  if(tipo==='criador'&&perfil.criador){
+    criadorAtual=perfil.criador;localStorage.setItem('raise_cri',criadorAtual);
+  }
+  const label=$('auth-user-label');
+  if(label)label.textContent=`${perfil.nome||user.email} · ${tipo}`;
+  $('login-screen')?.style.setProperty('display','none');
+  $('app')?.classList.remove('auth-locked');
+}
+async function iniciarAuth(){
+  const {data}=await sb.auth.getSession();
+  const user=data?.session?.user;
+  if(!user){$('app')?.classList.add('auth-locked');return false;}
+  const perfil=await carregarPerfilUsuario(user);
+  if(!perfil){
+    await sb.auth.signOut();
+    mostrarErroLogin('Seu login existe, mas ainda nao tem perfil liberado no CRM.');
+    $('app')?.classList.add('auth-locked');
+    return false;
+  }
+  aplicarPerfilUsuario(user,perfil);
+  return true;
+}
+async function entrarCRM(){
+  esconderErroLogin();
+  const email=$('login-email')?.value?.trim();
+  const senha=$('login-senha')?.value||'';
+  if(!email||!senha){mostrarErroLogin('Informe e-mail e senha.');return;}
+  const {data,error}=await sb.auth.signInWithPassword({email,password:senha});
+  if(error){mostrarErroLogin('Login ou senha invalidos.');return;}
+  const perfil=await carregarPerfilUsuario(data.user);
+  if(!perfil){
+    await sb.auth.signOut();
+    mostrarErroLogin('Acesso sem perfil liberado. Peça para um admin vincular seu usuario.');
+    return;
+  }
+  aplicarPerfilUsuario(data.user,perfil);
+  await iniciarCRMLogado();
+}
+async function recuperarSenha(){
+  esconderErroLogin();
+  const email=$('login-email')?.value?.trim();
+  if(!email){mostrarErroLogin('Digite seu e-mail para recuperar a senha.');return;}
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.href});
+  if(error){mostrarErroLogin('Nao foi possivel enviar recuperacao agora.');return;}
+  mostrarErroLogin('Enviamos um link de recuperacao para o e-mail informado.');
+}
+async function sairCRM(){
+  await sb.auth.signOut();
+  USUARIO_ATUAL=null;PERFIL_ATUAL=null;AUTH_PRONTO=false;
+  $('app')?.classList.add('auth-locked');
+  $('login-screen')?.style.removeProperty('display');
 }
 
 function resetArray(arr,items){
@@ -1328,9 +1447,15 @@ const isFeitoMid=(cri,tipo)=>MIDIAS_STATUS[chaveMid(cri,tipo,getSemKey())]?.feit
 
 // === NAVEGAÇÃO ===
 function gP(id,btn){
+  if(AUTH_PRONTO&&!perfilPodePortal(id)){
+    toast('Acesso restrito ao seu perfil.','err');
+    const portal=portalDoPerfil();
+    if(portal&&portal!==id)gP(portal,document.querySelector(`.psb.${portal}`));
+    return;
+  }
   document.querySelectorAll('.portal').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.psb').forEach(b=>b.classList.remove('on'));
-  $(('p-'+id))?.classList.add('on');btn.classList.add('on');
+  $(('p-'+id))?.classList.add('on');btn?.classList.add('on');
   localStorage.setItem('raise_portal_atual',id);
   if(id==='adm')renderAdm();if(id==='ope')renderOpe();if(id==='cri')renderCri();
 }
@@ -2671,9 +2796,13 @@ function initSelects(){
   carregarCorrecaoFaturamento();
   carregarCorrecaoKPI();
   const opeSel=$('ope-sel');
-  rebuildOptions(opeSel,OPERADORES_PADRAO,{selected:operadorAtual});
+  const opsPermitidos=(PERFIL_ATUAL?.tipo==='colaborador'||PERFIL_ATUAL?.tipo==='operador')?[operadorAtual]:OPERADORES_PADRAO;
+  rebuildOptions(opeSel,opsPermitidos,{selected:operadorAtual});
+  if(opeSel)opeSel.disabled=PERFIL_ATUAL?.tipo==='colaborador'||PERFIL_ATUAL?.tipo==='operador';
   const criSel=$('cri-sel');
-  rebuildOptions(criSel,criadores,{selected:criadorAtual});
+  const criPermitidos=PERFIL_ATUAL?.tipo==='criador'?[criadorAtual]:criadores;
+  rebuildOptions(criSel,criPermitidos,{selected:criadorAtual});
+  if(criSel)criSel.disabled=PERFIL_ATUAL?.tipo==='criador';
   const rotDia=$('a-rot-d');
   if(rotDia){
     const dias=['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'].map((d,i)=>({value:String(i===6?0:i+1),label:d}));
@@ -2691,11 +2820,17 @@ function initSelects(){
 // TROCA CRIADOR / OPERADOR
 // ============================================================
 function trocarOperador(v){
+  if(PERFIL_ATUAL?.tipo==='colaborador'||PERFIL_ATUAL?.tipo==='operador'){
+    operadorAtual=PERFIL_ATUAL.operador||operadorAtual;toast('Seu acesso esta vinculado ao seu proprio painel.','err');renderOpe();return;
+  }
   operadorAtual=v;localStorage.setItem('raise_op',v);
   const nft=$('ope-nome-ft');if(nft)nft.textContent=v;
   renderOpe();
 }
 function trocarCriador(v){
+  if(PERFIL_ATUAL?.tipo==='criador'){
+    criadorAtual=PERFIL_ATUAL.criador||criadorAtual;toast('Seu acesso esta vinculado ao seu proprio painel.','err');renderCri();return;
+  }
   criadorAtual=v;localStorage.setItem('raise_cri',v);
   const cr=CRIADORES_PADRAO.find(c=>c.nome===v);
   const ft=$('cri-nome-ft');if(ft)ft.textContent=v;
@@ -2729,8 +2864,16 @@ function initClock(){
 // RESTORE SESSION
 // ============================================================
 function restoreSession(){
-  operadorAtual=localStorage.getItem('raise_op')||operadorAtual;
-  criadorAtual=localStorage.getItem('raise_cri')||criadorAtual;
+  if(PERFIL_ATUAL?.tipo==='colaborador'||PERFIL_ATUAL?.tipo==='operador'){
+    operadorAtual=PERFIL_ATUAL.operador||operadorAtual;
+  }else{
+    operadorAtual=localStorage.getItem('raise_op')||operadorAtual;
+  }
+  if(PERFIL_ATUAL?.tipo==='criador'){
+    criadorAtual=PERFIL_ATUAL.criador||criadorAtual;
+  }else{
+    criadorAtual=localStorage.getItem('raise_cri')||criadorAtual;
+  }
   const opeSel=$('ope-sel');if(opeSel)opeSel.value=operadorAtual;
   const criSel=$('cri-sel');if(criSel)criSel.value=criadorAtual;
   const nft=$('ope-nome-ft');if(nft)nft.textContent=operadorAtual;
@@ -2740,7 +2883,8 @@ function restoreSession(){
   if(cct&&cr)cct.textContent=`${diasRestantes(cr.inicio,cr.duracao||12)} dias de contrato`;
 }
 function restoreView(){
-  const portal=localStorage.getItem('raise_portal_atual')||'adm';
+  let portal=localStorage.getItem('raise_portal_atual')||'adm';
+  if(AUTH_PRONTO&&!perfilPodePortal(portal))portal=portalDoPerfil()||'adm';
   const aba=localStorage.getItem('raise_aba_atual');
   document.querySelectorAll('.portal').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.psb').forEach(b=>b.classList.remove('on'));
@@ -2855,14 +2999,19 @@ async function salvarLancamentoInterno(){
 // ============================================================
 // MAIN
 // ============================================================
-document.addEventListener('DOMContentLoaded',()=>{
-  initClock();
+async function iniciarCRMLogado(){
   restoreSession();
   restoreView();
   renderGestao();
-  renderDossie('Bruna Santiny');
-  carregarTudo();
+  renderDossie(criadorAtual||'Bruna Santiny');
+  await carregarTudo();
   iniciarRealtime();
+}
+document.addEventListener('DOMContentLoaded',async()=>{
+  initClock();
+  const ok=await iniciarAuth();
+  if(!ok)return;
+  await iniciarCRMLogado();
 });
 </script>
 </body>
