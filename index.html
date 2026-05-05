@@ -522,7 +522,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
       <div class="frow">
         <div class="fg"><label class="fl">Seguidores (ganho)</label><input class="fi" type="number" id="kpi-seg" placeholder="0"></div>
         <div class="fg"><label class="fl">Visualizações</label><input class="fi" type="number" id="kpi-view" placeholder="0"></div>
-        <div class="fg"><label class="fl">Assinantes total</label><input class="fi" type="number" id="kpi-ass" placeholder="0"></div>
+        <div class="fg"><label class="fl">Assinantes novos</label><input class="fi" type="number" id="kpi-ass" placeholder="0"></div>
       </div>
       <div class="fg"><label class="fl">Engajamento (%)</label><input class="fi" type="number" step="0.1" id="kpi-eng" placeholder="0"></div>
       <button class="btn btn-p" onclick="salvarKPI()">Salvar KPIs</button>
@@ -1368,7 +1368,7 @@ let ONB_STEPS=['Formalização e contrato','Definição estratégica e persona',
 function onboardingEditorHTML(){
   return `<div class="card" style="margin-bottom:12px"><div class="ch"><span class="ct">Processos do onboarding</span><span class="bdg bok">${ONB_STEPS.length} etapas</span></div><div class="cb">
     <div class="frow"><div class="fg"><label class="fl">Nova atividade/processo</label><input class="fi" id="onb-step-new" placeholder="Ex: Validar bio e links"></div><button class="btn btn-p" onclick="adicionarEtapaOnboarding()">Adicionar</button></div>
-    <div>${ONB_STEPS.map((p,i)=>`<div class="row"><span style="flex:1">${i+1}. ${esc(p)}</span><button class="btn btn-d btn-sm" onclick="removerEtapaOnboarding(${i})">Remover</button></div>`).join('')}</div>
+    <div>${ONB_STEPS.map((p,i)=>`<div class="row"><span style="flex:1">${i+1}. ${esc(p)}</span><button class="btn btn-sm" onclick="editarEtapaOnboarding(${i})">Editar</button><button class="btn btn-d btn-sm" onclick="removerEtapaOnboarding(${i})">Remover</button></div>`).join('')}</div>
   </div></div>`;
 }
 function renderOnboarding(){
@@ -1412,6 +1412,18 @@ async function adicionarEtapaOnboarding(){
   ONB_STEPS.push(nome);
   const ok=await salvarEtapasOnboarding();
   if(ok){renderOnboarding();toast('Atividade adicionada ao onboarding.');}
+}
+async function editarEtapaOnboarding(idx){
+  const atual=ONB_STEPS[idx];
+  if(atual==null)return;
+  const novo=prompt('Editar atividade do onboarding:',atual);
+  if(novo==null)return;
+  const nome=novo.trim();
+  if(!nome){toast('O nome da atividade nao pode ficar vazio.','err');return;}
+  if(ONB_STEPS.some((p,i)=>i!==idx&&p.toLowerCase()===nome.toLowerCase())){toast('Essa atividade ja existe.','err');return;}
+  ONB_STEPS[idx]=nome;
+  const ok=await salvarEtapasOnboarding();
+  if(ok){renderOnboarding();toast('Atividade atualizada.');}
 }
 async function removerEtapaOnboarding(idx){
   const nome=ONB_STEPS[idx];
@@ -1879,10 +1891,16 @@ async function salvarKPI(){
   if(!cri){toast('Selecione o criador.','err');return;}
   const now=getNow();
   const id=`kpi__${cri}__${getMesKey(now)}__W${semana}`;
+  const atual=KPIS_DB.find(k=>k.id===id)||{};
+  const addSeguidores=parseInt($('kpi-seg')?.value)||0;
+  const addVisualizacoes=parseInt(($('kpi-vis')||$('kpi-view'))?.value)||0;
+  const addAssinantes=parseInt($('kpi-ass')?.value)||0;
+  const engInput=$('kpi-eng')?.value;
+  const engNovo=engInput===''||engInput==null?Number(atual.engajamento||0):parseFloat(engInput)||0;
   const dados={id,criador:cri,semana,semana_key:`${now.getFullYear()}-${now.getMonth()+1}-W${semana}`,mes_key:getMesKey(now),
-    engajamento:parseFloat($('kpi-eng')?.value)||0,seguidores:parseInt($('kpi-seg')?.value)||0,
-    visualizacoes:parseInt(($('kpi-vis')||$('kpi-view'))?.value)||0,assinantes:parseInt($('kpi-ass')?.value)||0,
-    created_at:new Date().toISOString()};
+    engajamento:engNovo,seguidores:Number(atual.seguidores||0)+addSeguidores,
+    visualizacoes:Number(atual.visualizacoes||0)+addVisualizacoes,assinantes:Number(atual.assinantes||0)+addAssinantes,
+    created_at:atual.created_at||new Date().toISOString(),updated_at:new Date().toISOString()};
   const result=await dbUpsert('kpis_manuais',dados).catch(()=>null);
   if(!result){toast('Erro ao salvar KPIs. Verifique a tabela kpis_manuais.','err');return;}
   const idx=KPIS_DB.findIndex(k=>k.id===id);if(idx>=0)KPIS_DB[idx]=dados;else KPIS_DB.push(dados);
