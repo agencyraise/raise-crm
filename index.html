@@ -883,6 +883,7 @@ let KPI_CACHE={};     // calculado automaticamente
 let _saving=false;    // trava durante saves de checklist
 let _selectSignature='';
 const LOCAL_STATE_KEY='raise_crm_estado_local_v1';
+const NOTIF_VISTAS_KEY='raise_notificacoes_vistas';
 
 let operadorAtual=localStorage.getItem('raise_op')||'Matheus A.';
 let criadorAtual=localStorage.getItem('raise_cri')||'Bruna Santiny';
@@ -942,6 +943,53 @@ function toast(msg,tipo='ok'){
   t.style.cssText=`position:fixed;bottom:22px;right:22px;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.12);transition:opacity .3s;font-family:var(--fb);max-width:320px;${cores[tipo]||cores.ok}`;
   t.textContent=msg;document.body.appendChild(t);
   setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300)},3200);
+}
+
+function notificacoesNavegadorDisponiveis(){
+  return 'Notification' in window;
+}
+async function pedirPermissaoNotificacoes(){
+  if(!notificacoesNavegadorDisponiveis()){
+    toast('Este navegador não suporta notificações.','err');return false;
+  }
+  if(Notification.permission==='granted'){
+    toast('Notificações já estão permitidas.','info');return true;
+  }
+  if(Notification.permission==='denied'){
+    toast('Notificações estão bloqueadas nas configurações do navegador.','err');return false;
+  }
+  const perm=await Notification.requestPermission();
+  if(perm==='granted'){
+    toast('Notificações permitidas neste navegador.','ok');
+    try{new Notification('Raise CRM',{body:'Você receberá alertas importantes do CRM.'});}catch(e){}
+    return true;
+  }
+  toast('Permissão de notificação não foi ativada.','info');
+  return false;
+}
+function notificacoesVistas(){
+  try{return JSON.parse(localStorage.getItem(NOTIF_VISTAS_KEY)||'[]');}catch(e){return [];}
+}
+function marcarNotificacaoVistaLocal(id){
+  const vistos=notificacoesVistas();
+  if(!vistos.includes(id)){
+    vistos.push(id);
+    localStorage.setItem(NOTIF_VISTAS_KEY,JSON.stringify(vistos.slice(-200)));
+  }
+}
+function dispararNotificacaoNativa(n){
+  if(!notificacoesNavegadorDisponiveis()||Notification.permission!=='granted')return;
+  const id=n.id||`${n.destinatario}-${n.created_at}-${n.mensagem}`;
+  if(notificacoesVistas().includes(id))return;
+  try{
+    new Notification(n.titulo||'Alerta Raise CRM',{body:n.mensagem||'Você tem uma pendência no CRM.',tag:id,renotify:true});
+    marcarNotificacaoVistaLocal(id);
+  }catch(e){console.warn('Notificação do navegador falhou',e);}
+}
+function checarNotificacoesCriador(){
+  if(!$('p-cri')?.classList.contains('on'))return;
+  const abertas=NOTIFICACOES_DB.filter(n=>n.destinatario===criadorAtual&&n.status!=='lida');
+  abertas.forEach(dispararNotificacaoNativa);
 }
 
 // === SUPABASE OPS ===
@@ -1015,6 +1063,8 @@ function motivoSaude(cr,s){
   const fat=KPI_CACHE.fatMes?.[cr.nome]||0;
   const abertas=CHAMADOS.filter(c=>c.criador_nome===cr.nome&&c.status==='aberto').length;
   const rotina=KPI_CACHE.execPorCri?.[cr.nome]||0;
+  const motivos=KPI_CACHE.motivosPorCri?.[cr.nome]||[];
+  if(motivos.length)return `${s<60?'Crise':'Atenção'}: ${motivos.slice(0,4).join(', ')}.`;
   if(s<60){
     if(rotina<60)return `Crise por rotina baixa (${rotina}% concluída hoje).`;
     if(!fat)return 'Crise por falta de faturamento lançado no mês.';
@@ -1118,7 +1168,7 @@ async function carregarTudo(){
     [...plats,...(local.plataformas||[])].forEach(p=>{PLATAFORMAS_STATUS[`${p.criador}__${p.plataforma}`]=p;});
   }catch(e){console.error('carregarTudo',e);}
   // Só re-renderiza se não há save ativo (evita desmarcar checklist)
-  if(!_saving){recalcular();renderAll();}
+  if(!_saving){recalcular();renderAll();checarNotificacoesCriador();}
 }
 
 // === MOTOR DE CÁLCULO — KPIs automáticos ===
@@ -1141,6 +1191,20 @@ function recalcular(){
   });
   const receitaTotal=Object.values(fatMes).reduce((a,b)=>a+b,0);
 
+  // KPIs sociais por criador
+  const socialPorCri={};
+  CRIADORES_PADRAO.forEach(cr=>{
+    const k=resumoKPIManual(cr.nome,mk,sk);
+    const score=(k.seguidores>0?5:0)+(k.visualizacoes>0?7:0)+(k.assinantes>0?4:0)+(k.engajamento>=1?4:0);
+    socialPorCri[cr.nome]={...k,score:Math.min(20,score)};
+  });
+  const socialTotal=Object.values(socialPorCri).reduce((acc,k)=>({
+    seguidores:acc.seguidores+(k.seguidores||0),
+    visualizacoes:acc.visualizacoes+(k.visualizacoes||0),
+    assinantes:acc.assinantes+(k.assinantes||0),
+    comDados:acc.comDados+(k.temDados?1:0)
+  }),{seguidores:0,visualizacoes:0,assinantes:0,comDados:0});
+
   // Execução de rotina por criador
   const execPorCri={};
   CRIADORES_PADRAO.forEach(cr=>{
@@ -1153,20 +1217,40 @@ function recalcular(){
 
   // Saúde calculada
   const saudePorCri={};
+  const motivosPorCri={};
   CRIADORES_PADRAO.forEach(cr=>{
     const exec=execPorCri[cr.nome]||0;
     const temFat=(fatMes[cr.nome]||0)>0?15:0;
     const midOk=isFeitoMid(cr.nome,'rotineiro')&&isFeitoMid(cr.nome,'mais18')?15:0;
     const cham=CHAMADOS.filter(c=>c.criador_nome===cr.nome&&c.status==='aberto').length;
-    saudePorCri[cr.nome]=Math.min(100,Math.max(0,Math.round(exec*0.6+temFat+midOk-cham*5)));
+    const social=socialPorCri[cr.nome]?.score||0;
+    const semCham=cham===0?10:Math.max(0,10-cham*5);
+    const score=Math.min(100,Math.max(0,Math.round(exec*0.4+temFat+midOk+social+semCham)));
+    saudePorCri[cr.nome]=score;
+    const motivos=[];
+    if(exec<70)motivos.push('rotina abaixo do esperado');
+    if(!temFat)motivos.push('sem faturamento no mes');
+    if(!midOk)motivos.push('midias pendentes');
+    if(!socialPorCri[cr.nome]?.temDados)motivos.push('sem KPIs sociais lancados');
+    else{
+      const k=socialPorCri[cr.nome];
+      if(k.visualizacoes<=0)motivos.push('sem visualizacoes informadas');
+      if(k.seguidores<=0)motivos.push('sem crescimento de seguidores');
+      if(k.engajamento>0&&k.engajamento<1)motivos.push('engajamento baixo');
+    }
+    if(cham>0)motivos.push(`${cham} chamado(s) aberto(s)`);
+    motivosPorCri[cr.nome]=motivos;
   });
 
   // Alertas automáticos
   const alertas=[];
   CRIADORES_PADRAO.forEach(cr=>{
     const s=saudePorCri[cr.nome]||0;
-    if(s<60) alertas.push({tipo:'crise',msg:`${cr.nome} — ${motivoSaude(cr,s)}`});
+    const motivos=motivosPorCri[cr.nome]||[];
+    if(s<60) alertas.push({tipo:'crise',criador:cr.nome,msg:`${cr.nome} — ${motivos.slice(0,3).join(', ')||motivoSaude(cr,s)}`});
+    else if(s<75) alertas.push({tipo:'atencao',criador:cr.nome,msg:`${cr.nome} — atenção: ${motivos.slice(0,2).join(', ')||'acompanhar evolução'}`});
     if(!isFeitoMid(cr.nome,'rotineiro')) alertas.push({tipo:'midia',msg:`${cr.nome} — mídias rotineiras não enviadas`});
+    if(!socialPorCri[cr.nome]?.temDados) alertas.push({tipo:'kpi',criador:cr.nome,msg:`${cr.nome} — KPIs sociais ainda não lançados este mês`});
   });
   NOTIFICACOES_DB.filter(n=>n.status!=='lida').forEach(n=>alertas.push({tipo:'notificacao',msg:n.mensagem||n.titulo||'Notificação pendente'}));
   LOGS_DB.slice(0,5).forEach(l=>alertas.push({tipo:'log',msg:`Log ${l.operador||'equipe'}: ${l.descricao||l.mensagem||''}`}));
@@ -1178,7 +1262,14 @@ function recalcular(){
   let sP=0,sO=0,sT=0,sA=0;
   FAT_DB.filter(f=>f.mes_key===mk).forEach(f=>{sP+=(f.privacy||0);sO+=(f.onlyfans||0);sT+=(f.telegram_vip||0);sA+=(f.venda_avulsa||0);});
 
-  KPI_CACHE={fatMes,fatSem,manualMes,manualSem,receitaTotal,execGeral,execPorCri,saudePorCri,alertas,
+  const relatorioResumo=[
+    receitaTotal>0?`Receita total do mes: ${fmt$(receitaTotal)}.`:'Ainda nao existe faturamento lancado no mes.',
+    `${socialTotal.comDados} de ${CRIADORES_PADRAO.length} criadores tem KPIs sociais lancados.`,
+    `Execucao geral da rotina: ${execGeral}%.`,
+    alertas.length?`${alertas.length} alerta(s) pedem acompanhamento.`:'Nenhum alerta critico no momento.'
+  ];
+
+  KPI_CACHE={fatMes,fatSem,manualMes,manualSem,receitaTotal,execGeral,execPorCri,saudePorCri,motivosPorCri,socialPorCri,socialTotal,relatorioResumo,alertas,
     chamAbertos:CHAMADOS.filter(c=>c.status==='aberto').length,
     plat:{privacy:sP,onlyfans:sO,telegram:sT,avulsa:sA}};
 }
@@ -1413,7 +1504,8 @@ function renderFinInterno(){
 // ============================================================
 function renderKPIs(){
   const K=KPI_CACHE;const now=getNow();
-  set('kpi-msg',`Dia ${now.getDate()} de ${getMN(now)}. KPIs calculados automaticamente dos dados reais.`);
+  const soc=K.socialTotal||{};
+  set('kpi-msg',`Dia ${now.getDate()} de ${getMN(now)}. ${soc.comDados||0}/${CRIADORES_PADRAO.length} criadores com KPIs sociais lancados. Seguidores: ${Number(soc.seguidores||0).toLocaleString('pt-BR')} · Visualizacoes: ${Number(soc.visualizacoes||0).toLocaleString('pt-BR')}.`);
   set('kpi-card-t',`Vendas por plataforma · ${getMN(now)}/${now.getFullYear()}`);
   set('kpi-v-exec',(K.execGeral||0)+'%',K.execGeral>=70?'kv cup':'kv cam');
   set('kpi-s-exec',K.execGeral>=70?'✅ meta atingida':'⚠️ abaixo da meta');
@@ -1474,6 +1566,7 @@ function renderRelatoriosConectado(){
         <div class="row"><span style="flex:1">Advertencias</span><span class="cam" style="font-weight:700" id="rel-adv">0</span></div>
       </div></div>
       <div class="card"><div class="ch"><span class="ct">Decisoes necessarias</span></div><div class="cb" id="rel-decisoes"></div></div>
+      <div class="card"><div class="ch"><span class="ct">Raciocinio do CRM</span></div><div class="cb" id="rel-raciocinio"></div></div>
     </div>`;
   const K=KPI_CACHE;
   const tot=CHAMADOS.length;const res=CHAMADOS.filter(c=>c.status==='resolvido').length;
@@ -1489,6 +1582,8 @@ function renderRelatoriosConectado(){
   if(decEl)decEl.innerHTML=(K.alertas||[]).length
     ?(K.alertas||[]).map(a=>{const id='dec__'+btoa(unescape(encodeURIComponent(a.msg))).replace(/=+$/,'');const feita=DECISOES_DB.find(d=>d.id===id)?.tomada;return`<div class="row"><span class="dot ${feita?'dok':a.tipo==='crise'?'ddn':'dam'}"></span><span style="flex:1">${esc(a.msg)}</span><button class="btn btn-sm ${feita?'btn-g':'btn-p'}" onclick="marcarDecisao('${id}','${esc(a.msg)}',${!feita})">${feita?'Decisao tomada':'Marcar decisao'}</button></div>`;}).join('')
     :'<div class="row"><span class="dot dok"></span><span style="flex:1">Nenhuma decisao urgente.</span></div>';
+  const rac=$('rel-raciocinio');
+  if(rac)rac.innerHTML=(K.relatorioResumo||[]).map(t=>`<div class="row"><span class="dot dok"></span><span style="flex:1">${esc(t)}</span></div>`).join('');
 }
 renderRelatorios=renderRelatoriosConectado;
 
@@ -1768,11 +1863,13 @@ async function marcarCriadorOb(cri,obr,el,event){
   renderCriTar();renderCriOV();
 }
 async function enviarNotificacaoCriador(cri,mensagem){
+  if(!cri){toast('Criador não encontrado para notificar.','err');return;}
   const dados={destinatario:cri,origem:operadorAtual,tipo:'midia',prioridade:'alta',titulo:'Envio de mídias pendente',mensagem,status:'aberta',created_at:new Date().toISOString()};
   const result=await dbInsert('notificacoes',dados).catch(()=>null);
   if(!result){toast('Erro ao enviar notificação.','err');return;}
   NOTIFICACOES_DB=[...result,...NOTIFICACOES_DB];
-  recalcular();renderAlertas();toast(`Alerta enviado para ${cri}.`);
+  recalcular();renderAlertas();renderCriOV();
+  toast(`Alerta enviado para ${cri}.`);
 }
 
 function atualizarContadores(){
@@ -1922,7 +2019,7 @@ function renderMidiasOpe(){
       <span class="hrow-n">${esc(cr.nome)}</span>
       <div style="font-size:12px;color:var(--tx3);margin-right:8px">${r?'✅':'⬜'} Rotineiro · ${i?'✅':'⬜'} Ideias · ${m?'✅':'⬜'} +18</div>
       <span class="bdg ${todas?'bok':nenhuma?'bur':'bwa'}">${todas?'Entregue':nenhuma?'Não enviou':'Parcial'}</span>
-      ${nenhuma?`<button class="btn btn-r btn-sm" onclick="enviarNotificacaoCriador('${esc(cr.nome)}','Envio de mídias pendente nesta semana.')">Notificar</button>`:''}
+      ${!todas?`<button class="btn btn-r btn-sm" onclick="event.stopPropagation();enviarNotificacaoCriador('${esc(cr.nome)}','Envio de mídias pendente nesta semana. Abra o CRM e envie as mídias para a equipe.')">Notificar</button>`:''}
     </div>`;
   }).join('')||'<div class="nf nf-b"><span>ℹ️</span><span>Nenhum criador atribuído.</span></div>';
   const resEl=$('o-res-mid');
@@ -2195,7 +2292,13 @@ function renderCriOV(){
   const pcEl=$('c-ponto-critico');
   if(pcEl){
     const notif=NOTIFICACOES_DB.find(n=>n.destinatario===criadorAtual&&n.status!=='lida');
-    if(notif)pcEl.textContent=`ALERTA PRIORITÁRIO: ${notif.mensagem||notif.titulo}`;
+    if(notif){
+      const perm=notificacoesNavegadorDisponiveis()?Notification.permission:'unsupported';
+      const btn=perm==='default'?` <button class="btn btn-r btn-sm" style="margin-left:8px" onclick="event.stopPropagation();pedirPermissaoNotificacoes()">Permitir notificações</button>`:'';
+      const extra=perm==='denied'?' <span style="font-size:12px;color:var(--dn)">Notificações bloqueadas no navegador.</span>':'';
+      pcEl.innerHTML=`<b>ALERTA PRIORITÁRIO:</b> ${esc(notif.mensagem||notif.titulo)}${btn}${extra}`;
+      dispararNotificacaoNativa(notif);
+    }
     else if(pct<80)pcEl.textContent='Ponto crítico: tarefas diárias abaixo de 80%. Marque suas obrigações.';
     else if(!midOk)pcEl.textContent='Ponto crítico: mídias ainda não entregues esta semana.';
     else if(!totMes)pcEl.textContent='Atenção: nenhum faturamento lançado este mês.';
@@ -2285,7 +2388,20 @@ function renderResultOpe(){
   const execEl=$('o-res-exec');if(!execEl)return;
   const now=getNow();const day=now.getDay();const wom=getWOM(now);
   const mc=CRIADORES_PADRAO.filter(c=>c.operador===operadorAtual);
-  execEl.innerHTML=mc.map(cr=>{const obs=obsDoDia(day,'todos');const f=obs.filter(o=>isFeitoRot(cr.nome,o.nome)).length;const pct=obs.length?Math.round(f/obs.length*100):0;const cor=pct>=80?'var(--ok)':pct>=60?'var(--wn)':'var(--dn)';return`<div class="br"><span class="bl">${cr.nome.split(' ')[0]}</span><div class="bw"><div class="bf" style="width:${pct}%;background:${cor}"><span class="bv">${pct}%</span></div></div></div>`;}).join('');
+  const resumo=mc.reduce((acc,cr)=>{
+    const k=KPI_CACHE.socialPorCri?.[cr.nome]||{};
+    const exec=KPI_CACHE.execPorCri?.[cr.nome]||0;
+    acc.seg+=Number(k.seguidores)||0;acc.view+=Number(k.visualizacoes)||0;acc.exec+=exec;
+    return acc;
+  },{seg:0,view:0,exec:0});
+  const mets=$('o-res')?.querySelector('.mets');
+  if(mets){
+    const execMed=mc.length?Math.round(resumo.exec/mc.length):0;
+    mets.innerHTML=`<div class="mc"><div class="mc-v cup">${resumo.seg?`+${resumo.seg.toLocaleString('pt-BR')}`:'—'}</div><div class="mc-l">Seguidores mes</div></div>
+      <div class="mc"><div class="mc-v cnu">${execMed}%</div><div class="mc-l">Execucao media</div></div>
+      <div class="mc"><div class="mc-v cup">${resumo.view?resumo.view.toLocaleString('pt-BR'):'—'}</div><div class="mc-l">Visualizacoes mes</div></div>`;
+  }
+  execEl.innerHTML=mc.map(cr=>{const obs=obsDoDia(day,'todos');const f=obs.filter(o=>isFeitoRot(cr.nome,o.nome)).length;const pct=obs.length?Math.round(f/obs.length*100):0;const cor=pct>=80?'var(--ok)':pct>=60?'var(--wn)':'var(--dn)';const motivos=KPI_CACHE.motivosPorCri?.[cr.nome]||[];return`<div class="br"><span class="bl">${cr.nome.split(' ')[0]}</span><div class="bw"><div class="bf" style="width:${pct}%;background:${cor}"><span class="bv">${pct}%</span></div></div>${motivos.length?`<div style="font-size:11px;color:var(--tx3);margin-top:4px">${esc(motivos.slice(0,2).join(', '))}</div>`:''}</div>`;}).join('');
   const semEl=$('o-res-sem');if(semEl)semEl.textContent=`Semana ${wom} de ${getMN(now)}`;
 }
 
