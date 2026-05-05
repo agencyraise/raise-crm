@@ -528,6 +528,35 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
       <button class="btn btn-p" onclick="salvarKPI()">Salvar KPIs</button>
     </div></div>
 
+    <!-- CORRECOES / AUDITORIA -->
+    <div class="card"><div class="ch"><span class="ct">Correcoes / Auditoria</span><span class="bdg bur" style="font-size:11px">Admin</span></div><div class="cb">
+      <div class="nf nf-b"><span>ℹ️</span><span>Use para corrigir preenchimentos errados. Correção substitui o valor da semana, não soma novamente.</span></div>
+      <div class="sl">Corrigir faturamento semanal</div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Criador</label><select class="fs" id="corr-fat-cri" onchange="carregarCorrecaoFaturamento()"></select></div>
+        <div class="fg"><label class="fl">Semana do mês</label><select class="fs" id="corr-fat-sem" onchange="carregarCorrecaoFaturamento()"></select></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Privacy (R$)</label><input class="fi" type="number" id="corr-fat-priv" placeholder="0"></div>
+        <div class="fg"><label class="fl">OnlyFans (R$)</label><input class="fi" type="number" id="corr-fat-of" placeholder="0"></div>
+        <div class="fg"><label class="fl">Telegram VIP (R$)</label><input class="fi" type="number" id="corr-fat-tg" placeholder="0"></div>
+        <div class="fg"><label class="fl">Venda avulsa (R$)</label><input class="fi" type="number" id="corr-fat-av" placeholder="0"></div>
+      </div>
+      <button class="btn btn-r" onclick="corrigirFaturamento()">Salvar correção de faturamento</button>
+      <div class="sl" style="margin-top:16px">Corrigir KPIs sociais</div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Criador</label><select class="fs" id="corr-kpi-cri" onchange="carregarCorrecaoKPI()"></select></div>
+        <div class="fg"><label class="fl">Semana do mês</label><select class="fs" id="corr-kpi-sem" onchange="carregarCorrecaoKPI()"></select></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Seguidores</label><input class="fi" type="number" id="corr-kpi-seg" placeholder="0"></div>
+        <div class="fg"><label class="fl">Visualizações</label><input class="fi" type="number" id="corr-kpi-view" placeholder="0"></div>
+        <div class="fg"><label class="fl">Assinantes</label><input class="fi" type="number" id="corr-kpi-ass" placeholder="0"></div>
+        <div class="fg"><label class="fl">Engajamento (%)</label><input class="fi" type="number" step="0.1" id="corr-kpi-eng" placeholder="0"></div>
+      </div>
+      <button class="btn btn-r" onclick="corrigirKPI()">Salvar correção de KPI</button>
+    </div></div>
+
     <!-- STATUS PLATAFORMAS -->
     <div class="card"><div class="ch"><span class="ct">🔗 Status das plataformas</span><span class="bdg bgr" style="font-size:11px">Alterações aparecem para os criadores</span></div><div class="cb">
       <div class="frow">
@@ -1141,8 +1170,14 @@ async function carregarTudo(){
     LOGS_DB=logs;
     KPIS_DB=kpis;
     DECISOES_DB=dec;
-    DOSSIE_DB={};dos.forEach(d=>{DOSSIE_DB[d.criador]=d;});
+    DOSSIE_DB={};dos.forEach(d=>{
+      const chave=d.criador||String(d.id||'').replace(/^dos__/,'');
+      if(chave)DOSSIE_DB[chave]=d;
+    });
     CONFIG_DB={};cfg.forEach(c=>{CONFIG_DB[c.chave]=c.valor;});
+    if(Array.isArray(CONFIG_DB.onboarding_steps)&&CONFIG_DB.onboarding_steps.length){
+      ONB_STEPS=CONFIG_DB.onboarding_steps.map(s=>String(s||'').trim()).filter(Boolean);
+    }
     if(cri.length||local.criadores?.length){
       resetArray(CRIADORES_PADRAO,uniqByNome([
         ...(local.criadores||[]).map(normalizarCriador),
@@ -1329,12 +1364,19 @@ function renderAlertas(){
   el.innerHTML=alertas.length?alertas.map(a=>`<div class="adv ${a.tipo==='crise'?'':'am'}"><div class="adv-t">${a.tipo==='crise'?'Crítico':'Atenção'}</div><div class="adv-s">${esc(a.msg)}</div></div>`).join(''):'<div class="nf nf-g"><span>✅</span><span>Nenhum alerta crítico no momento.</span></div>';
 }
 
-const ONB_STEPS=['Formalização e contrato','Definição estratégica e persona','Estrutura de conversão','Criação e aquecimento de perfis','Plataformas premium','Segurança e 2FA','Go-live e separação de obrigações'];
+let ONB_STEPS=['Formalização e contrato','Definição estratégica e persona','Estrutura de conversão','Criação e aquecimento de perfis','Plataformas premium','Segurança e 2FA','Go-live e separação de obrigações'];
+function onboardingEditorHTML(){
+  return `<div class="card" style="margin-bottom:12px"><div class="ch"><span class="ct">Processos do onboarding</span><span class="bdg bok">${ONB_STEPS.length} etapas</span></div><div class="cb">
+    <div class="frow"><div class="fg"><label class="fl">Nova atividade/processo</label><input class="fi" id="onb-step-new" placeholder="Ex: Validar bio e links"></div><button class="btn btn-p" onclick="adicionarEtapaOnboarding()">Adicionar</button></div>
+    <div>${ONB_STEPS.map((p,i)=>`<div class="row"><span style="flex:1">${i+1}. ${esc(p)}</span><button class="btn btn-d btn-sm" onclick="removerEtapaOnboarding(${i})">Remover</button></div>`).join('')}</div>
+  </div></div>`;
+}
 function renderOnboarding(){
   const el=$('a-onb')?.querySelector('.cnt');if(!el)return;
   const ativos=LEADS_DB.filter(l=>!ONBOARDING_STATUS[`onb__${l.id}`]?.finalizado);
-  if(!ativos.length){el.innerHTML='<div class="nf nf-g"><span>✅</span><span>Nenhum onboarding ativo. Use Novo lead para iniciar.</span></div>';return;}
-  el.innerHTML=`<div class="g2">${ativos.map(lead=>{
+  const editor=onboardingEditorHTML();
+  if(!ativos.length){el.innerHTML=editor+'<div class="nf nf-g"><span>✅</span><span>Nenhum onboarding ativo. Use Novo lead para iniciar.</span></div>';return;}
+  el.innerHTML=editor+`<div class="g2">${ativos.map(lead=>{
     const sid=`onb__${lead.id}`;
     const st=ONBOARDING_STATUS[sid]||{};
     const feitas=st.passos||[];
@@ -1355,6 +1397,38 @@ async function marcarOnboarding(id,idx){
   const result=await dbUpsert('onboarding_status',dados).catch(()=>null);
   if(!result){toast('Erro ao salvar onboarding.','err');return;}
   ONBOARDING_STATUS[id]=dados;renderOnboarding();
+}
+async function salvarEtapasOnboarding(){
+  CONFIG_DB.onboarding_steps=[...ONB_STEPS];
+  const result=await dbSetConfig('onboarding_steps',CONFIG_DB.onboarding_steps).catch(()=>null);
+  if(!result){toast('Erro ao salvar processos do onboarding. Verifique crm_config.','err');return false;}
+  return true;
+}
+async function adicionarEtapaOnboarding(){
+  const input=$('onb-step-new');
+  const nome=input?.value?.trim();
+  if(!nome){toast('Informe o nome da atividade.','err');return;}
+  if(ONB_STEPS.some(p=>p.toLowerCase()===nome.toLowerCase())){toast('Essa atividade ja existe.','err');return;}
+  ONB_STEPS.push(nome);
+  const ok=await salvarEtapasOnboarding();
+  if(ok){renderOnboarding();toast('Atividade adicionada ao onboarding.');}
+}
+async function removerEtapaOnboarding(idx){
+  const nome=ONB_STEPS[idx];
+  if(nome==null)return;
+  if(!confirm(`Remover "${nome}" do onboarding? As marcacoes existentes serao ajustadas.`))return;
+  ONB_STEPS.splice(idx,1);
+  const ajustes=Object.values(ONBOARDING_STATUS).map(st=>{
+    const passos=Array.isArray(st.passos)?st.passos:[];
+    const novos=passos.filter(p=>p!==idx).map(p=>p>idx?p-1:p).filter(p=>p>=0&&p<ONB_STEPS.length);
+    if(JSON.stringify(novos)===JSON.stringify(passos))return Promise.resolve(true);
+    const dados={...st,passos:novos,updated_at:new Date().toISOString()};
+    ONBOARDING_STATUS[st.id]=dados;
+    return dbUpsert('onboarding_status',dados).catch(()=>null);
+  });
+  const resultados=await Promise.all([salvarEtapasOnboarding(),...ajustes]);
+  if(!resultados[0])return;
+  renderOnboarding();toast('Atividade removida do onboarding.');
 }
 async function finalizarOnboarding(id,nome){
   if(!confirm(`Finalizar onboarding de ${nome}? Essa ação remove o lead da lista ativa.`))return;
@@ -1816,6 +1890,67 @@ async function salvarKPI(){
   recalcular();renderAll();toast('KPIs salvos e análises atualizadas.');
 }
 
+function semanaKeyPorNumero(semana){
+  const now=getNow();
+  return `${now.getFullYear()}-${now.getMonth()+1}-W${semana}`;
+}
+function idFaturamentoSemana(cri,semana){
+  const now=getNow();
+  return `fat__${cri}__${semanaKeyPorNumero(semana)}`;
+}
+function idKPISemana(cri,semana){
+  const now=getNow();
+  return `kpi__${cri}__${getMesKey(now)}__W${semana}`;
+}
+function carregarCorrecaoFaturamento(){
+  const cri=$('corr-fat-cri')?.value;
+  const semana=Number($('corr-fat-sem')?.value)||getWOM(getNow());
+  const atual=FAT_DB.find(f=>f.id===idFaturamentoSemana(cri,semana))||{};
+  if($('corr-fat-priv'))$('corr-fat-priv').value=Number(atual.privacy)||0;
+  if($('corr-fat-of'))$('corr-fat-of').value=Number(atual.onlyfans)||0;
+  if($('corr-fat-tg'))$('corr-fat-tg').value=Number(atual.telegram_vip)||0;
+  if($('corr-fat-av'))$('corr-fat-av').value=Number(atual.venda_avulsa)||0;
+}
+async function corrigirFaturamento(){
+  const cri=$('corr-fat-cri')?.value;
+  const semana=Number($('corr-fat-sem')?.value)||getWOM(getNow());
+  if(!cri){toast('Selecione o criador.','err');return;}
+  const now=getNow();const id=idFaturamentoSemana(cri,semana);
+  const priv=parseFloat($('corr-fat-priv')?.value)||0;
+  const of=parseFloat($('corr-fat-of')?.value)||0;
+  const tg=parseFloat($('corr-fat-tg')?.value)||0;
+  const av=parseFloat($('corr-fat-av')?.value)||0;
+  const atual=FAT_DB.find(f=>f.id===id)||{};
+  const dados={id,criador:cri,semana_key:semanaKeyPorNumero(semana),mes_key:getMesKey(now),semana,mes:now.getMonth()+1,ano:now.getFullYear(),
+    privacy:priv,onlyfans:of,telegram_vip:tg,venda_avulsa:av,total:priv+of+tg+av,created_at:atual.created_at||new Date().toISOString()};
+  const result=await dbUpsert('faturamento',dados).catch(()=>null);
+  if(!result){toast('Erro ao corrigir faturamento.','err');return;}
+  const idx=FAT_DB.findIndex(f=>f.id===id);if(idx>=0)FAT_DB[idx]=dados;else FAT_DB.push(dados);
+  recalcular();renderAll();toast('Faturamento corrigido.');
+}
+function carregarCorrecaoKPI(){
+  const cri=$('corr-kpi-cri')?.value;
+  const semana=Number($('corr-kpi-sem')?.value)||getWOM(getNow());
+  const atual=KPIS_DB.find(k=>k.id===idKPISemana(cri,semana))||{};
+  if($('corr-kpi-seg'))$('corr-kpi-seg').value=Number(atual.seguidores)||0;
+  if($('corr-kpi-view'))$('corr-kpi-view').value=Number(atual.visualizacoes)||0;
+  if($('corr-kpi-ass'))$('corr-kpi-ass').value=Number(atual.assinantes)||0;
+  if($('corr-kpi-eng'))$('corr-kpi-eng').value=Number(atual.engajamento)||0;
+}
+async function corrigirKPI(){
+  const cri=$('corr-kpi-cri')?.value;
+  const semana=Number($('corr-kpi-sem')?.value)||getWOM(getNow());
+  if(!cri){toast('Selecione o criador.','err');return;}
+  const now=getNow();const id=idKPISemana(cri,semana);
+  const dados={id,criador:cri,semana,semana_key:semanaKeyPorNumero(semana),mes_key:getMesKey(now),
+    seguidores:parseInt($('corr-kpi-seg')?.value)||0,visualizacoes:parseInt($('corr-kpi-view')?.value)||0,
+    assinantes:parseInt($('corr-kpi-ass')?.value)||0,engajamento:parseFloat($('corr-kpi-eng')?.value)||0,created_at:new Date().toISOString()};
+  const result=await dbUpsert('kpis_manuais',dados).catch(()=>null);
+  if(!result){toast('Erro ao corrigir KPI.','err');return;}
+  const idx=KPIS_DB.findIndex(k=>k.id===id);if(idx>=0)KPIS_DB[idx]=dados;else KPIS_DB.push(dados);
+  recalcular();renderAll();toast('KPI corrigido.');
+}
+
 // ============================================================
 // ROTINA — marcar com trava anti-toggle e anti-polling
 // ============================================================
@@ -1983,7 +2118,7 @@ function resumoKPIManual(criador,mesKey,semKey){
   return {
     seguidores:mes.reduce((a,k)=>a+n(k.seguidores||k.seguidores_ganho),0),
     visualizacoes:mes.reduce((a,k)=>a+n(k.visualizacoes||k.views||k.visualizacoes_total),0),
-    assinantes:n((sem||ult).assinantes||(sem||ult).assinantes_total),
+    assinantes:mes.reduce((a,k)=>a+n(k.assinantes||k.assinantes_total),0),
     engajamento:n((sem||ult).engajamento||(sem||ult).engajamento_pct),
     semana:(sem||ult).semana||getWOM(getNow()),
     temDados:mes.length>0
@@ -2279,7 +2414,7 @@ function renderCriOV(){
   set('c-ass',kpi.assinantes?fmtN(kpi.assinantes):'—');
   set('c-seg-comp',kpi.temDados?'ganho no mês':'sem KPI lançado');
   set('c-view-comp',kpi.engajamento?`engajamento ${String(kpi.engajamento).replace('.',',')}%`:(kpi.temDados?'visualizações do mês':'sem KPI lançado'));
-  set('c-ass-comp',kpi.assinantes?`semana ${kpi.semana}`:'sem KPI lançado');
+  set('c-ass-comp',kpi.assinantes?'assinantes do mês':'sem KPI lançado');
   // Constância
   const day=now.getDay();const criObs=obsDoDia(day,'todos').filter(o=>o.resp==='criador'||o.resp==='ambos');
   const f=criObs.filter(o=>isFeitoRot(criadorAtual,o.nome)).length;
@@ -2473,13 +2608,15 @@ function initSelects(){
   if(signature===_selectSignature)return;
   _selectSignature=signature;
   const criadores=CRIADORES_PADRAO.map(c=>c.nome);
-  ['fat-cri','kpi-cri-sel','plat-cri-sel','mc-cri','mf-cri','mt-cri','a-dos-sel'].forEach(id=>rebuildOptions($(id),criadores));
+  ['fat-cri','kpi-cri-sel','plat-cri-sel','mc-cri','mf-cri','mt-cri','a-dos-sel','corr-fat-cri','corr-kpi-cri'].forEach(id=>rebuildOptions($(id),criadores));
   ['mac-ope','mt-ope'].forEach(id=>rebuildOptions($(id),OPERADORES_PADRAO));
-  ['fat-sem-g','kpi-sem-sel','mf-sem'].forEach(id=>{
+  ['fat-sem-g','kpi-sem-sel','mf-sem','corr-fat-sem','corr-kpi-sem'].forEach(id=>{
     const semanas=[];
     for(let i=1;i<=wom;i++)semanas.push({value:String(i),label:`Semana ${i} de ${month}`});
     rebuildOptions($(id),semanas,{selected:String(wom)});
   });
+  carregarCorrecaoFaturamento();
+  carregarCorrecaoKPI();
   const opeSel=$('ope-sel');
   rebuildOptions(opeSel,OPERADORES_PADRAO,{selected:operadorAtual});
   const criSel=$('cri-sel');
