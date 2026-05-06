@@ -844,7 +844,8 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 
 <div id="m-add-operador" class="mo" style="display:none" onclick="if(event.target===this)cM('m-add-operador')">
   <div class="mo-box"><div class="mo-t"> Adicionar operador</div>
-    <div class="fg"><label class="fl">Nome</label><input class="fi" id="mao-nome" placeholder="Ex: Carlos M."></div>
+    <div class="nf nf-b"><span></span><span>Este cadastro cria o colaborador operacional no CRM. O login e senha continuam sendo criados no Supabase Auth e vinculados em perfis_usuarios.</span></div>
+    <div class="fg"><label class="fl">Nome</label><input class="fi" id="mao-nome" placeholder="Nome do colaborador"></div>
     <div class="fg"><label class="fl">Função</label><input class="fi" id="mao-func" placeholder="Ex: Editor, Community Manager"></div>
     <div class="ma"><button class="btn" onclick="cM('m-add-operador')">Cancelar</button><button class="btn btn-p" onclick="adicionarOperador()">Adicionar</button></div>
   </div>
@@ -904,6 +905,22 @@ let AUTH_PRONTO=false;
 const CRIADORES_PADRAO=[];
 const OPERADORES_PADRAO=[];
 const OBRIGACOES_PADRAO=[];
+const OBRIGACOES_BASE=[
+  {id:'base__editar_post_instagram',nome:'Editar + post Instagram (2x)',resp:'raise',dia:'todos'},
+  {id:'base__editar_conteudo_18',nome:'Edição conteúdo +18 (Privacy e OnlyFans)',resp:'raise',dia:'todos'},
+  {id:'base__post_privacy_onlyfans',nome:'Post Privacy + OnlyFans',resp:'raise',dia:'todos'},
+  {id:'base__post_telegram_vip',nome:'Post Telegram VIP',resp:'raise',dia:'todos'},
+  {id:'base__post_grupo_free_whatsapp',nome:'Post grupo free + canal WhatsApp',resp:'raise',dia:'todos'},
+  {id:'base__post_x',nome:'Post X (Twitter)',resp:'raise',dia:'todos'},
+  {id:'base__monitoramento',nome:'Monitoramento engajamento + vendas',resp:'raise',dia:'todos'},
+  {id:'base__stories',nome:'Stories Instagram / TikTok / X',resp:'ambos',dia:'todos'},
+  {id:'base__anunciar_live',nome:'Anunciar a live pela manhã',resp:'criador',dia:'2'},
+  {id:'base__executar_live',nome:'Executar a live junto com a Raise',resp:'ambos',dia:'2'},
+  {id:'base__responder_caixinha',nome:'Responder caixinha de perguntas',resp:'criador',dia:'3'},
+  {id:'base__storie_sua_vez',nome:'Storie "Sua Vez"',resp:'criador',dia:'3'},
+  {id:'base__enviar_midias_semana',nome:'Enviar mídias da semana via Telegram',resp:'criador',dia:'1'},
+  {id:'base__enviar_midias_proxima_semana',nome:'Enviar mídias da próxima semana',resp:'criador',dia:'0'}
+];
 
 // === UTILS ===
 const getNow=()=>new Date();
@@ -1017,6 +1034,21 @@ async function dbDeleteWhere(t,filters=[]){
 async function dbSetConfig(chave,valor){
   return dbUpsert('crm_config',{chave,valor,updated_at:new Date().toISOString(),created_at:new Date().toISOString()},'chave');
 }
+async function inicializarObrigacoesBaseSePreciso(obs){
+  if(obs.length)return obs;
+  if(CONFIG_DB.obrigacoes_base_inicializadas)return obs;
+  const agora=new Date().toISOString();
+  const resultados=await Promise.all(OBRIGACOES_BASE.map(o=>
+    dbUpsert('obrigacoes',{id:o.id,nome:o.nome,responsavel:o.resp,dia:o.dia,created_at:agora}).catch(()=>null)
+  ));
+  const salvas=resultados.flat().filter(Boolean);
+  if(salvas.length){
+    await dbSetConfig('obrigacoes_base_inicializadas',true).catch(()=>null);
+    CONFIG_DB.obrigacoes_base_inicializadas=true;
+    return salvas;
+  }
+  return OBRIGACOES_BASE;
+}
 
 // === AUTENTICACAO E PERFIS ===
 function portalDoPerfil(){
@@ -1065,11 +1097,12 @@ function reaplicarVinculoPerfil(){
     operadorAtual=PERFIL_ATUAL.operador;localStorage.setItem('raise_op',operadorAtual);
   }
   if(tipo==='criador'&&PERFIL_ATUAL.criador){
-    criadorAtual=PERFIL_ATUAL.criador;localStorage.setItem('raise_cri',criadorAtual);
+    const encontrado=CRIADORES_PADRAO.find(c=>nomesIguais(c.nome,PERFIL_ATUAL.criador));
+    criadorAtual=encontrado?.nome||PERFIL_ATUAL.criador;localStorage.setItem('raise_cri',criadorAtual);
   }
   if(tipo==='admin'){
     if(!operadorAtual||!OPERADORES_PADRAO.includes(operadorAtual))operadorAtual=OPERADORES_PADRAO[0]||'';
-    if(!criadorAtual||!CRIADORES_PADRAO.some(c=>c.nome===criadorAtual))criadorAtual=CRIADORES_PADRAO[0]?.nome||'';
+    if(!criadorAtual||!CRIADORES_PADRAO.some(c=>nomesIguais(c.nome,criadorAtual)))criadorAtual=CRIADORES_PADRAO[0]?.nome||'';
   }
 }
 async function iniciarAuth(){
@@ -1120,11 +1153,18 @@ async function sairCRM(){
 function resetArray(arr,items){
   arr.splice(0,arr.length,...items);
 }
+function chaveNome(v){
+  return String(v||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+}
+function nomesIguais(a,b){
+  return chaveNome(a)===chaveNome(b);
+}
 function uniqByNome(items){
   const map=new Map();
   items.filter(Boolean).forEach(item=>{
     const nome=String(item.nome||item).trim();
-    if(nome&&!map.has(nome))map.set(nome,item);
+    const key=chaveNome(nome);
+    if(nome&&!map.has(key))map.set(key,item);
   });
   return [...map.values()];
 }
@@ -1134,7 +1174,7 @@ function normalizarCriador(c){
     nome:c.nome,
     operador:c.operador||'Admin',
     cta:Number(c.cta||1),
-    inicio:c.inicio||c.created_at.slice(0,10)||getNow().toISOString().slice(0,10),
+    inicio:c.inicio||(c.created_at?c.created_at.slice(0,10):getNow().toISOString().slice(0,10)),
     duracao:Number(c.duracao||c.duracao_meses||12)
   };
 }
@@ -1147,10 +1187,10 @@ function normalizarObrigacao(o){
   };
 }
 function isCriadorRemovido(nome){
-  return (CONFIG_DB.criadores_removidos||[]).includes(nome);
+  return (CONFIG_DB.criadores_removidos||[]).some(n=>nomesIguais(n,nome));
 }
 function isOperadorRemovido(nome){
-  return (CONFIG_DB.operadores_removidos||[]).includes(nome);
+  return (CONFIG_DB.operadores_removidos||[]).some(n=>nomesIguais(n,nome));
 }
 function motivoSaude(cr,s){
   const fat=KPI_CACHE.fatMes?.[cr.nome]||0;
@@ -1238,23 +1278,37 @@ async function carregarTudo(){
     if(Array.isArray(CONFIG_DB.onboarding_steps)&&CONFIG_DB.onboarding_steps.length){
       ONB_STEPS=CONFIG_DB.onboarding_steps.map(s=>String(s||'').trim()).filter(Boolean);
     }
-    let criadoresBase=uniqByNome(cri.map(normalizarCriador)).filter(c=>c.nome&&!isCriadorRemovido(c.nome));
+    const obrigacoesFonte=await inicializarObrigacoesBaseSePreciso(obs);
+    const criadoresPerfis=perfis
+      .filter(p=>p.ativo!==false&&p.tipo==='criador'&&(p.criador||p.nome))
+      .map(p=>normalizarCriador({
+        id:`perfil__${p.id||p.email||p.criador||p.nome}`,
+        nome:p.criador||p.nome,
+        operador:p.operador||'Admin',
+        cta:1,
+        inicio:p.created_at
+      }));
+    let criadoresBase=uniqByNome([
+      ...cri.map(normalizarCriador),
+      ...criadoresPerfis
+    ]).filter(c=>c.nome&&!isCriadorRemovido(c.nome));
     let operadoresBase=uniqByNome([
       ...perfis.filter(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(p.operador||p.nome)).map(p=>p.operador||p.nome),
       ...ops.map(o=>o.nome)
     ]).filter(op=>op&&!isOperadorRemovido(op));
-    const obrigacoesBase=uniqByNome(obs.map(normalizarObrigacao)).filter(o=>o.nome);
+    const obrigacoesBase=uniqByNome(obrigacoesFonte.map(normalizarObrigacao)).filter(o=>o.nome);
     const tipo=PERFIL_ATUAL?.tipo==='operador'?'colaborador':PERFIL_ATUAL?.tipo;
     if(tipo==='colaborador'){
       const opVinculado=PERFIL_ATUAL.operador||PERFIL_ATUAL.nome||operadorAtual;
       operadorAtual=opVinculado;
-      criadoresBase=criadoresBase.filter(c=>c.operador===opVinculado);
+      criadoresBase=criadoresBase.filter(c=>nomesIguais(c.operador,opVinculado));
       operadoresBase=opVinculado?[opVinculado]:[];
     }
     if(tipo==='criador'){
       const criVinculado=PERFIL_ATUAL.criador||PERFIL_ATUAL.nome||criadorAtual;
-      criadorAtual=criVinculado;
-      criadoresBase=criadoresBase.filter(c=>c.nome===criVinculado);
+      const encontrado=criadoresBase.find(c=>nomesIguais(c.nome,criVinculado));
+      criadorAtual=encontrado?.nome||criVinculado;
+      criadoresBase=encontrado?[encontrado]:criadoresBase.filter(c=>nomesIguais(c.nome,criVinculado));
       operadoresBase=uniqByNome(criadoresBase.map(c=>c.operador).filter(Boolean));
     }
     resetArray(CRIADORES_PADRAO,criadoresBase);
@@ -2693,7 +2747,7 @@ function renderEquipeConectada(){
   el.innerHTML=`<div class="sl">Operadores</div>${OPERADORES_PADRAO.map(op=>{
     const cri=CRIADORES_PADRAO.filter(c=>c.operador===op).map(c=>c.nome);
     const adv=advMes.filter(a=>a.operador===op).length;
-    const perfil=PERFIS_DB.find(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(p.operador===op||(!p.operador&&p.nome===op)));
+    const perfil=PERFIS_DB.find(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(nomesIguais(p.operador,op)||(!p.operador&&nomesIguais(p.nome,op))));
     const ini=op.split(' ').map(p=>p[0]).join('').slice(0,2);
     return `<div class="hrow" ${adv>=3?'style="border-color:#FBBDD2"':''}><div class="av ${adv>=3?'avp':'avt'}">${ini}</div><div style="flex:1"><div class="hrow-n">${esc(op)} <span class="bdg bgr" style="font-size:10px">Colaborador</span> ${perfil?'<span class="bdg bok" style="font-size:10px">login ativo</span>':'<span class="bdg bgr" style="font-size:10px">sem login</span>'} ${adv?`<span class="bdg ${adv>=3?'bur':'bwa'}" style="font-size:10px">${adv} advertencia(s)</span>`:''}</div>${perfil?.email?`<div style="font-size:12px;color:var(--tx3)">${esc(perfil.email)}</div>`:''}<div style="font-size:12px;color:var(--tx3)">${cri.length?esc(cri.join(', ')):'Sem criadores atribuidos'}</div></div><button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button><button class="btn btn-r btn-sm" onclick="removerOperador('${esc(op)}')">Remover</button><span class="bdg ${adv>=3?'bwa':'bok'}">${adv>=3?'Atencao':'Ativo'}</span></div>`;
   }).join('')}
@@ -2828,7 +2882,7 @@ function restoreSession(){
   }
   if(PERFIL_ATUAL.tipo==='admin'){
     if(!operadorAtual||!OPERADORES_PADRAO.includes(operadorAtual))operadorAtual=OPERADORES_PADRAO[0]||'';
-    if(!criadorAtual||!CRIADORES_PADRAO.some(c=>c.nome===criadorAtual))criadorAtual=CRIADORES_PADRAO[0]?.nome||'';
+    if(!criadorAtual||!CRIADORES_PADRAO.some(c=>nomesIguais(c.nome,criadorAtual)))criadorAtual=CRIADORES_PADRAO[0]?.nome||'';
   }
   const opeSel=$('ope-sel');if(opeSel)opeSel.value=operadorAtual;
   const criSel=$('cri-sel');if(criSel)criSel.value=criadorAtual;
