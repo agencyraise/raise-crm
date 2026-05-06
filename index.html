@@ -283,7 +283,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
     <button class="si" onclick="gS('adm','a-fin',this)"><span class="si-txt">Financeiro</span></button>
     <button class="si" onclick="gS('adm','a-fint',this)"><span class="si-txt">Controle interno</span></button>
     <button class="si" onclick="gS('adm','a-equ',this)"><span class="si-txt">Equipe</span></button>
-    <button class="si" onclick="gS('adm','a-adv?',this)"><span class="si-txt">Advertências</span></button>
+    <button class="si" onclick="gS('adm','a-adv',this)"><span class="si-txt">Advertências</span></button>
     <div class="sb-sec">Análise</div>
     <button class="si" onclick="gS('adm','a-kpi',this)"><span class="si-txt">KPIs</span></button>
     <button class="si" onclick="gS('adm','a-rel',this)"><span class="si-txt">Relatórios</span></button>
@@ -298,8 +298,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 <div id="a-dash" class="scr on">
   <div class="page-top"><div><div class="page-title">Dashboard</div><div class="page-sub" id="a-dt">Saúde consolidada de todos os projetos</div></div><div class="page-actions"><span class="bdg bin" id="a-dt2"></span></div></div>
   <div class="cnt">
-    <div class="nf nf-r" id="nf-rick"><span></span><span>Rick Necker  -  promoção vence <b>amanhã</b>. Ação imediata.</span><span class="nf-x" onclick="this.parentElement.remove()">x</span></div>
-    <div class="nf nf-a" id="nf-ana"><span></span><span>Ana C. acumulou 3 advertências este mês.</span><span class="nf-x" onclick="this.parentElement.remove()">x</span></div>
+    <div id="dash-alertas-auto"></div>
     <div class="mets">
       <div class="mc"><div class="mc-v cnu" id="d-total-proj">9</div><div class="mc-l">Projetos ativos</div></div>
       <div class="mc"><div class="mc-v" id="d-exec">74%</div><div class="mc-l">Execução geral</div></div>
@@ -321,15 +320,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 <!-- A-ALERT -->
 <div id="a-alert" class="scr">
   <div class="page-top"><div><div class="page-title">Alertas críticos</div><div class="page-sub">Situações que exigem decisão imediata</div></div></div>
-  <div class="cnt">
-    <div class="sl">Alertas de projeto</div>
-    <div class="adv"><div class="adv-t"> Rick Necker  -  Promoção vence amanhã</div><div class="adv-s">Decisão de renovar ou encerrar necessária hoje.</div></div>
-    <div class="adv"><div class="adv-t"> Negão Rubi  -  Perfil caído + faturamento -18%</div><div class="adv-s">Protocolo Tipo 1 ativo. Perfil reserva acionado.</div></div>
-    <div class="adv am"><div class="adv-t"> Negão Rubi  -  7 meses · risco de saturação</div><div class="adv-s">Recomendar campanha de reativação + topo de funil.</div></div>
-    <div class="sl">Alertas de equipe</div>
-    <div class="adv am"><div class="adv-t"> Ana C.  -  3 advertências acumuladas este mês</div><div class="adv-s">Verificar entrega de obrigações. Conversa individual recomendada.</div></div>
-    <div class="adv am"><div class="adv-t"> Pérola  -  sem envio de mídias esta semana</div><div class="adv-s">Banco de mídias: 1 semana restante.</div></div>
-  </div>
+  <div class="cnt"></div>
 </div>
 
 <!-- A-ROT -->
@@ -354,28 +345,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 <!-- A-ONB -->
 <div id="a-onb" class="scr">
   <div class="page-top"><div><div class="page-title">Onboarding</div><div class="page-sub">Página individual por lead · admin não pode falhar aqui</div></div><div class="page-actions"><button class="btn btn-p" onclick="oM('m-lead')">+ Novo lead</button></div></div>
-  <div class="cnt">
-    <div class="nf nf-b"><span></span><span>Julia S. no passo 3 há 2 dias. Verifique o andamento.</span></div>
-    <div class="g2">
-      <div class="card"><div class="ch"><span class="ct">Julia S. · Passo 3/7</span><span class="bdg bin">43%</span></div><div class="cb">
-        <div class="pb"><div class="pbf" style="width:43%;background:var(--ac)"></div></div>
-        <div style="font-size:12px;color:var(--tx3);margin-bottom:10px">Responsável: Lucas F. · 5 dias</div>
-        <div class="row"><div class="sn" style="background:var(--ok)">1</div><span style="flex:1;font-size:13px">Formalização e contrato</span><span class="bdg bok">?</span></div>
-        <div class="row"><div class="sn" style="background:var(--ok)">2</div><span style="flex:1;font-size:13px">Definição estratégica e persona</span><span class="bdg bok">?</span></div>
-        <div class="row" style="background:var(--ac2);border-radius:6px;padding:7px 10px"><div class="sn" style="background:var(--ac)">3</div><span style="flex:1;font-size:13px">Estrutura de conversão</span><span class="bdg bin">Agora</span></div>
-        <div class="row" style="opacity:.4"><div class="sn" style="background:var(--tx3)">4</div><span style="flex:1;font-size:13px">Criação e aquecimento de perfis</span></div>
-        <div class="row" style="opacity:.4"><div class="sn" style="background:var(--tx3)">5</div><span style="flex:1;font-size:13px">Plataformas premium</span></div>
-        <div class="row" style="opacity:.4"><div class="sn" style="background:var(--tx3)">6</div><span style="flex:1;font-size:13px">Segurança e 2FA</span></div>
-        <div class="row" style="opacity:.4"><div class="sn" style="background:var(--tx3)">7</div><span style="flex:1;font-size:13px">Go-live e separação de obrigações</span></div>
-      </div></div>
-      <div class="card"><div class="ch"><span class="ct">Mariana F. · Passo 1/7</span><span class="bdg bwa">14%</span></div><div class="cb">
-        <div class="pb"><div class="pbf" style="width:14%;background:var(--wn)"></div></div>
-        <div style="font-size:12px;color:var(--tx3);margin-bottom:10px">Responsável: Matheus A. · 1 dia</div>
-        <div class="row" style="background:var(--ac2);border-radius:6px;padding:7px 10px"><div class="sn" style="background:var(--ac)">1</div><span style="flex:1;font-size:13px">Formalização e contrato</span><span class="bdg bin">Em andamento</span></div>
-        <div class="row" style="opacity:.4"><div class="sn" style="background:var(--tx3)">2</div><span style="flex:1;font-size:13px">Definição estratégica e persona</span></div>
-      </div></div>
-    </div>
-  </div>
+  <div class="cnt"></div>
 </div>
 
 <!-- A-MID -->
@@ -405,11 +375,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 <!-- A-DOS -->
 <div id="a-dos" class="scr">
   <div class="page-top"><div><div class="page-title">Dossiê completo</div><div class="page-sub">Dados, contrato, plataformas, 2FA e cofre de senhas</div></div>
-    <div class="page-actions"><select class="fs" style="width:160px;padding:5px 9px;font-size:12px" id="a-dos-sel" onchange="renderDossie(this.value)">
-      <option>Bruna Santiny</option><option>Negão Rubi</option><option>Barbara Fartura</option>
-      <option>Rick Necker</option><option>Gabriela Avillar</option><option>Meck</option>
-      <option>Pérola</option><option>Alice</option><option>Luh</option>
-    </select></div>
+    <div class="page-actions"><select class="fs" style="width:160px;padding:5px 9px;font-size:12px" id="a-dos-sel" onchange="renderDossie(this.value)"></select></div>
   </div>
   <div class="cnt" id="dossie-content"></div>
 </div>
@@ -448,30 +414,13 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 <!-- A-EQU -->
 <div id="a-equ" class="scr">
   <div class="page-top"><div><div class="page-title">Equipe</div><div class="page-sub">Operadores · criadores · atribuições · transferências</div></div><div class="page-actions"><button class="btn btn-p" onclick="oM('m-user')">+ Usuário</button></div></div>
-  <div class="cnt">
-    <div class="sl">Operadores</div>
-    <div class="hrow"><div class="av avp">MA</div><div style="flex:1"><div class="hrow-n">Matheus A. <span class="bdg bgr" style="font-size:10px">Editor</span></div><div style="font-size:12px;color:var(--tx3)">Bruna Santiny, Pérola</div></div><button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button><span class="bdg bok">Ativo</span></div>
-    <div class="hrow" style="border-color:#FBBDD2"><div class="av avt">AC</div><div style="flex:1"><div class="hrow-n">Ana C. <span class="bdg bgr" style="font-size:10px">CM</span> <span class="bdg bur" style="font-size:10px">3 advertências</span></div><div style="font-size:12px;color:var(--tx3)">Rubi, Alice, Luh</div></div><button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button><span class="bdg bwa">Atenção</span></div>
-    <div class="hrow"><div class="av avb">LF</div><div style="flex:1"><div class="hrow-n">Lucas F. <span class="bdg bgr" style="font-size:10px">Gestor</span></div><div style="font-size:12px;color:var(--tx3)">Gabi, Meck, Rick, Barbara</div></div><button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button><span class="bdg bok">Ativo</span></div>
-    <div class="sl">Admins</div>
-    <div class="hrow"><div class="av av-a">MU</div><span class="hrow-n">Murilo (você)</span><span class="bdg bin">Admin</span></div>
-    <div class="hrow"><div class="av avt">JO</div><span class="hrow-n">João</span><span class="bdg bin">Admin</span><button class="btn btn-r">Remover</button></div>
-    <button class="btn btn-p" style="margin-top:8px" onclick="oM('m-user')">+ Adicionar Admin</button>
-  </div>
+  <div class="cnt"></div>
 </div>
 
 <!-- A-ADV -->
 <div id="a-adv" class="scr">
   <div class="page-top"><div><div class="page-title">Advertências</div><div class="page-sub">Registro mensal · penalidade definida pessoalmente pelo Admin</div></div></div>
-  <div class="cnt">
-    <div class="sl">Resumo do mês atual</div>
-    <div class="hrow" style="border-color:#FBBDD2"><div class="av avt">AC</div><span class="hrow-n">Ana C.</span><span class="bdg bur">3 advertências</span><span style="font-size:12px;color:var(--dn);margin-left:8px"> Crítico</span></div>
-    <div class="hrow"><div class="av avp">MA</div><span class="hrow-n">Matheus A.</span><span class="bdg bwa">1 advertência</span></div>
-    <div class="hrow"><div class="av avb">LF</div><span class="hrow-n">Lucas F.</span><span class="bdg bok">0 advertências</span></div>
-    <div class="sl">Detalhes · Ana C.</div>
-    <div class="adv"><div class="adv-t">Advertência #3 · Seg 22/04 · 23:59</div><div class="adv-s">Não concluiu 100% das obrigações de Negão Rubi.</div><div class="adv-j">Justificativa: "Tive problema de acesso ao Instagram."</div></div>
-    <div class="adv"><div class="adv-t">Advertência #2 · Sex 19/04 · 23:59</div><div class="adv-s">Não concluiu post Telegram VIP  -  Luh.</div><div class="adv-j">Justificativa: "Conteúdo não chegou a tempo do criador."</div></div>
-  </div>
+  <div class="cnt"></div>
 </div>
 
 <!-- A-KPI -->
@@ -500,17 +449,13 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
     <div class="nf nf-g"><span></span><span>Relatório semanal gerado automaticamente toda sexta-feira às 18h.</span></div>
     <div class="g2">
       <div class="card"><div class="ch"><span class="ct">Resumo semanal</span><span class="bdg bok">Pronto</span></div><div class="cb">
-        <div class="row"><span style="flex:1">Execução geral</span><span class="cup" style="font-weight:700">74%</span></div>
-        <div class="row"><span style="flex:1">Chamados resolvidos</span><span>8 de 12</span></div>
-        <div class="row"><span style="flex:1">Mídias no prazo</span><span>7 de 9</span></div>
-        <div class="row"><span style="flex:1">Receita da semana</span><span class="cup" style="font-weight:700">R$10.8k</span></div>
-        <div class="row"><span style="flex:1">Advertências</span><span class="cam" style="font-weight:700">4</span></div>
+        <div class="row"><span style="flex:1">Execução geral</span><span id="rel-exec" class="cup" style="font-weight:700">0%</span></div>
+        <div class="row"><span style="flex:1">Chamados resolvidos</span><span id="rel-cham">0 de 0</span></div>
+        <div class="row"><span style="flex:1">Mídias no prazo</span><span id="rel-midias">0 de 0</span></div>
+        <div class="row"><span style="flex:1">Receita da semana</span><span id="rel-receita" class="cup" style="font-weight:700"> - </span></div>
+        <div class="row"><span style="flex:1">Advertências</span><span id="rel-adv" class="cam" style="font-weight:700">0</span></div>
       </div></div>
-      <div class="card"><div class="ch"><span class="ct">Decisões necessárias</span></div><div class="cb">
-        <div class="row"><span class="dot ddn"></span><span style="flex:1">Rubi  -  perfil caído</span><span style="font-size:12px;color:var(--tx3)">Protocolo ativo</span></div>
-        <div class="row"><span class="dot ddn"></span><span style="flex:1">Rick  -  promo amanhã</span><span style="font-size:12px;color:var(--tx3)">Decidir hoje</span></div>
-        <div class="row"><span class="dot dam"></span><span style="flex:1">Ana C.  -  3 advertências</span><span style="font-size:12px;color:var(--tx3)">Conversa pendente</span></div>
-      </div></div>
+      <div class="card"><div class="ch"><span class="ct">Decisões necessárias</span></div><div class="cb" id="rel-decisoes"></div></div>
     </div>
   </div>
 </div>
@@ -715,7 +660,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
     <div style="font-size:11px;color:var(--tx3);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Criadora atual</div>
     <select class="fs" style="width:100%;font-size:12px" id="cri-sel" onchange="trocarCriador(this.value)"></select>
   </div>
-  <div class="sb-ft"><div style="display:flex;align-items:center;gap:9px"><div class="sb-av av-c">BS</div><div><div style="font-size:13px;font-weight:600;color:var(--tx)" id="cri-nome-ft">Bruna Santiny</div><div style="font-size:11px;color:var(--tx3)" id="cri-contrato-ft">240 dias de contrato</div></div></div></div>
+  <div class="sb-ft"><div style="display:flex;align-items:center;gap:9px"><div class="sb-av av-c">CR</div><div><div style="font-size:13px;font-weight:600;color:var(--tx)" id="cri-nome-ft">Criador</div><div style="font-size:11px;color:var(--tx3)" id="cri-contrato-ft">Contrato</div></div></div></div>
 </div>
 <div class="main">
 
@@ -795,8 +740,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
   <div class="cnt">
     <div class="nf nf-b" id="c-pen-dia"><span></span><span id="c-pen-msg">Carregando...</span></div>
     <div class="sl">Suas pendências</div>
-    <div class="cham pri"><div class="tkt">Anunciar live de terça pela manhã</div><div class="tks"> Prioridade · Prazo: amanhã cedo · <span class="bdg bwa">Pendente</span></div></div>
-    <div class="cham nor"><div class="tkt">Enviar mídias de ideias de conteúdo</div><div class="tks"> Normal · Prazo: domingo · <span class="bdg bin">Pendente</span></div></div>
+    <div id="c-pen-list"></div>
     <div style="margin-top:12px;padding:12px 14px;background:var(--bg3);border-radius:var(--rad);border:1.5px solid var(--bd)">
       <div style="font-size:13px;color:var(--tx2);margin-bottom:10px">Algo fora do normal aconteceu Abra um chamado e sua equipe verá imediatamente.</div>
       <button class="btn btn-b" style="width:100%;padding:10px;font-size:13px" onclick="oM('m-cham-cri')"> Abrir chamado</button>
@@ -885,7 +829,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 
 <div id="m-add-criador" class="mo" style="display:none" onclick="if(event.target===this)cM('m-add-criador')">
   <div class="mo-box"><div class="mo-t"> Adicionar criador</div>
-    <div class="fg"><label class="fl">Nome completo</label><input class="fi" id="mac-nome" placeholder="Ex: Bruna Santiny"></div>
+    <div class="fg"><label class="fl">Nome completo</label><input class="fi" id="mac-nome" placeholder="Nome do criador"></div>
     <div class="frow">
       <div class="fg"><label class="fl">Operador responsável</label><select class="fs" id="mac-ope"></select></div>
       <div class="fg"><label class="fl">CTA estágio (1-4)</label><select class="fs" id="mac-cta"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
@@ -950,41 +894,16 @@ let _selectSignature='';
 const LOCAL_STATE_KEY='raise_crm_estado_local_v1';
 const NOTIF_VISTAS_KEY='raise_notificacoes_vistas';
 
-let operadorAtual=localStorage.getItem('raise_op')||'Matheus A.';
-let criadorAtual=localStorage.getItem('raise_cri')||'Bruna Santiny';
+let operadorAtual=localStorage.getItem('raise_op')||'';
+let criadorAtual=localStorage.getItem('raise_cri')||'';
 let USUARIO_ATUAL=null;
 let PERFIL_ATUAL=null;
 let AUTH_PRONTO=false;
 
 // === DADOS ESTRUTURAIS ===
-const CRIADORES_PADRAO=[
-  {nome:'Bruna Santiny',  operador:'Matheus A.', cta:3, inicio:'2025-01-15', duracao:12},
-  {nome:'Negão Rubi',     operador:'Ana C.',      cta:2, inicio:'2025-02-01', duracao:12},
-  {nome:'Barbara Fartura',operador:'Carla M.',    cta:4, inicio:'2025-01-10', duracao:12},
-  {nome:'Rick Necker',    operador:'Lucas F.',    cta:3, inicio:'2025-03-01', duracao:12},
-  {nome:'Gabriela Avillar',operador:'Lucas F.',   cta:2, inicio:'2025-03-15', duracao:12},
-  {nome:'Meck',           operador:'Lucas F.',    cta:2, inicio:'2025-04-01', duracao:12},
-  {nome:'Pérola',         operador:'Matheus A.', cta:2, inicio:'2025-02-10', duracao:12},
-  {nome:'Alice',          operador:'Ana C.',      cta:1, inicio:'2025-03-01', duracao:12},
-  {nome:'Luh',            operador:'Ana C.',      cta:2, inicio:'2025-02-20', duracao:12},
-];
-const OPERADORES_PADRAO=['Matheus A.','Ana C.','Lucas F.','Carla M.'];
-const OBRIGACOES_PADRAO=[
-  {nome:'Editar + post Instagram (2x)',             resp:'raise',   dia:'todos'},
-  {nome:'Edição conteúdo +18 (Privacy e OnlyFans)', resp:'raise',   dia:'todos'},
-  {nome:'Post Privacy + OnlyFans',                  resp:'raise',   dia:'todos'},
-  {nome:'Post Telegram VIP',                        resp:'raise',   dia:'todos'},
-  {nome:'Post grupo free + canal WhatsApp',         resp:'raise',   dia:'todos'},
-  {nome:'Post X (Twitter)',                         resp:'raise',   dia:'todos'},
-  {nome:'Monitoramento engajamento + vendas',       resp:'raise',   dia:'todos'},
-  {nome:'Stories Instagram / TikTok / X',           resp:'ambos',   dia:'todos'},
-  {nome:'Anunciar a live pela manhã',               resp:'criador', dia:'2'},
-  {nome:'Executar a live junto com a Raise',        resp:'ambos',   dia:'2'},
-  {nome:'Responder caixinha de perguntas',          resp:'criador', dia:'3'},
-  {nome:'Storie "Sua Vez"',                         resp:'criador', dia:'3'},
-  {nome:'Enviar mídias da semana via Telegram',     resp:'criador', dia:'1'},
-  {nome:'Enviar mídias da próxima semana',          resp:'criador', dia:'0'},
-];
+const CRIADORES_PADRAO=[];
+const OPERADORES_PADRAO=[];
+const OBRIGACOES_PADRAO=[];
 
 // === UTILS ===
 const getNow=()=>new Date();
@@ -1005,7 +924,7 @@ const fmt$=v=>{
 const $=(id)=>document.getElementById(id);
 const set=(id,v,cls)=>{const e=$(id);if(!e)return;e.textContent=v;if(cls!==undefined)e.className=cls;};
 
-function toast(msg,tipo='ok?'){
+function toast(msg,tipo='ok'){
   const cores={ok:'background:#E6FAF4;color:#065F46;border:1.5px solid #6EE7B7',err:'background:#FEE2E7;color:#9E0022;border:1.5px solid #FBBDD2',info:'background:#EDE9FF;color:#4C1D95;border:1.5px solid #C4B5FD'};
   const t=document.createElement('div');
   t.style.cssText=`position:fixed;bottom:22px;right:22px;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.12);transition:opacity .3s;font-family:var(--fb);max-width:320px;${cores[tipo]||cores.ok}`;
@@ -1028,7 +947,7 @@ async function pedirPermissaoNotificacoes(){
   }
   const perm=await Notification.requestPermission();
   if(perm==='granted'){
-    toast('Notificações permitidas neste navegador.','ok?');
+    toast('Notificações permitidas neste navegador.','ok');
     try{new Notification('Raise CRM',{body:'Você receberá alertas importantes do CRM.'});}catch(e){}
     return true;
   }
@@ -1148,10 +1067,14 @@ function reaplicarVinculoPerfil(){
   if(tipo==='criador'&&PERFIL_ATUAL.criador){
     criadorAtual=PERFIL_ATUAL.criador;localStorage.setItem('raise_cri',criadorAtual);
   }
+  if(tipo==='admin'){
+    if(!operadorAtual||!OPERADORES_PADRAO.includes(operadorAtual))operadorAtual=OPERADORES_PADRAO[0]||'';
+    if(!criadorAtual||!CRIADORES_PADRAO.some(c=>c.nome===criadorAtual))criadorAtual=CRIADORES_PADRAO[0]?.nome||'';
+  }
 }
 async function iniciarAuth(){
   const {data}=await sb.auth.getSession();
-  const user=data.session.user;
+  const user=data.session?.user;
   if(!user){$('app').classList.add('auth-locked');return false;}
   const perfil=await carregarPerfilUsuario(user);
   if(!perfil){
@@ -1250,12 +1173,7 @@ function lerEstadoLocal(){
 }
 function salvarEstadoLocal(){
   try{
-    localStorage.setItem(LOCAL_STATE_KEY,JSON.stringify({
-      criadores:CRIADORES_PADRAO,
-      operadores:OPERADORES_PADRAO,
-      obrigacoes:OBRIGACOES_PADRAO,
-      plataformas:Object.values(PLATAFORMAS_STATUS)
-    }));
+    localStorage.removeItem(LOCAL_STATE_KEY);
   }catch(e){console.warn('Não foi possível salvar estado local',e);}
 }
 function rebuildOptions(sel,items,{includeAll=false,allLabel='Todos',selected}={}){
@@ -1278,7 +1196,6 @@ function rebuildOptions(sel,items,{includeAll=false,allLabel='Todos',selected}={
 // === CARREGAR TUDO  -  busca TODAS as tabelas ===
 async function carregarTudo(){
   try{
-    const local=lerEstadoLocal();
     const [ch,rot,mid,fat,fin,adv,cri,ops,obs,plats,leads,onb,notifs,logs,kpis,dec,dos,cfg,perfis]=await Promise.all([
       dbGet('chamados'),
       dbGet('rotina_status'),
@@ -1321,33 +1238,30 @@ async function carregarTudo(){
     if(Array.isArray(CONFIG_DB.onboarding_steps)&&CONFIG_DB.onboarding_steps.length){
       ONB_STEPS=CONFIG_DB.onboarding_steps.map(s=>String(s||'').trim()).filter(Boolean);
     }
-    if(cri.length||local.criadores.length){
-      resetArray(CRIADORES_PADRAO,uniqByNome([
-        ...cri.map(normalizarCriador),
-        ...(local.criadores||[]).map(normalizarCriador),
-        ...CRIADORES_PADRAO
-      ]).filter(c=>!isCriadorRemovido(c.nome)));
+    let criadoresBase=uniqByNome(cri.map(normalizarCriador)).filter(c=>c.nome&&!isCriadorRemovido(c.nome));
+    let operadoresBase=uniqByNome([
+      ...perfis.filter(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(p.operador||p.nome)).map(p=>p.operador||p.nome),
+      ...ops.map(o=>o.nome)
+    ]).filter(op=>op&&!isOperadorRemovido(op));
+    const obrigacoesBase=uniqByNome(obs.map(normalizarObrigacao)).filter(o=>o.nome);
+    const tipo=PERFIL_ATUAL?.tipo==='operador'?'colaborador':PERFIL_ATUAL?.tipo;
+    if(tipo==='colaborador'){
+      const opVinculado=PERFIL_ATUAL.operador||PERFIL_ATUAL.nome||operadorAtual;
+      operadorAtual=opVinculado;
+      criadoresBase=criadoresBase.filter(c=>c.operador===opVinculado);
+      operadoresBase=opVinculado?[opVinculado]:[];
     }
-    if(ops.length||local.operadores.length){
-      const operadoresPerfis=perfis
-        .filter(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(p.operador||p.nome))
-        .map(p=>p.operador||p.nome);
-      resetArray(OPERADORES_PADRAO,uniqByNome([
-        ...operadoresPerfis,
-        ...ops.map(o=>o.nome),
-        ...(local.operadores||[]),
-        ...OPERADORES_PADRAO
-      ]).filter(op=>!isOperadorRemovido(op)));
+    if(tipo==='criador'){
+      const criVinculado=PERFIL_ATUAL.criador||PERFIL_ATUAL.nome||criadorAtual;
+      criadorAtual=criVinculado;
+      criadoresBase=criadoresBase.filter(c=>c.nome===criVinculado);
+      operadoresBase=uniqByNome(criadoresBase.map(c=>c.operador).filter(Boolean));
     }
-    if(obs.length||local.obrigacoes.length){
-      resetArray(OBRIGACOES_PADRAO,uniqByNome([
-        ...obs.map(normalizarObrigacao),
-        ...(local.obrigacoes||[]).map(normalizarObrigacao),
-        ...OBRIGACOES_PADRAO
-      ]));
-    }
+    resetArray(CRIADORES_PADRAO,criadoresBase);
+    resetArray(OPERADORES_PADRAO,operadoresBase);
+    resetArray(OBRIGACOES_PADRAO,obrigacoesBase);
     PLATAFORMAS_STATUS={};
-    [...(local.plataformas||[]),...plats].forEach(p=>{PLATAFORMAS_STATUS[`${p.criador}__${p.plataforma}`]=p;});
+    plats.forEach(p=>{PLATAFORMAS_STATUS[`${p.criador}__${p.plataforma}`]=p;});
     reaplicarVinculoPerfil();
   }catch(e){console.error('carregarTudo',e);}
   // Só re-renderiza se não há save ativo (evita desmarcar checklist)
@@ -1505,6 +1419,7 @@ function cM(id){$(id).style.display='none';}
 
 // === RENDER ALL ===
 function renderAll(){
+  reaplicarVinculoPerfil();
   renderDashboard();renderProjetos();renderFinanceiro();renderKPIs();renderRelatorios();
   renderAlertas();renderOnboarding();renderEquipe();renderAdvertencias();renderRotAdm();renderMidiasAdm();renderChamadosAdm();
   renderRotOpe();renderMidiasOpe();renderChamadosOpe();renderDosOpe();renderResultOpe();
@@ -1512,8 +1427,8 @@ function renderAll(){
   renderGestao();renderFinInterno();atualizarBadges();initSelects();
 }
 function renderAdm(){renderDashboard();renderProjetos();renderFinanceiro();renderKPIs();renderRelatorios();renderAlertas();renderOnboarding();renderEquipe();renderAdvertencias();renderRotAdm();renderMidiasAdm();renderChamadosAdm();renderGestao();renderFinInterno();}
-function renderOpe(){renderRotOpe();renderMidiasOpe();renderChamadosOpe();renderDosOpe();renderResultOpe();}
-function renderCri(){renderCriOV();renderCriTar();renderCriMid();renderCriPen();}
+function renderOpe(){reaplicarVinculoPerfil();renderRotOpe();renderMidiasOpe();renderChamadosOpe();renderDosOpe();renderResultOpe();}
+function renderCri(){reaplicarVinculoPerfil();renderCriOV();renderCriTar();renderCriMid();renderCriPen();}
 
 // ============================================================
 // DASHBOARD  -  100% calculado
@@ -1622,15 +1537,19 @@ function renderDashboard(){
   const dtEl=$('a-dt2');if(dtEl)dtEl.textContent=getDN(now)+', '+now.getDate()+' de '+getMN(now);
   const subEl=$('a-dt');if(subEl)subEl.textContent='Saúde consolidada · '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   // Alertas automáticos
-  const nfZone=$('nf-rick');
+  const nfZone=$('dash-alertas-auto');
   if(nfZone){
-    nfZone.parentNode.querySelectorAll('.nf-auto').forEach(n=>n.remove());
+    nfZone.innerHTML='';
     (K.alertas||[]).slice(0,3).forEach(a=>{
       const d=document.createElement('div');
-      d.className=`nf ${a.tipo==='crise'?'nf-r?':'nf-a'} nf-auto`;
+      d.className=`nf ${a.tipo==='crise'?'nf-r':'nf-a'} nf-auto`;
       d.innerHTML=`<span></span><span>${esc(a.msg)}</span><span class="nf-x" onclick="this.parentElement.remove()">x</span>`;
-      nfZone.after(d);
+      nfZone.appendChild(d);
     });
+  }
+  if(!CRIADORES_PADRAO.length){
+    el.innerHTML='<div class="nf nf-b"><span></span><span>Nenhum criador encontrado para este acesso.</span></div>';
+    return;
   }
   el.innerHTML=CRIADORES_PADRAO.map(cr=>{
     const s=K.saudePorCri?.[cr.nome]||50;
@@ -1655,6 +1574,7 @@ function renderDashboard(){
 // ============================================================
 function renderProjetos(){
   const el=$('lista-projetos');if(!el)return;
+  if(!CRIADORES_PADRAO.length){el.innerHTML='<div class="nf nf-b"><span></span><span>Nenhum projeto encontrado para este acesso.</span></div>';return;}
   const K=KPI_CACHE;
   el.innerHTML=`<div class="nf nf-b"><span></span><span>Saudável: acima de 75%. Atenção: 60% a 74%. Crise: abaixo de 60%, calculada por rotina, faturamento, mídias e chamados.</span></div>`+CRIADORES_PADRAO.map(cr=>{
     const s=K.saudePorCri?.[cr.nome]||50;
@@ -1703,7 +1623,7 @@ function renderFinanceiro(){
   const barEl=$('fin-barras-criadores');
   if(barEl){
     const sorted=CRIADORES_PADRAO.map(c=>({nome:c.nome,val:K.fatMes?.[c.nome]||0})).sort((a,b)=>b.val-a.val);
-    const max=sorted[0].val||0;
+    const max=sorted[0]?.val||0;
     barEl.innerHTML=max>0?sorted.map(({nome,val})=>{
       const pct=Math.round(val/max*100);
       const cor=pct>=70?'var(--ac)':pct>=40?'var(--wn)':'var(--dn)';
@@ -1837,7 +1757,7 @@ renderRelatorios=renderRelatoriosConectado;
 // ADVERTENCIAS  -  automáticas do banco
 // ============================================================
 function renderAdvertencias(){
-  const el=$('adv-cnt')||$('a-adv?').querySelector('.cnt');if(!el)return;
+  const el=$('adv-cnt')||$('a-adv').querySelector('.cnt');if(!el)return;
   const mk=getMesKey();const advMes=ADV_DB.filter(a=>a.mes_key===mk);
   const porOpe={};advMes.forEach(a=>{porOpe[a.operador]=(porOpe[a.operador]||[]).concat(a);});
   const resumo=OPERADORES_PADRAO.map(op=>{
@@ -2188,7 +2108,7 @@ async function marcarObrigacao(cri,obr,el,event){
 function _aplicarCk(el,feito){
   if(!el)return;
   if(el.classList.contains('today-t')){
-    const cb=el.querySelector('.today-cb');if(cb)cb.classList.toggle('ok?',feito);return;
+    const cb=el.querySelector('.today-cb');if(cb)cb.classList.toggle('ok',feito);return;
   }
   const box=el.querySelector('.ckb');const lbl=el.querySelector('.ckl');
   if(box){box.classList.toggle('done',feito);const m=box.querySelector('.ckm');if(m)m.style.display=feito?'block':'none';}
@@ -2248,6 +2168,7 @@ function renderRotAdm(){
   const filtroCri=cSel?cSel.value:'todos';
   const lista=filtroCri==='todos'?CRIADORES_PADRAO:CRIADORES_PADRAO.filter(c=>c.nome===filtroCri);
   let html='';let f=0,p=0;
+  if(!lista.length){el.innerHTML='<div class="nf nf-b"><span></span><span>Nenhum criador encontrado para este filtro.</span></div>';return;}
   lista.forEach(cr=>{
     const obs=obsDoDia(filtroDay,'todos');
     const feitas=obs.filter(o=>isFeitoRot(cr.nome,o.nome)).length;
@@ -2288,7 +2209,7 @@ function renderRotOpe(){
 async function marcarMidia(tipo,el){
   if(el._ck)return;el._ck=true;_saving=true;
   const sk=getSemKey();const chave=chaveMid(criadorAtual,tipo,sk);
-  const atual=MIDIAS_STATUS[chave].feito||false;const feito=!atual;
+  const atual=MIDIAS_STATUS[chave]?.feito||false;const feito=!atual;
   const box=el.querySelector('.ckb');const lbl=el.querySelector('.ckl');const bdg=el.querySelector('.bdg');
   if(box){box.classList.toggle('done',feito);const m=box.querySelector('.ckm');if(m)m.style.display=feito?'block':'none';}
   if(lbl)lbl.classList.toggle('dl',feito);
@@ -2463,10 +2384,7 @@ function atualizarBadges(){
 // ============================================================
 // DOSSIE
 // ============================================================
-const DOSSIE={
-  'Bruna Santiny':{cpf:'---.---.----62',persona:'Feminino · 25-35 · BR',senhas:[{p:'IG Principal · App 2FA',v:'@bruna_santiny / Br@2025#',s:true},{p:'IG Reserva 1',v:'@bruna_res1 / Res@1234!',s:true},{p:'Canal WhatsApp',v:'+55 11 9xxxx-xxxx',s:true},{p:'Privacy · SMS 2FA',v:'brunasantiny / Prv#2025',s:false},{p:'OnlyFans · App 2FA',v:'bruna.hot / OF@pass!',s:false},{p:'Telegram VIP',v:'t.me/brunavip · Admin@raise',s:false}]},
-  'Negão Rubi':{cpf:'---.---.----41',persona:'Masculino · 25-40 · BR',senhas:[{p:'IG Principal · App 2FA',v:'@negao_rubi / Ru@2025#',s:true},{p:'Privacy · SMS 2FA',v:'negaorubi / Prv#2025',s:false}]},
-};
+const DOSSIE={};
 
 function renderDossie(nome){
   const el=$('dossie-content');if(!el)return;
@@ -2592,6 +2510,7 @@ async function salvarDossieAtual(nome){
 }
 
 function renderCriOV(){
+  if(!criadorAtual)return;
   const now=getNow();const date=now.getDate();
   const diasNoMes=new Date(now.getFullYear(),now.getMonth()+1,0).getDate();
   const mesAntNome=getMN(new Date(now.getFullYear(),now.getMonth()-1,1));
@@ -2665,6 +2584,7 @@ function renderCriOV(){
 }
 
 function renderCriTar(){
+  if(!criadorAtual)return;
   const now=getNow();const day=now.getDay();
   const dtEl=$('c-today-dt');if(dtEl)dtEl.textContent=`${getDN(now).toUpperCase()}, ${now.getDate()} DE ${getMN(now).toUpperCase()} DE ${now.getFullYear()}`;
   const todayObs=obsDoDia(day,'todos').filter(o=>o.resp==='criador'||o.resp==='ambos');
@@ -2694,6 +2614,7 @@ function renderCriTar(){
 }
 
 function renderCriMid(){
+  if(!criadorAtual)return;
   const now=getNow();const wom=getWOM(now);const month=getMN(now);
   const tEl=$('c-mid-sem-titulo');if(tEl)tEl.textContent=`Semana ${wom} de ${month}`;
   [['rotineiro','ck-mid-rot'],['ideias','ck-mid-ide'],['mais18','ck-mid-18']].forEach(([tipo,id])=>{
@@ -2711,15 +2632,18 @@ function renderCriMid(){
 }
 
 function renderCriPen(){
+  if(!criadorAtual)return;
   const now=getNow();
   const penEl=$('c-pen-s');if(penEl)penEl.textContent='O que precisa da sua atenção agora';
   const diaEl=$('c-pen-msg');if(diaEl)diaEl.textContent=`Hoje é ${getDN(now)}, dia ${now.getDate()}.`;
-  const listEl=$('c-chamados-list');if(!listEl)return;
+  const pendEl=$('c-pen-list'),chamEl=$('c-chamados-list');
+  if(!pendEl||!chamEl)return;
   const pend=obsDoDia(now.getDay(),'todos').filter(o=>(o.resp==='criador'||o.resp==='ambos')&&!isFeitoRot(criadorAtual,o.nome));
   const meus=CHAMADOS.filter(c=>c.criado_por===criadorAtual&&c.status!=='resolvido').slice(0,5);
   const htmlPend=pend.map(o=>`<div class="ck" onclick="marcarCriadorOb('${esc(criadorAtual)}','${esc(o.nome)}',this,event)"><div class="ckb"><div class="ckm">?</div></div><span class="ckl">${esc(o.nome)}</span><span class="tag tc">Pendente</span></div>`).join('');
   const htmlCham=meus.map(c=>`<div class="cham nor"><div class="tkt">${esc(c.titulo)}</div><div class="tks">Status: ${statusBdg(c.status)} · Resp: ${esc(c.responsavel)}</div></div>`).join('');
-  listEl.innerHTML=(htmlPend||'<div class="nf nf-g"><span></span><span>Nenhuma obrigação pendente hoje.</span></div>')+(htmlCham?`<div class="sl">Chamados</div>${htmlCham}`:'');
+  pendEl.innerHTML=htmlPend||'<div class="nf nf-g"><span></span><span>Nenhuma obrigação pendente hoje.</span></div>';
+  chamEl.innerHTML=htmlCham||'<div class="nf nf-b"><span></span><span>Nenhum chamado aberto.</span></div>';
 }
 
 function renderResultOpe(){
@@ -2902,6 +2826,10 @@ function restoreSession(){
   }else{
     criadorAtual=localStorage.getItem('raise_cri')||criadorAtual;
   }
+  if(PERFIL_ATUAL.tipo==='admin'){
+    if(!operadorAtual||!OPERADORES_PADRAO.includes(operadorAtual))operadorAtual=OPERADORES_PADRAO[0]||'';
+    if(!criadorAtual||!CRIADORES_PADRAO.some(c=>c.nome===criadorAtual))criadorAtual=CRIADORES_PADRAO[0]?.nome||'';
+  }
   const opeSel=$('ope-sel');if(opeSel)opeSel.value=operadorAtual;
   const criSel=$('cri-sel');if(criSel)criSel.value=criadorAtual;
   const nft=$('ope-nome-ft');if(nft)nft.textContent=operadorAtual;
@@ -2913,16 +2841,16 @@ function restoreSession(){
 function restoreView(){
   let portal=localStorage.getItem('raise_portal_atual')||'adm';
   if(AUTH_PRONTO&&!perfilPodePortal(portal))portal=portalDoPerfil()||'adm';
-  const aba=localStorage.getItem('raise_aba_atual');
+  let aba=localStorage.getItem('raise_aba_atual');
   document.querySelectorAll('.portal').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.psb').forEach(b=>b.classList.remove('on'));
   $(`p-${portal}`).classList.add('on');
   document.querySelector(`.psb.${portal}`).classList.add('on');
-  if(aba&&$(aba)){
+  if(aba&&$(aba)&&$(aba).closest('.portal')?.id===`p-${portal}`){
     $(`p-${portal}`).querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
     $(aba).classList.add('on');
     $(`p-${portal}`).querySelectorAll('.si').forEach(b=>b.classList.remove('on'));
-    $(`p-${portal}`).querySelector(`.si[onclick*="'${aba}'"]`).classList.add('on');
+    $(`p-${portal}`).querySelector(`.si[onclick*="'${aba}'"]`)?.classList.add('on');
   }
 }
 
@@ -3032,7 +2960,7 @@ async function iniciarCRMLogado(){
   restoreSession();
   restoreView();
   renderGestao();
-  renderDossie(criadorAtual||'Bruna Santiny');
+  if(criadorAtual)renderDossie(criadorAtual);
   await carregarTudo();
   restoreSession();
   restoreView();
