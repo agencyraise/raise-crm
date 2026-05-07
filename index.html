@@ -1036,16 +1036,17 @@ async function dbSetConfig(chave,valor){
 }
 async function inicializarObrigacoesBaseSePreciso(obs){
   if(obs.length)return obs;
-  if(CONFIG_DB.obrigacoes_base_inicializadas)return obs;
-  const agora=new Date().toISOString();
-  const resultados=await Promise.all(OBRIGACOES_BASE.map(o=>
-    dbUpsert('obrigacoes',{id:o.id,nome:o.nome,responsavel:o.resp,dia:o.dia,created_at:agora}).catch(()=>null)
-  ));
-  const salvas=resultados.flat().filter(Boolean);
-  if(salvas.length){
-    await dbSetConfig('obrigacoes_base_inicializadas',true).catch(()=>null);
-    CONFIG_DB.obrigacoes_base_inicializadas=true;
-    return salvas;
+  if(!CONFIG_DB.obrigacoes_base_inicializadas){
+    const agora=new Date().toISOString();
+    const resultados=await Promise.all(OBRIGACOES_BASE.map(o=>
+      dbUpsert('obrigacoes',{id:o.id,nome:o.nome,responsavel:o.resp,dia:o.dia,created_at:agora}).catch(()=>null)
+    ));
+    const salvas=resultados.flat().filter(Boolean);
+    if(salvas.length){
+      await dbSetConfig('obrigacoes_base_inicializadas',true).catch(()=>null);
+      CONFIG_DB.obrigacoes_base_inicializadas=true;
+      return salvas;
+    }
   }
   return OBRIGACOES_BASE;
 }
@@ -1295,7 +1296,8 @@ async function carregarTudo(){
     ]).filter(c=>c.nome&&!isCriadorRemovido(c.nome));
     let operadoresBase=uniqByNome([
       ...perfis.filter(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(p.operador||p.nome)).map(p=>p.operador||p.nome),
-      ...ops.map(o=>o.nome)
+      ...ops.map(o=>o.nome),
+      ...criadoresBase.map(c=>c.operador).filter(Boolean)
     ]).filter(op=>op&&!isOperadorRemovido(op));
     const obrigacoesBase=uniqByNome(obrigacoesFonte.map(normalizarObrigacao)).filter(o=>o.nome);
     const tipo=PERFIL_ATUAL?.tipo==='operador'?'colaborador':PERFIL_ATUAL?.tipo;
@@ -1429,9 +1431,9 @@ function recalcular(){
 // === HELPERS ===
 const obsDoDia=(day,resp)=>OBRIGACOES_PADRAO.filter(o=>(o.dia==='todos'||o.dia===String(day))&&(resp==='todos'||o.resp===resp||o.resp==='ambos'));
 const chaveRot=(cri,obr,dk)=>`${cri}__${obr}__${dk}`;
-const isFeitoRot=(cri,obr)=>ROTINA_STATUS[chaveRot(cri,obr,getDiaKey())].feito||false;
+const isFeitoRot=(cri,obr)=>ROTINA_STATUS[chaveRot(cri,obr,getDiaKey())]?.feito||false;
 const chaveMid=(cri,tipo,sk)=>`mid__${cri}__${tipo}__${sk}`;
-const isFeitoMid=(cri,tipo)=>MIDIAS_STATUS[chaveMid(cri,tipo,getSemKey())].feito||false;
+const isFeitoMid=(cri,tipo)=>MIDIAS_STATUS[chaveMid(cri,tipo,getSemKey())]?.feito||false;
 
 // === NAVEGACAO ===
 function gP(id,btn){
