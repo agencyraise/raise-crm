@@ -1567,7 +1567,16 @@ function gS(portal,id,btn){
   if(id==='a-kpi')renderKPIs();
   if(id==='a-rel')renderRelatorios();
 }
-function oM(id){$(id).style.display='flex';}
+function prepararTransferencia(){
+  const criadores=CRIADORES_PADRAO.length?CRIADORES_PADRAO.map(c=>c.nome):EQUIPE_BASE.criadores.map(c=>c.nome);
+  const operadores=OPERADORES_PADRAO.length?OPERADORES_PADRAO:EQUIPE_BASE.operadores.map(o=>o.nome);
+  rebuildOptions($('mt-cri'),criadores);
+  rebuildOptions($('mt-ope'),operadores,{selected:operadores.includes(operadorAtual)?operadorAtual:operadores[0]});
+}
+function oM(id){
+  if(id==='m-transfer')prepararTransferencia();
+  $(id).style.display='flex';
+}
 function cM(id){$(id).style.display='none';}
 
 // === RENDER ALL ===
@@ -2900,6 +2909,7 @@ function initSelects(){
   const criadores=CRIADORES_PADRAO.map(c=>c.nome);
   ['fat-cri','kpi-cri-sel','plat-cri-sel','mc-cri','mf-cri','mt-cri','a-dos-sel','corr-fat-cri','corr-kpi-cri'].forEach(id=>rebuildOptions($(id),criadores));
   ['mac-ope','mt-ope'].forEach(id=>rebuildOptions($(id),OPERADORES_PADRAO));
+  prepararTransferencia();
   ['fat-sem-g','kpi-sem-sel','mf-sem','corr-fat-sem','corr-kpi-sem'].forEach(id=>{
     const semanas=[];
     for(let i=1;i<=wom;i++)semanas.push({value:String(i),label:`Semana ${i} de ${month}`});
