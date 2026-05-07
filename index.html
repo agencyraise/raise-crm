@@ -39,7 +39,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 .topnav-user{font-size:12px;color:var(--tx2);margin-left:auto;font-weight:600}
 .logout-btn{padding:6px 10px;border-radius:8px;border:1px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;font-size:12px;font-weight:700}
 .logout-btn:hover{border-color:var(--dn);color:var(--dn)}
-.auth-admin .psb.ope,.auth-admin .psb.cri,.auth-operador .psb.adm,.auth-operador .psb.cri,.auth-criador .psb.adm,.auth-criador .psb.ope{display:none}
+.auth-operador .psb.adm,.auth-operador .psb.cri,.auth-criador .psb.adm,.auth-criador .psb.ope{display:none}
 
 /* TOP NAV */
 .topnav{display:flex;gap:8px;padding:12px 20px;background:var(--bg2);border-bottom:1.5px solid var(--bd);align-items:center;position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
@@ -1059,6 +1059,7 @@ function portalDoPerfil(){
   return null;
 }
 function perfilPodePortal(portal){
+  if(PERFIL_ATUAL?.tipo==='admin')return true;
   return portalDoPerfil()===portal;
 }
 function mostrarErroLogin(msg){
