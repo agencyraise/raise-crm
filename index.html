@@ -1394,7 +1394,7 @@ async function carregarTudo(){
       ...perfis.filter(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(p.operador||p.operador_id||p.nome)).map(p=>p.operador||nomeBasePorCodigo('operadores',p.operador_id)||p.nome),
       ...ops.filter(o=>o.ativo!==false).map(o=>o.nome),
       ...criadoresBase.map(c=>c.operador).filter(Boolean)
-    ]).filter(op=>op&&!isOperadorRemovido(op));
+    ]).filter(op=>op&&!nomesIguais(op,'Sem responsável')&&!isOperadorRemovido(op));
     const obrigacoesBase=uniqByNome(obrigacoesFonte.map(normalizarObrigacao)).filter(o=>o.nome);
     const tipo=PERFIL_ATUAL?.tipo==='operador'?'colaborador':PERFIL_ATUAL?.tipo;
     if(tipo==='colaborador'){
@@ -1866,7 +1866,7 @@ function renderRelatorios(){
   set('rel-cham',`${res} de ${tot}`);
   set('rel-midias',`${comMid} de ${CRIADORES_PADRAO.length}`);
   set('rel-receita',K.receitaTotal>0?fmt$(K.receitaTotal):' - ');
-  set('rel-adv?',ADV_DB.filter(a=>a.mes_key===getMesKey()).length||0);
+  set('rel-adv',ADV_DB.filter(a=>a.mes_key===getMesKey()).length||0);
   const stEl=$('rel-status');
   if(stEl){stEl.textContent=K.execGeral>=70?'Saudável':'Atenção';stEl.className=`bdg ${K.execGeral>=70?'bok':'bwa'}`;}
   const decEl=$('rel-decisoes');
@@ -1903,7 +1903,7 @@ function renderRelatoriosConectado(){
   set('rel-cham',`${res} de ${tot}`);
   set('rel-midias',`${comMid} de ${CRIADORES_PADRAO.length}`);
   set('rel-receita',K.receitaTotal>0?fmt$(K.receitaTotal):' - ');
-  set('rel-adv?',ADV_DB.filter(a=>a.mes_key===getMesKey()).length||0);
+  set('rel-adv',ADV_DB.filter(a=>a.mes_key===getMesKey()).length||0);
   const stEl=$('rel-status');
   if(stEl){stEl.textContent=K.execGeral>=70?'Saudavel':'Atencao';stEl.className=`bdg ${K.execGeral>=70?'bok':'bwa'}`;}
   const decEl=$('rel-decisoes');
@@ -2943,7 +2943,7 @@ function initSelects(){
 // ============================================================
 function trocarOperador(v){
   if(PERFIL_ATUAL.tipo==='colaborador'||PERFIL_ATUAL.tipo==='operador'){
-    operadorAtual=PERFIL_ATUAL.operador||operadorAtual;toast('Seu acesso esta vinculado ao seu proprio painel.','err');renderOpe();return;
+    operadorAtual=PERFIL_ATUAL.operador||nomeBasePorCodigo('operadores',PERFIL_ATUAL.operador_id)||PERFIL_ATUAL.nome||operadorAtual;toast('Seu acesso esta vinculado ao seu proprio painel.','err');renderOpe();return;
   }
   operadorAtual=v;localStorage.setItem('raise_op',v);
   const nft=$('ope-nome-ft');if(nft)nft.textContent=v;
@@ -2951,7 +2951,7 @@ function trocarOperador(v){
 }
 function trocarCriador(v){
   if(PERFIL_ATUAL.tipo==='criador'){
-    criadorAtual=PERFIL_ATUAL.criador||criadorAtual;toast('Seu acesso esta vinculado ao seu proprio painel.','err');renderCri();return;
+    criadorAtual=PERFIL_ATUAL.criador||nomeBasePorCodigo('criadores',PERFIL_ATUAL.criador_id)||PERFIL_ATUAL.nome||criadorAtual;toast('Seu acesso esta vinculado ao seu proprio painel.','err');renderCri();return;
   }
   criadorAtual=v;localStorage.setItem('raise_cri',v);
   const cr=CRIADORES_PADRAO.find(c=>c.nome===v);
@@ -2987,12 +2987,12 @@ function initClock(){
 // ============================================================
 function restoreSession(){
   if(PERFIL_ATUAL.tipo==='colaborador'||PERFIL_ATUAL.tipo==='operador'){
-    operadorAtual=PERFIL_ATUAL.operador||operadorAtual;
+    operadorAtual=PERFIL_ATUAL.operador||nomeBasePorCodigo('operadores',PERFIL_ATUAL.operador_id)||PERFIL_ATUAL.nome||operadorAtual;
   }else{
     operadorAtual=localStorage.getItem('raise_op')||operadorAtual;
   }
   if(PERFIL_ATUAL.tipo==='criador'){
-    criadorAtual=PERFIL_ATUAL.criador||criadorAtual;
+    criadorAtual=PERFIL_ATUAL.criador||nomeBasePorCodigo('criadores',PERFIL_ATUAL.criador_id)||PERFIL_ATUAL.nome||criadorAtual;
   }else{
     criadorAtual=localStorage.getItem('raise_cri')||criadorAtual;
   }
@@ -3099,6 +3099,7 @@ async function confirmarTransferencia(){
   const novoOp=document.getElementById('mt-ope').value;
   if(!cri||!novoOp){toast('Selecione o criador e o novo operador.','err');return;}
   const cr=CRIADORES_PADRAO.find(c=>c.nome===cri);
+  if(!cr){toast('Criador ainda não carregou do banco. Atualize a página e tente novamente.','err');return;}
   if(cr){
     cr.operador=novoOp;
     cr.operador_id=codigoBasePorNome('operadores',novoOp)||codigoOperador(novoOp);
