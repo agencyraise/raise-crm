@@ -904,6 +904,27 @@ let AUTH_PRONTO=false;
 // === DADOS ESTRUTURAIS ===
 const CRIADORES_PADRAO=[];
 const OPERADORES_PADRAO=[];
+const EQUIPE_BASE={
+  admins:[
+    {codigo:'adm01',nome:'Murilo'},
+    {codigo:'adm02',nome:'Yuri'}
+  ],
+  operadores:[
+    {codigo:'cl01',nome:'Jose Airton'},
+    {codigo:'cl02',nome:'Gabriel Carvalho'},
+    {codigo:'cl03',nome:'Ricardo Oliveira'}
+  ],
+  criadores:[
+    {codigo:'cr01',nome:'Bruna Santiny'},
+    {codigo:'cr02',nome:'Negão Rubi'},
+    {codigo:'cr03',nome:'Barbara Fartura'},
+    {codigo:'cr04',nome:'Gabriella Avillar'},
+    {codigo:'cr05',nome:'Rick Necker'},
+    {codigo:'cr06',nome:'Jujuh Gaucha'},
+    {codigo:'cr07',nome:'Shakira'},
+    {codigo:'cr08',nome:'Perola Alencar'}
+  ]
+};
 const OBRIGACOES_PADRAO=[];
 const OBRIGACOES_BASE=[
   {id:'base__editar_post_instagram',nome:'Editar + post Instagram (2x)',resp:'raise',dia:'todos'},
@@ -1031,6 +1052,39 @@ async function dbDeleteWhere(t,filters=[]){
   if(error){console.error('[DELETE WHERE]',t,error.message);return null;}
   return data||[];
 }
+async function dbUpdateBy(t,col,val,d){
+  const {data,error}=await sb.from(t).update(d).eq(col,val).select();
+  if(error){console.error('[UPDATE BY]',t,error.message);return null;}
+  return data;
+}
+async function salvarCriadorEstrutural(dados){
+  const codigo=dados.codigo||codigoCriador(dados.nome);
+  const payload={...dados,codigo};
+  const porCodigo=await dbUpsert('criadores',payload,'codigo').catch(()=>null);
+  if(porCodigo)return porCodigo;
+  if(dados.id&&!String(dados.id).startsWith('perfil__')){
+    const porId=await dbUpdate('criadores',dados.id,payload).catch(()=>null);
+    if(porId&&porId.length)return porId;
+  }
+  const semId={...payload};
+  delete semId.id;
+  const inserido=await dbInsert('criadores',semId).catch(()=>null);
+  if(inserido)return inserido;
+  const legado={nome:dados.nome,operador:dados.operador,cta:dados.cta,inicio:dados.inicio,duracao_meses:dados.duracao_meses,created_at:dados.created_at};
+  return dbInsert('criadores',legado).catch(()=>null);
+}
+async function salvarOperadorEstrutural(dados){
+  const codigo=dados.codigo||codigoOperador(dados.nome);
+  const payload={...dados,codigo};
+  const porCodigo=await dbUpsert('operadores',payload,'codigo').catch(()=>null);
+  if(porCodigo)return porCodigo;
+  const semId={...payload};
+  delete semId.id;
+  const inserido=await dbInsert('operadores',semId).catch(()=>null);
+  if(inserido)return inserido;
+  const legado={nome:dados.nome,funcao:dados.funcao,email:dados.email,created_at:dados.created_at};
+  return dbInsert('operadores',legado).catch(()=>null);
+}
 async function dbSetConfig(chave,valor){
   return dbUpsert('crm_config',{chave,valor,updated_at:new Date().toISOString(),created_at:new Date().toISOString()},'chave');
 }
@@ -1081,11 +1135,13 @@ function aplicarPerfilUsuario(user,perfil){
   const tipo=perfil.tipo==='operador'?'colaborador':perfil.tipo;
   document.body.classList.remove('auth-admin','auth-operador','auth-criador');
   document.body.classList.add(`auth-${tipo==='colaborador'?'operador':tipo}`);
-  if(tipo==='colaborador'&&perfil.operador){
-    operadorAtual=perfil.operador;localStorage.setItem('raise_op',operadorAtual);
+  if(tipo==='colaborador'&&(perfil.operador||perfil.operador_id)){
+    operadorAtual=perfil.operador||nomeBasePorCodigo('operadores',perfil.operador_id)||perfil.nome;
+    localStorage.setItem('raise_op',operadorAtual);
   }
-  if(tipo==='criador'&&perfil.criador){
-    criadorAtual=perfil.criador;localStorage.setItem('raise_cri',criadorAtual);
+  if(tipo==='criador'&&(perfil.criador||perfil.criador_id)){
+    criadorAtual=perfil.criador||nomeBasePorCodigo('criadores',perfil.criador_id)||perfil.nome;
+    localStorage.setItem('raise_cri',criadorAtual);
   }
   const label=$('auth-user-label');
   if(label)label.textContent=`${perfil.nome||user.email} · ${tipo}`;
@@ -1095,12 +1151,14 @@ function aplicarPerfilUsuario(user,perfil){
 function reaplicarVinculoPerfil(){
   if(!PERFIL_ATUAL)return;
   const tipo=PERFIL_ATUAL.tipo==='operador'?'colaborador':PERFIL_ATUAL.tipo;
-  if(tipo==='colaborador'&&PERFIL_ATUAL.operador){
-    operadorAtual=PERFIL_ATUAL.operador;localStorage.setItem('raise_op',operadorAtual);
+  if(tipo==='colaborador'&&(PERFIL_ATUAL.operador||PERFIL_ATUAL.operador_id)){
+    operadorAtual=PERFIL_ATUAL.operador||nomeBasePorCodigo('operadores',PERFIL_ATUAL.operador_id)||PERFIL_ATUAL.nome;
+    localStorage.setItem('raise_op',operadorAtual);
   }
-  if(tipo==='criador'&&PERFIL_ATUAL.criador){
-    const encontrado=CRIADORES_PADRAO.find(c=>nomesIguais(c.nome,PERFIL_ATUAL.criador));
-    criadorAtual=encontrado?.nome||PERFIL_ATUAL.criador;localStorage.setItem('raise_cri',criadorAtual);
+  if(tipo==='criador'&&(PERFIL_ATUAL.criador||PERFIL_ATUAL.criador_id)){
+    const encontrado=CRIADORES_PADRAO.find(c=>matchCriador(c,PERFIL_ATUAL));
+    criadorAtual=encontrado?.nome||PERFIL_ATUAL.criador||nomeBasePorCodigo('criadores',PERFIL_ATUAL.criador_id)||PERFIL_ATUAL.nome;
+    localStorage.setItem('raise_cri',criadorAtual);
   }
   if(tipo==='admin'){
     if(!operadorAtual||!OPERADORES_PADRAO.includes(operadorAtual))operadorAtual=OPERADORES_PADRAO[0]||'';
@@ -1161,6 +1219,37 @@ function chaveNome(v){
 function nomesIguais(a,b){
   return chaveNome(a)===chaveNome(b);
 }
+function slugPessoa(v){
+  return chaveNome(v).replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+}
+function codigoBasePorNome(grupo,nome){
+  return (EQUIPE_BASE[grupo]||[]).find(p=>nomesIguais(p.nome,nome))?.codigo||'';
+}
+function nomeBasePorCodigo(grupo,codigo){
+  return (EQUIPE_BASE[grupo]||[]).find(p=>String(p.codigo)===String(codigo))?.nome||'';
+}
+function codigoOperador(nome){
+  return codigoBasePorNome('operadores',nome)||'op__'+slugPessoa(nome);
+}
+function codigoCriador(nome){
+  return codigoBasePorNome('criadores',nome)||'cri__'+slugPessoa(nome);
+}
+function matchOperador(cr,perfil){
+  const opId=perfil?.operador_id||codigoBasePorNome('operadores',perfil?.operador||perfil?.nome);
+  const opNome=perfil?.operador||perfil?.nome||operadorAtual;
+  if(opId&&(cr.operador_id===opId||cr.operador_codigo===opId))return true;
+  return nomesIguais(cr.operador,opNome);
+}
+function matchCriador(cr,perfil){
+  const criId=perfil?.criador_id||codigoBasePorNome('criadores',perfil?.criador||perfil?.nome);
+  const criNome=perfil?.criador||perfil?.nome||criadorAtual;
+  if(criId&&(cr.codigo===criId||cr.criador_id===criId))return true;
+  return nomesIguais(cr.nome,criNome);
+}
+function criadoresDoOperador(nome){
+  const opId=codigoBasePorNome('operadores',nome)||codigoOperador(nome);
+  return CRIADORES_PADRAO.filter(c=>c.operador_id===opId||c.operador_codigo===opId||nomesIguais(c.operador,nome));
+}
 function uniqByNome(items){
   const map=new Map();
   items.filter(Boolean).forEach(item=>{
@@ -1171,10 +1260,15 @@ function uniqByNome(items){
   return [...map.values()];
 }
 function normalizarCriador(c){
+  const codigo=c.codigo||c.criador_id||codigoBasePorNome('criadores',c.nome);
+  const operadorId=c.operador_id||c.operador_codigo||codigoBasePorNome('operadores',c.operador);
+  const operadorNome=c.operador||nomeBasePorCodigo('operadores',operadorId)||'Sem responsável';
   return {
     id:c.id||c.nome,
+    codigo:codigo||codigoCriador(c.nome),
     nome:c.nome,
-    operador:c.operador||'Admin',
+    operador:operadorNome,
+    operador_id:operadorId||'',
     cta:Number(c.cta||1),
     inicio:c.inicio||(c.created_at?c.created_at.slice(0,10):getNow().toISOString().slice(0,10)),
     duracao:Number(c.duracao||c.duracao_meses||12)
@@ -1282,36 +1376,38 @@ async function carregarTudo(){
     }
     const obrigacoesFonte=await inicializarObrigacoesBaseSePreciso(obs);
     const criadoresPerfis=perfis
-      .filter(p=>p.ativo!==false&&p.tipo==='criador'&&(p.criador||p.nome))
+      .filter(p=>p.ativo!==false&&p.tipo==='criador'&&(p.criador||p.criador_id||p.nome))
       .map(p=>normalizarCriador({
         id:`perfil__${p.id||p.email||p.criador||p.nome}`,
-        nome:p.criador||p.nome,
-        operador:p.operador||'Admin',
+        codigo:p.criador_id||codigoBasePorNome('criadores',p.criador||p.nome),
+        nome:p.criador||nomeBasePorCodigo('criadores',p.criador_id)||p.nome,
+        operador:p.operador||nomeBasePorCodigo('operadores',p.operador_id)||'Sem responsável',
+        operador_id:p.operador_id||codigoBasePorNome('operadores',p.operador),
         cta:1,
         inicio:p.created_at
       }));
     let criadoresBase=uniqByNome([
-      ...cri.map(normalizarCriador),
+      ...cri.filter(c=>c.ativo!==false).map(normalizarCriador),
       ...criadoresPerfis
     ]).filter(c=>c.nome&&!isCriadorRemovido(c.nome));
     let operadoresBase=uniqByNome([
-      ...perfis.filter(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(p.operador||p.nome)).map(p=>p.operador||p.nome),
-      ...ops.map(o=>o.nome),
+      ...perfis.filter(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(p.operador||p.operador_id||p.nome)).map(p=>p.operador||nomeBasePorCodigo('operadores',p.operador_id)||p.nome),
+      ...ops.filter(o=>o.ativo!==false).map(o=>o.nome),
       ...criadoresBase.map(c=>c.operador).filter(Boolean)
     ]).filter(op=>op&&!isOperadorRemovido(op));
     const obrigacoesBase=uniqByNome(obrigacoesFonte.map(normalizarObrigacao)).filter(o=>o.nome);
     const tipo=PERFIL_ATUAL?.tipo==='operador'?'colaborador':PERFIL_ATUAL?.tipo;
     if(tipo==='colaborador'){
-      const opVinculado=PERFIL_ATUAL.operador||PERFIL_ATUAL.nome||operadorAtual;
+      const opVinculado=PERFIL_ATUAL.operador||nomeBasePorCodigo('operadores',PERFIL_ATUAL.operador_id)||PERFIL_ATUAL.nome||operadorAtual;
       operadorAtual=opVinculado;
-      criadoresBase=criadoresBase.filter(c=>nomesIguais(c.operador,opVinculado));
+      criadoresBase=criadoresBase.filter(c=>matchOperador(c,PERFIL_ATUAL));
       operadoresBase=opVinculado?[opVinculado]:[];
     }
     if(tipo==='criador'){
-      const criVinculado=PERFIL_ATUAL.criador||PERFIL_ATUAL.nome||criadorAtual;
-      const encontrado=criadoresBase.find(c=>nomesIguais(c.nome,criVinculado));
+      const criVinculado=PERFIL_ATUAL.criador||nomeBasePorCodigo('criadores',PERFIL_ATUAL.criador_id)||PERFIL_ATUAL.nome||criadorAtual;
+      const encontrado=criadoresBase.find(c=>matchCriador(c,PERFIL_ATUAL));
       criadorAtual=encontrado?.nome||criVinculado;
-      criadoresBase=encontrado?[encontrado]:criadoresBase.filter(c=>nomesIguais(c.nome,criVinculado));
+      criadoresBase=encontrado?[encontrado]:criadoresBase.filter(c=>matchCriador(c,PERFIL_ATUAL));
       operadoresBase=uniqByNome(criadoresBase.map(c=>c.operador).filter(Boolean));
     }
     resetArray(CRIADORES_PADRAO,criadoresBase);
@@ -1897,15 +1993,17 @@ async function adicionarCriador(){
   const inicio=$('mac-inicio').value||getNow().toISOString().slice(0,10);
   const dur=parseInt($('mac-dur').value)||12;
   if(!nome){toast('Informe o nome do criador.','err');return;}
-  const id=`cri__${nome}`;
-  const result=await dbUpsert('criadores',{id,nome,operador:ope,cta,inicio,duracao_meses:dur,created_at:new Date().toISOString()}).catch(()=>null);
+  const codigo=codigoCriador(nome);
+  const operador_id=codigoBasePorNome('operadores',ope)||codigoOperador(ope);
+  const result=await salvarCriadorEstrutural({codigo,nome,operador:ope,operador_id,cta,inicio,duracao_meses:dur,created_at:new Date().toISOString()});
   if(!result){toast('Erro ao adicionar criador. Verifique a tabela criadores.','err');return;}
   if(isCriadorRemovido(nome)){
     CONFIG_DB.criadores_removidos=(CONFIG_DB.criadores_removidos||[]).filter(n=>n!==nome);
     const cfg=await dbSetConfig('criadores_removidos',CONFIG_DB.criadores_removidos).catch(()=>null);
     if(!cfg){toast('Criador salvo, mas houve erro ao reativar na configuração.','err');return;}
   }
-  CRIADORES_PADRAO.push({id,nome,operador:ope,cta,inicio,duracao:dur});
+  const salvo=result[0]||{};
+  CRIADORES_PADRAO.push({id:salvo.id||codigo,codigo,nome,operador:ope,operador_id,cta,inicio,duracao:dur});
   salvarEstadoLocal();
   cM('m-add-criador');
   ['mac-nome','mac-inicio','mac-dur'].forEach(id=>{const e=$(id);if(e)e.value='';});
@@ -1918,9 +2016,12 @@ function editarCriador(nome){toast(`Para editar ${nome}, use os campos de fatura
 async function removerCriador(nome){
   if(!confirm(`Remover ${nome}`))return;
   const i=CRIADORES_PADRAO.findIndex(c=>c.nome===nome);
-  const id=CRIADORES_PADRAO[i].id||`cri__${nome}`;
-  const del=await dbDelete('criadores',id).catch(()=>null);
-  if(!del){toast('Erro ao remover criador no banco.','err');return;}
+  const cr=CRIADORES_PADRAO[i]||{};
+  if(cr.id&&!String(cr.id).startsWith('perfil__')){
+    await dbDelete('criadores',cr.id).catch(()=>null);
+  }else if(cr.codigo){
+    await dbUpdateBy('criadores','codigo',cr.codigo,{ativo:false}).catch(()=>null);
+  }
   if(i>=0)CRIADORES_PADRAO.splice(i,1);
   const removidos=[...(CONFIG_DB.criadores_removidos||[]),nome].filter((v,i,a)=>a.indexOf(v)===i);
   CONFIG_DB.criadores_removidos=removidos;
@@ -1938,7 +2039,7 @@ async function adicionarOperador(){
   const nome=$('mao-nome').value.trim();
   const funcao=$('mao-func').value.trim()||'Operador';
   if(!nome){toast('Informe o nome.','err');return;}
-  const result=await dbUpsert('operadores',{id:`op__${nome}`,nome,funcao,created_at:new Date().toISOString()}).catch(()=>null);
+  const result=await salvarOperadorEstrutural({codigo:codigoOperador(nome),nome,funcao,created_at:new Date().toISOString()});
   if(!result){toast('Erro ao adicionar operador. Verifique a tabela operadores.','err');return;}
   if(isOperadorRemovido(nome)){
     CONFIG_DB.operadores_removidos=(CONFIG_DB.operadores_removidos||[]).filter(n=>n!==nome);
@@ -1954,14 +2055,15 @@ async function adicionarOperador(){
 }
 
 async function removerOperador(nome){
-  const vinculados=CRIADORES_PADRAO.filter(c=>c.operador===nome).map(c=>c.nome);
+  const vinculados=criadoresDoOperador(nome).map(c=>c.nome);
   if(vinculados.length){
     toast(`Transfira primeiro os criadores deste operador: ${vinculados.join(', ')}.`,'err');
     return;
   }
   if(!confirm(`Remover operador ${nome}`))return;
-  const result=await dbDelete('operadores',`op__${nome}`).catch(()=>null);
-  if(!result){toast('Erro ao remover operador no banco.','err');return;}
+  const opDb=(await dbGet('operadores').catch(()=>[])).find(o=>nomesIguais(o.nome,nome)||o.codigo===codigoOperador(nome));
+  if(opDb?.id)await dbDelete('operadores',opDb.id).catch(()=>null);
+  else await dbUpdateBy('operadores','codigo',codigoOperador(nome),{ativo:false}).catch(()=>null);
   const removidos=[...(CONFIG_DB.operadores_removidos||[]),nome].filter((v,i,a)=>a.indexOf(v)===i);
   CONFIG_DB.operadores_removidos=removidos;
   const cfg=await dbSetConfig('operadores_removidos',removidos).catch(()=>null);
@@ -2191,7 +2293,7 @@ function atualizarContadores(){
   const now=getNow();const day=now.getDay();let f=0,p=0;
   CRIADORES_PADRAO.forEach(cr=>{obsDoDia(day,'todos').forEach(o=>{if(isFeitoRot(cr.nome,o.nome))f++;else p++;});});
   set('rot-feitas',f);set('rot-pend',p);set('rot-pct',(f+p)?Math.round(f/(f+p)*100)+'%':'0%');
-  const mc=CRIADORES_PADRAO.filter(c=>c.operador===operadorAtual);let of=0,op=0;
+  const mc=criadoresDoOperador(operadorAtual);let of=0,op=0;
   mc.forEach(cr=>{obsDoDia(day,'todos').forEach(o=>{if(isFeitoRot(cr.nome,o.nome))of++;else op++;});});
   set('o-feitas',of);set('o-pend',op);set('o-pct',(of+op)?Math.round(of/(of+op)*100)+'%':'0%');
 }
@@ -2240,7 +2342,7 @@ function renderRotOpe(){
   const el=$('lista-rotina-ope');if(!el)return;
   const now=getNow();const day=now.getDay();
   const sub=$('o-rot-s');if(sub)sub.textContent=`Seus criadores · ${getDN(now)} · limite: 23:59`;
-  const mc=CRIADORES_PADRAO.filter(c=>c.operador===operadorAtual);
+  const mc=criadoresDoOperador(operadorAtual);
   let html='';let f=0,p=0;
   mc.forEach(cr=>{
     const obsR=obsDoDia(day,'todos').filter(o=>o.resp==='raise'||o.resp==='ambos');
@@ -2327,7 +2429,7 @@ function renderMidiasOpe(){
   const el=$('o-mid-status');if(!el)return;
   const now=getNow();const wom=getWOM(now);
   const slEl=$('o-sem-label');if(slEl)slEl.textContent=`Semana ${wom} de ${getMN(now)}`;
-  const mc=CRIADORES_PADRAO.filter(c=>c.operador===operadorAtual);
+  const mc=criadoresDoOperador(operadorAtual);
   el.innerHTML=mc.map(cr=>{
     const r=isFeitoMid(cr.nome,'rotineiro'),i=isFeitoMid(cr.nome,'ideias'),m=isFeitoMid(cr.nome,'mais18');
     const todas=r&&i&&m;const nenhuma=!r&&!i&&!m;
@@ -2480,7 +2582,7 @@ function renderDossie(nome){
 
 function renderDosOpe(){
   const el=$('o-dos-content');if(!el)return;
-  const mc=CRIADORES_PADRAO.filter(c=>c.operador===operadorAtual);
+  const mc=criadoresDoOperador(operadorAtual);
   el.innerHTML=mc.map(cr=>{
     const d=DOSSIE[cr.nome]||{senhas:[]};
     const dr=diasRestantes(cr.inicio,cr.duracao||12);
@@ -2491,7 +2593,7 @@ function renderDosOpe(){
 
 function renderDosOpeBasico(){
   const el=$('o-dos-content');if(!el)return;
-  const mc=CRIADORES_PADRAO.filter(c=>c.operador===operadorAtual);
+  const mc=criadoresDoOperador(operadorAtual);
   el.innerHTML=mc.map(cr=>{
     const d={...(DOSSIE[cr.nome]||{}),...(DOSSIE_DB[cr.nome]?.dados||{})};
     const dr=diasRestantes(cr.inicio,cr.duracao||12);
@@ -2706,7 +2808,7 @@ function renderCriPen(){
 function renderResultOpe(){
   const execEl=$('o-res-exec');if(!execEl)return;
   const now=getNow();const day=now.getDay();const wom=getWOM(now);
-  const mc=CRIADORES_PADRAO.filter(c=>c.operador===operadorAtual);
+  const mc=criadoresDoOperador(operadorAtual);
   const resumo=mc.reduce((acc,cr)=>{
     const k=KPI_CACHE.socialPorCri?.[cr.nome]||{};
     const exec=KPI_CACHE.execPorCri?.[cr.nome]||0;
@@ -2731,7 +2833,7 @@ function renderEquipe(){
   const el=$('a-equ').querySelector('.cnt');if(!el)return;
   const advMes=ADV_DB.filter(a=>a.mes_key===getMesKey());
   el.innerHTML=`<div class="sl">Operadores</div>${OPERADORES_PADRAO.map(op=>{
-    const cri=CRIADORES_PADRAO.filter(c=>c.operador===op).map(c=>c.nome);
+    const cri=criadoresDoOperador(op).map(c=>c.nome);
     const adv=advMes.filter(a=>a.operador===op).length;
     const ini=op.split(' ').map(p=>p[0]).join('').slice(0,2);
     return `<div class="hrow" ${adv>=3?'style="border-color:#FBBDD2"':''}><div class="av ${adv>=3?'avp':'avt'}">${ini}</div><div style="flex:1"><div class="hrow-n">${esc(op)} <span class="bdg bgr" style="font-size:10px">Colaborador</span> ${adv?`<span class="bdg ${adv>=3?'bur':'bwa'}" style="font-size:10px">${adv} advertência(s)</span>`:''}</div><div style="font-size:12px;color:var(--tx3)">${cri.length?esc(cri.join(', ')):'Sem criadores atribuídos'}</div></div><button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button><span class="bdg ${adv>=3?'bwa':'bok'}">${adv>=3?'Atenção':'Ativo'}</span></div>`;
@@ -2748,9 +2850,10 @@ function renderEquipeConectada(){
   const admins=[{nome:'Murilo',email:'',principal:true},...adminsPerfis,...((CONFIG_DB.admins||[]).filter(a=>a&&a.nome&&a.nome!=='Murilo'))]
     .filter((a,i,arr)=>a&&a.nome&&arr.findIndex(x=>x.nome===a.nome)===i);
   el.innerHTML=`<div class="sl">Operadores</div>${OPERADORES_PADRAO.map(op=>{
-    const cri=CRIADORES_PADRAO.filter(c=>c.operador===op).map(c=>c.nome);
+    const cri=criadoresDoOperador(op).map(c=>c.nome);
     const adv=advMes.filter(a=>a.operador===op).length;
-    const perfil=PERFIS_DB.find(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(nomesIguais(p.operador,op)||(!p.operador&&nomesIguais(p.nome,op))));
+    const opId=codigoBasePorNome('operadores',op)||codigoOperador(op);
+    const perfil=PERFIS_DB.find(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(p.operador_id===opId||nomesIguais(p.operador,op)||(!p.operador&&nomesIguais(p.nome,op))));
     const ini=op.split(' ').map(p=>p[0]).join('').slice(0,2);
     return `<div class="hrow" ${adv>=3?'style="border-color:#FBBDD2"':''}><div class="av ${adv>=3?'avp':'avt'}">${ini}</div><div style="flex:1"><div class="hrow-n">${esc(op)} <span class="bdg bgr" style="font-size:10px">Colaborador</span> ${perfil?'<span class="bdg bok" style="font-size:10px">login ativo</span>':'<span class="bdg bgr" style="font-size:10px">sem login</span>'} ${adv?`<span class="bdg ${adv>=3?'bur':'bwa'}" style="font-size:10px">${adv} advertencia(s)</span>`:''}</div>${perfil?.email?`<div style="font-size:12px;color:var(--tx3)">${esc(perfil.email)}</div>`:''}<div style="font-size:12px;color:var(--tx3)">${cri.length?esc(cri.join(', ')):'Sem criadores atribuidos'}</div></div><button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button><button class="btn btn-r btn-sm" onclick="removerOperador('${esc(op)}')">Remover</button><span class="bdg ${adv>=3?'bwa':'bok'}">${adv>=3?'Atencao':'Ativo'}</span></div>`;
   }).join('')}
@@ -2775,7 +2878,7 @@ function renderGestao(){
   if(gcEl)gcEl.innerHTML=CRIADORES_PADRAO.map(cr=>`<div class="row"><span style="flex:1;font-size:13px;font-weight:600">${esc(cr.nome)}</span><span style="font-size:12px;color:var(--tx3);margin-right:8px">Op: ${esc(cr.operador)} · CTA ${cr.cta||1} · ${diasRestantes(cr.inicio,cr.duracao||12)}d</span><button class="btn btn-sm" onclick="editarCriador('${esc(cr.nome)}')">Editar</button><button class="btn btn-r btn-sm" style="margin-left:4px" onclick="removerCriador('${esc(cr.nome)}')">x</button></div>`).join('')||'<div style="font-size:13px;color:var(--tx3);padding:10px 0">Nenhum criador.</div>';
   const goEl=$('gestao-operadores');
   if(goEl)goEl.innerHTML=OPERADORES_PADRAO.map(op=>{
-    const qtd=CRIADORES_PADRAO.filter(c=>c.operador===op).length;
+    const qtd=criadoresDoOperador(op).length;
     return `<div class="row"><span style="flex:1;font-size:13px;font-weight:600">${esc(op)}</span><span style="font-size:12px;color:var(--tx3);margin-right:8px">${qtd} criadores</span><button class="btn btn-r btn-sm" onclick="removerOperador('${esc(op)}')">Remover</button></div>`;
   }).join('');
   const obEl=$('gestao-obrigacoes');
@@ -2962,7 +3065,7 @@ async function salvarUsuario(){
   const email=document.getElementById('mu-email').value.trim()||'';
   if(!nome){toast('Informe o nome.','err');return;}
   if(tipo==='Operador'){
-    const result=await dbUpsert('operadores',{id:`op__${nome}`,nome,funcao:'Operador',email,created_at:new Date().toISOString()}).catch(()=>null);
+    const result=await salvarOperadorEstrutural({codigo:codigoOperador(nome),nome,funcao:'Operador',email,created_at:new Date().toISOString()});
     if(!result){toast('Erro ao adicionar operador.','err');return;}
     if(!OPERADORES_PADRAO.includes(nome))OPERADORES_PADRAO.push(nome);
   }else if(tipo==='Admin'){
@@ -2988,7 +3091,11 @@ async function confirmarTransferencia(){
   const cr=CRIADORES_PADRAO.find(c=>c.nome===cri);
   if(cr){
     cr.operador=novoOp;
-    const result=await dbUpdate('criadores',cr.id||`cri__${cri}`,{operador:novoOp}).catch(()=>null);
+    cr.operador_id=codigoBasePorNome('operadores',novoOp)||codigoOperador(novoOp);
+    const dados={...cr,operador:novoOp,operador_id:cr.operador_id,duracao_meses:cr.duracao||cr.duracao_meses||12,updated_at:new Date().toISOString()};
+    const result=(cr.id&&!String(cr.id).startsWith('perfil__'))
+      ? await dbUpdate('criadores',cr.id,{operador:novoOp,operador_id:cr.operador_id}).catch(()=>null)
+      : await salvarCriadorEstrutural(dados).catch(()=>null);
     if(!result){toast('Erro ao transferir no banco.','err');return;}
     salvarEstadoLocal();
   }
