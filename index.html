@@ -902,6 +902,8 @@ let DECISOES_DB=[];
 let DOSSIE_DB={};
 let CONFIG_DB={};
 let PERFIS_DB=[];
+let PESSOAS_DB=[];
+let VINCULOS_DB=[];
 let KPI_CACHE={};     // calculado automaticamente
 let _saving=false;    // trava durante saves de checklist
 let _selectSignature='';
@@ -1071,6 +1073,13 @@ async function dbUpdateBy(t,col,val,d){
   if(error){console.error('[UPDATE BY]',t,error.message);return null;}
   return data;
 }
+async function dbUpdateWhere(t,filters=[],d={}){
+  let q=sb.from(t).update(d);
+  filters.forEach(f=>{q=q[f.op||'eq'](f.col,f.val);});
+  const {data,error}=await q.select();
+  if(error){console.error('[UPDATE WHERE]',t,error.message);return null;}
+  return data;
+}
 async function salvarCriadorEstrutural(dados){
   const codigo=dados.codigo||codigoCriador(dados.nome);
   const payload={...dados,codigo};
@@ -1098,6 +1107,21 @@ async function salvarOperadorEstrutural(dados){
   if(inserido)return inserido;
   const legado={nome:dados.nome,funcao:dados.funcao,email:dados.email,created_at:dados.created_at};
   return dbInsert('operadores',legado).catch(()=>null);
+}
+async function salvarVinculoCriador(cr,operadorNome){
+  const criador_id=cr.pessoa_id||cr.codigo||codigoBasePorNome('criadores',cr.nome);
+  const operador_id=codigoBasePorNome('operadores',operadorNome)||codigoOperador(operadorNome);
+  if(!String(criador_id).startsWith('cr')||!String(operador_id).startsWith('cl'))return true;
+  const hoje=getNow().toISOString().slice(0,10);
+  const antigos=VINCULOS_DB.filter(v=>v.ativo!==false&&v.criador_id===criador_id);
+  await Promise.all(antigos.map(v=>dbUpdate('vinculos_operador_criador',v.id,{ativo:false,fim:hoje,updated_at:new Date().toISOString()}).catch(()=>null)));
+  const novo={id:`vin__${operador_id}__${criador_id}`,operador_id,criador_id,ativo:true,inicio:hoje,updated_at:new Date().toISOString(),created_at:new Date().toISOString()};
+  const result=await dbUpsert('vinculos_operador_criador',novo).catch(()=>null);
+  if(result){
+    VINCULOS_DB=VINCULOS_DB.filter(v=>v.criador_id!==criador_id||v.ativo===false);
+    VINCULOS_DB.push(novo);
+  }
+  return !!result;
 }
 async function dbSetConfig(chave,valor){
   return dbUpsert('crm_config',{chave,valor,updated_at:new Date().toISOString(),created_at:new Date().toISOString()},'chave');
@@ -1140,8 +1164,26 @@ function esconderErroLogin(){
   $('login-erro').classList.remove('on');
 }
 async function carregarPerfilUsuario(user){
+  const pessoaResp=await sb.from('pessoas').select('*').eq('auth_user_id',user.id).eq('ativo',true).maybeSingle().catch(()=>({data:null,error:null}));
+  if(pessoaResp?.data){
+    const p=pessoaResp.data;
+    return {
+      id:user.id,
+      pessoa_id:p.id,
+      email:p.email||user.email,
+      nome:p.nome,
+      tipo:p.tipo==='operador'?'colaborador':p.tipo,
+      operador_id:p.tipo==='operador'?p.id:null,
+      criador_id:p.tipo==='criador'?p.id:null,
+      ativo:p.ativo
+    };
+  }
   const {data,error}=await sb.from('perfis_usuarios').select('*').eq('id',user.id).eq('ativo',true).maybeSingle();
   if(error){console.error('[PERFIL]',error.message);return null;}
+  if(data?.pessoa_id&&!data.operador_id&&!data.criador_id){
+    if(String(data.pessoa_id).startsWith('cl'))data.operador_id=data.pessoa_id;
+    if(String(data.pessoa_id).startsWith('cr'))data.criador_id=data.pessoa_id;
+  }
   return data;
 }
 function aplicarPerfilUsuario(user,perfil){
@@ -1249,15 +1291,15 @@ function codigoCriador(nome){
   return codigoBasePorNome('criadores',nome)||'cri__'+slugPessoa(nome);
 }
 function matchOperador(cr,perfil){
-  const opId=perfil?.operador_id||codigoBasePorNome('operadores',perfil?.operador||perfil?.nome);
+  const opId=perfil?.operador_id||perfil?.pessoa_id||codigoBasePorNome('operadores',perfil?.operador||perfil?.nome);
   const opNome=perfil?.operador||perfil?.nome||operadorAtual;
   if(opId&&(cr.operador_id===opId||cr.operador_codigo===opId))return true;
   return nomesIguais(cr.operador,opNome);
 }
 function matchCriador(cr,perfil){
-  const criId=perfil?.criador_id||codigoBasePorNome('criadores',perfil?.criador||perfil?.nome);
+  const criId=perfil?.criador_id||perfil?.pessoa_id||codigoBasePorNome('criadores',perfil?.criador||perfil?.nome);
   const criNome=perfil?.criador||perfil?.nome||criadorAtual;
-  if(criId&&(cr.codigo===criId||cr.criador_id===criId))return true;
+  if(criId&&(cr.codigo===criId||cr.criador_id===criId||cr.pessoa_id===criId))return true;
   return nomesIguais(cr.nome,criNome);
 }
 function criadoresDoOperador(nome){
@@ -1280,6 +1322,7 @@ function normalizarCriador(c){
   return {
     id:c.id||c.nome,
     codigo:codigo||codigoCriador(c.nome),
+    pessoa_id:c.pessoa_id||codigo||'',
     nome:c.nome,
     operador:operadorNome,
     operador_id:operadorId||'',
@@ -1346,7 +1389,7 @@ function rebuildOptions(sel,items,{includeAll=false,allLabel='Todos',selected}={
 // === CARREGAR TUDO  -  busca TODAS as tabelas ===
 async function carregarTudo(){
   try{
-    const [ch,rot,mid,fat,fin,adv,cri,ops,obs,plats,leads,onb,notifs,logs,kpis,dec,dos,cfg,perfis]=await Promise.all([
+    const [ch,rot,mid,fat,fin,adv,cri,ops,obs,plats,leads,onb,notifs,logs,kpis,dec,dos,cfg,perfis,pessoas,vinculos]=await Promise.all([
       dbGet('chamados'),
       dbGet('rotina_status'),
       dbGet('midias_status'),
@@ -1366,6 +1409,8 @@ async function carregarTudo(){
       dbGet('dossies').catch(()=>[]),
       dbGet('crm_config').catch(()=>[]),
       dbGet('perfis_usuarios').catch(()=>[]),
+      dbGet('pessoas').catch(()=>[]),
+      dbGet('vinculos_operador_criador').catch(()=>[]),
     ]);
     CHAMADOS=ch;
     ROTINA_STATUS={};rot.forEach(r=>ROTINA_STATUS[r.chave]=r);
@@ -1380,6 +1425,8 @@ async function carregarTudo(){
     KPIS_DB=kpis;
     DECISOES_DB=dec;
     PERFIS_DB=perfis;
+    PESSOAS_DB=pessoas;
+    VINCULOS_DB=vinculos;
     DOSSIE_DB={};dos.forEach(d=>{
       const chave=d.criador||String(d.id||'').replace(/^dos__/,'');
       if(chave)DOSSIE_DB[chave]=d;
@@ -1389,6 +1436,25 @@ async function carregarTudo(){
       ONB_STEPS=CONFIG_DB.onboarding_steps.map(s=>String(s||'').trim()).filter(Boolean);
     }
     const obrigacoesFonte=await inicializarObrigacoesBaseSePreciso(obs);
+    const pessoasAtivas=pessoas.filter(p=>p.ativo!==false);
+    const vinculosAtivos=vinculos.filter(v=>v.ativo!==false);
+    const pessoaPorId=Object.fromEntries(pessoasAtivas.map(p=>[p.id,p]));
+    const criadoresPessoas=pessoasAtivas
+      .filter(p=>p.tipo==='criador')
+      .map(p=>{
+        const vin=vinculosAtivos.find(v=>v.criador_id===p.id);
+        const op=vin?pessoaPorId[vin.operador_id]:null;
+        return normalizarCriador({
+          id:`pessoa__${p.id}`,
+          codigo:p.id,
+          pessoa_id:p.id,
+          nome:p.nome,
+          operador:op?.nome||'Sem responsável',
+          operador_id:op?.id||'',
+          cta:1,
+          inicio:p.created_at
+        });
+      });
     const criadoresPerfis=perfis
       .filter(p=>p.ativo!==false&&p.tipo==='criador'&&(p.criador||p.criador_id||p.nome))
       .map(p=>normalizarCriador({
@@ -1401,10 +1467,12 @@ async function carregarTudo(){
         inicio:p.created_at
       }));
     let criadoresBase=uniqByNome([
+      ...criadoresPessoas,
       ...cri.filter(c=>c.ativo!==false).map(normalizarCriador),
       ...criadoresPerfis
     ]).filter(c=>c.nome&&!isCriadorRemovido(c.nome));
     let operadoresBase=uniqByNome([
+      ...pessoasAtivas.filter(p=>p.tipo==='operador').map(p=>p.nome),
       ...perfis.filter(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(p.operador||p.operador_id||p.nome)).map(p=>p.operador||nomeBasePorCodigo('operadores',p.operador_id)||p.nome),
       ...ops.filter(o=>o.ativo!==false).map(o=>o.nome),
       ...criadoresBase.map(c=>c.operador).filter(Boolean)
@@ -2921,14 +2989,16 @@ function renderEquipe(){
 function renderEquipeConectada(){
   const el=$('a-equ').querySelector('.cnt');if(!el)return;
   const advMes=ADV_DB.filter(a=>a.mes_key===getMesKey());
+  const adminsPessoas=PESSOAS_DB.filter(p=>p.ativo!==false&&p.tipo==='admin').map(p=>({nome:p.nome||p.email,email:p.email,principal:(p.nome||'').toLowerCase()==='murilo'}));
   const adminsPerfis=PERFIS_DB.filter(p=>p.ativo!==false&&p.tipo==='admin').map(p=>({nome:p.nome||p.email,email:p.email,principal:(p.nome||'').toLowerCase()==='murilo'}));
-  const admins=[{nome:'Murilo',email:'',principal:true},...adminsPerfis,...((CONFIG_DB.admins||[]).filter(a=>a&&a.nome&&a.nome!=='Murilo'))]
+  const admins=[{nome:'Murilo',email:'',principal:true},...adminsPessoas,...adminsPerfis,...((CONFIG_DB.admins||[]).filter(a=>a&&a.nome&&a.nome!=='Murilo'))]
     .filter((a,i,arr)=>a&&a.nome&&arr.findIndex(x=>x.nome===a.nome)===i);
   el.innerHTML=`<div class="sl">Operadores</div>${OPERADORES_PADRAO.map(op=>{
     const cri=criadoresDoOperador(op).map(c=>c.nome);
     const adv=advMes.filter(a=>a.operador===op).length;
     const opId=codigoBasePorNome('operadores',op)||codigoOperador(op);
-    const perfil=PERFIS_DB.find(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(p.operador_id===opId||nomesIguais(p.operador,op)||(!p.operador&&nomesIguais(p.nome,op))));
+    const pessoa=PESSOAS_DB.find(p=>p.ativo!==false&&p.tipo==='operador'&&(p.id===opId||nomesIguais(p.nome,op)));
+    const perfil=PERFIS_DB.find(p=>p.ativo!==false&&(p.tipo==='colaborador'||p.tipo==='operador')&&(p.operador_id===opId||p.pessoa_id===opId||nomesIguais(p.operador,op)||(!p.operador&&nomesIguais(p.nome,op))))||pessoa;
     const ini=op.split(' ').map(p=>p[0]).join('').slice(0,2);
     return `<div class="hrow" ${adv>=3?'style="border-color:#FBBDD2"':''}><div class="av ${adv>=3?'avp':'avt'}">${ini}</div><div style="flex:1"><div class="hrow-n">${esc(op)} <span class="bdg bgr" style="font-size:10px">Colaborador</span> ${perfil?'<span class="bdg bok" style="font-size:10px">login ativo</span>':'<span class="bdg bgr" style="font-size:10px">sem login</span>'} ${adv?`<span class="bdg ${adv>=3?'bur':'bwa'}" style="font-size:10px">${adv} advertencia(s)</span>`:''}</div>${perfil?.email?`<div style="font-size:12px;color:var(--tx3)">${esc(perfil.email)}</div>`:''}<div style="font-size:12px;color:var(--tx3)">${cri.length?esc(cri.join(', ')):'Sem criadores atribuidos'}</div></div><button class="btn btn-sm" onclick="oM('m-transfer')">Transferir criador</button><button class="btn btn-r btn-sm" onclick="removerOperador('${esc(op)}')">Remover</button><span class="bdg ${adv>=3?'bwa':'bok'}">${adv>=3?'Atencao':'Ativo'}</span></div>`;
   }).join('')}
@@ -3116,6 +3186,8 @@ function iniciarRealtime(){
       .on('postgres_changes',{event:'*',schema:'public',table:'dossies'},()=>carregarTudo())
       .on('postgres_changes',{event:'*',schema:'public',table:'crm_config'},()=>carregarTudo())
       .on('postgres_changes',{event:'*',schema:'public',table:'perfis_usuarios'},()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'pessoas'},()=>carregarTudo())
+      .on('postgres_changes',{event:'*',schema:'public',table:'vinculos_operador_criador'},()=>carregarTudo())
       .subscribe();
   }catch(e){console.log('Realtime fallback  -  polling ativo');}
   setInterval(()=>{ if(!_saving)carregarTudo(); },8000);
@@ -3175,6 +3247,8 @@ async function confirmarTransferencia(){
       ? await dbUpdate('criadores',cr.id,{operador:novoOp,operador_id:cr.operador_id}).catch(()=>null)
       : await salvarCriadorEstrutural(dados).catch(()=>null);
     if(!result){toast('Erro ao transferir no banco.','err');return;}
+    const vinculoOk=await salvarVinculoCriador(cr,novoOp).catch(()=>false);
+    if(!vinculoOk){toast('Criador atualizado, mas o vínculo profissional não foi salvo. Rode o SQL da arquitetura.','err');return;}
     salvarEstadoLocal();
   }
   cM('m-transfer');
