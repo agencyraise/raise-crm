@@ -36,10 +36,15 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 .login-err{display:none;margin-top:12px}.login-err.on{display:flex}
 .auth-only{display:none!important}
 .auth-admin .for-admin,.auth-operador .for-operador,.auth-criador .for-criador{display:inline-flex!important}
-.topnav-user{font-size:12px;color:var(--tx2);margin-left:auto;font-weight:600}
+.topnav-user{font-size:12px;color:var(--tx2);font-weight:600}
 .logout-btn{padding:6px 10px;border-radius:8px;border:1px solid var(--bd2);background:var(--bg2);color:var(--tx2);cursor:pointer;font-size:12px;font-weight:700}
 .logout-btn:hover{border-color:var(--dn);color:var(--dn)}
 .auth-operador .psb.adm,.auth-operador .psb.cri,.auth-criador .psb.adm,.auth-criador .psb.ope{display:none}
+.view-as{align-items:center;gap:6px;padding:5px 8px;border:1.5px solid var(--bd);border-radius:12px;background:var(--bg);margin-left:auto}
+.view-as-label{font-size:10px;color:var(--tx3);font-weight:800;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.view-as select{border:1px solid var(--bd2);border-radius:8px;background:var(--bg2);color:var(--tx2);font-size:12px;font-weight:700;padding:5px 8px;max-width:220px}
+.view-as button{padding:5px 8px;border-radius:8px;border:1px solid var(--bd2);background:var(--bg2);color:var(--ac);font-size:11px;font-weight:800;cursor:pointer}
+.view-as-note{font-size:11px;color:var(--ac);font-weight:800;white-space:nowrap}
 
 /* TOP NAV */
 .topnav{display:flex;gap:8px;padding:12px 20px;background:var(--bg2);border-bottom:1.5px solid var(--bd);align-items:center;position:sticky;top:0;z-index:100;box-shadow:var(--sh)}
@@ -258,6 +263,14 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
   <button class="psb adm on" onclick="gP('adm',this)">Admin</button>
   <button class="psb ope" onclick="gP('ope',this)">Operador</button>
   <button class="psb cri" onclick="gP('cri',this)">Criador</button>
+  <div class="view-as auth-only for-admin" id="view-as-box">
+    <span class="view-as-label">Visualizar como</span>
+    <select id="view-as-sel" onchange="visualizarComo(this.value)">
+      <option value="adm">Admin</option>
+    </select>
+    <button onclick="voltarVisualizacaoAdmin()">Voltar</button>
+    <span class="view-as-note" id="view-as-note"></span>
+  </div>
   <div class="topnav-user" id="auth-user-label"></div>
   <button class="logout-btn" onclick="sairCRM()">Sair</button>
   <div class="topnav-clock" id="clk"></div>
@@ -900,6 +913,7 @@ let criadorAtual=localStorage.getItem('raise_cri')||'';
 let USUARIO_ATUAL=null;
 let PERFIL_ATUAL=null;
 let AUTH_PRONTO=false;
+let MODO_VISUALIZACAO=localStorage.getItem('raise_visualizar_como')||'adm';
 
 // === DADOS ESTRUTURAIS ===
 const CRIADORES_PADRAO=[];
@@ -1566,6 +1580,58 @@ function gS(portal,id,btn){
   if(id==='a-fin')renderFinanceiro();
   if(id==='a-kpi')renderKPIs();
   if(id==='a-rel')renderRelatorios();
+}
+function atualizarControleVisualizacao(){
+  const sel=$('view-as-sel'),note=$('view-as-note');
+  if(!sel||PERFIL_ATUAL?.tipo!=='admin')return;
+  const atual=sel.value||MODO_VISUALIZACAO||'adm';
+  const opcoes=[
+    {value:'adm',label:'Admin'},
+    ...OPERADORES_PADRAO.map(op=>({value:`ope::${op}`,label:`Colaborador: ${op}`})),
+    ...CRIADORES_PADRAO.map(cr=>({value:`cri::${cr.nome}`,label:`Criador: ${cr.nome}`}))
+  ];
+  rebuildOptions(sel,opcoes,{selected:opcoes.some(o=>o.value===atual)?atual:'adm'});
+  if(note)note.textContent=MODO_VISUALIZACAO==='adm'?'':'simulação admin';
+}
+function abrirPortalVisual(portal){
+  const btn=document.querySelector(`.psb.${portal}`);
+  if(btn)gP(portal,btn);
+}
+function visualizarComo(valor){
+  if(PERFIL_ATUAL?.tipo!=='admin'){toast('Apenas admins podem usar esta visualização.','err');return;}
+  MODO_VISUALIZACAO=valor||'adm';
+  localStorage.setItem('raise_visualizar_como',MODO_VISUALIZACAO);
+  if(MODO_VISUALIZACAO==='adm'){
+    atualizarControleVisualizacao();
+    abrirPortalVisual('adm');
+    toast('Visualização de admin restaurada.','info');
+    return;
+  }
+  const [tipo,nome]=MODO_VISUALIZACAO.split('::');
+  if(tipo==='ope'){
+    operadorAtual=nome||operadorAtual;
+    localStorage.setItem('raise_op',operadorAtual);
+    atualizarControleVisualizacao();
+    abrirPortalVisual('ope');
+    toast(`Visualizando como colaborador: ${operadorAtual}.`,'info');
+    return;
+  }
+  if(tipo==='cri'){
+    criadorAtual=nome||criadorAtual;
+    localStorage.setItem('raise_cri',criadorAtual);
+    atualizarControleVisualizacao();
+    abrirPortalVisual('cri');
+    toast(`Visualizando como criador: ${criadorAtual}.`,'info');
+  }
+}
+function voltarVisualizacaoAdmin(){
+  const sel=$('view-as-sel');if(sel)sel.value='adm';
+  visualizarComo('adm');
+}
+function aplicarVisualizacaoAdminSalva(){
+  if(PERFIL_ATUAL?.tipo!=='admin')return;
+  atualizarControleVisualizacao();
+  if(MODO_VISUALIZACAO&&MODO_VISUALIZACAO!=='adm')visualizarComo(MODO_VISUALIZACAO);
 }
 function prepararTransferencia(){
   const criadores=CRIADORES_PADRAO.length?CRIADORES_PADRAO.map(c=>c.nome):EQUIPE_BASE.criadores.map(c=>c.nome);
@@ -2936,6 +3002,7 @@ function initSelects(){
     rebuildOptions(rotCri,criadores,{includeAll:true,allLabel:'Todos os criadores'});
     rotCri.onchange=renderRotAdm;
   }
+  atualizarControleVisualizacao();
 }
 
 // ============================================================
@@ -3140,6 +3207,7 @@ async function iniciarCRMLogado(){
   restoreSession();
   restoreView();
   renderAll();
+  aplicarVisualizacaoAdminSalva();
   iniciarRealtime();
 }
 document.addEventListener('DOMContentLoaded',async()=>{
