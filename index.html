@@ -3,265 +3,2577 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Raise Hot - CRM</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>RaiseHot CRM</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--bg:#f5f6fa;--panel:#fff;--soft:#eef0f6;--line:#dfe2eb;--text:#16182a;--muted:#6b7087;--weak:#9ca2b8;--brand:#6c5ce7;--brand2:#eeeaff;--ok:#00a878;--okb:#e8faf4;--warn:#f59e0b;--warnb:#fff4d6;--bad:#e11d48;--badb:#ffe4eb;--blue:#1d72b8;--blueb:#e9f3fc;--r:10px;--font:'Inter',sans-serif;--head:'Syne',sans-serif}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px}button,input,select,textarea{font:inherit}button{cursor:pointer}
-.top{height:62px;background:var(--panel);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 18px;position:sticky;top:0;z-index:5}.brand{font-family:var(--head);font-size:22px;font-weight:800;margin-right:8px}.brand span{color:var(--brand)}.portal-btn{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:20px;padding:8px 15px;font-weight:800}.portal-btn.on{background:var(--brand);border-color:var(--brand);color:#fff}.clock{margin-left:auto;color:var(--weak);font-weight:700;font-size:13px}
-.app-error{display:none;background:var(--badb);border:1px solid #f8a8ba;color:var(--bad);padding:10px 14px;font-weight:800}
-.app-error.on{display:block}
-.layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 62px)}.side{background:var(--panel);border-right:1px solid var(--line);padding:14px 10px;position:sticky;top:62px;height:calc(100vh - 62px);overflow:auto}.side-title{font-family:var(--head);font-size:16px;font-weight:800;margin:8px 10px 2px}.side-sub{color:var(--weak);font-size:11px;margin:0 10px 16px;text-transform:uppercase;letter-spacing:.06em}.nav-sec{color:var(--weak);font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:800;margin:16px 10px 6px}.nav{width:100%;text-align:left;border:0;background:transparent;color:var(--muted);padding:10px 12px;border-radius:8px;font-weight:700;margin-bottom:2px}.nav:hover,.nav.on{background:var(--brand2);color:var(--brand)}
-.main{padding:20px;min-width:0}.screen{display:none}.screen.on{display:block}.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px}.title{font-family:var(--head);font-size:28px;font-weight:800}.sub{color:var(--muted);margin-top:4px}.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.grid{display:grid;gap:12px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}.metric{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}.metric b{font-family:var(--head);font-size:26px;display:block}.metric span{color:var(--weak);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.05em}.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-bottom:12px}.card-h{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;align-items:center}.card-t{font-family:var(--head);font-weight:800}.card-b{padding:14px}.row{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.grow{flex:1}.muted{color:var(--muted)}.small{font-size:12px}.pill{display:inline-flex;align-items:center;border-radius:20px;padding:4px 9px;font-weight:800;font-size:11px}.ok{background:var(--okb);color:var(--ok)}.warn{background:var(--warnb);color:#8a5400}.bad{background:var(--badb);color:var(--bad)}.info{background:var(--brand2);color:var(--brand)}.blue{background:var(--blueb);color:var(--blue)}.btn{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:8px;padding:8px 12px;font-weight:800}.btn:hover{border-color:var(--brand);color:var(--brand)}.btn.p{background:var(--brand);border-color:var(--brand);color:#fff}.btn.g{background:var(--ok);border-color:var(--ok);color:#fff}.btn.r{background:var(--bad);border-color:var(--bad);color:#fff}.btn.s{padding:5px 8px;font-size:12px}.input,.select,.area{width:100%;border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 10px;color:var(--text)}.area{min-height:80px;resize:vertical}.field{display:grid;gap:5px;margin-bottom:10px}.field label{font-size:11px;color:var(--weak);text-transform:uppercase;letter-spacing:.05em;font-weight:800}.modal{position:fixed;inset:0;background:rgba(0,0,0,.42);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal.on{display:flex}.box{width:min(560px,100%);max-height:88vh;overflow:auto;background:var(--panel);border-radius:14px;border:1px solid var(--line);padding:18px}.box h3{font-family:var(--head);margin:0 0 14px}.bar{height:9px;background:var(--soft);border-radius:20px;overflow:hidden}.bar i{display:block;height:100%;border-radius:20px}.toast{position:fixed;right:18px;bottom:18px;background:var(--text);color:#fff;padding:12px 14px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);display:none;z-index:30}.toast.on{display:block}.table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}.table th,.table td{text-align:left;border-bottom:1px solid var(--line);padding:10px;font-size:13px}.table th{color:var(--weak);font-size:11px;text-transform:uppercase;letter-spacing:.05em}.clean-creator{max-width:920px;margin:auto}.big-action{padding:14px;border-radius:12px;font-size:15px}
-@media(max-width:850px){.layout{grid-template-columns:1fr}.side{position:static;height:auto;display:flex;overflow:auto;gap:4px}.side-title,.side-sub,.nav-sec{display:none}.nav{white-space:nowrap}.main{padding:14px}.g2,.g3,.g4{grid-template-columns:1fr}.page-head{align-items:flex-start;flex-direction:column}.top{overflow:auto}.clock{display:none}}
-.modal{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;z-index:2147483647!important;align-items:flex-start!important;justify-content:center!important;padding:76px 18px 24px!important;overflow:auto!important;background:rgba(18,20,35,.58)!important}
-.modal.on{display:flex!important}
-.box{position:relative!important;margin:0 auto!important;max-height:calc(100vh - 104px)!important;max-height:calc(100dvh - 104px)!important;overflow:auto!important;box-shadow:0 24px 70px rgba(0,0,0,.22)!important}
-.modal-close{position:absolute;top:12px;right:12px;border:1px solid var(--line);background:#fff;color:var(--muted);border-radius:8px;width:32px;height:32px;font-weight:900}
-body.modal-open{overflow:hidden}
-.toast{z-index:10000!important}
+/* ============================================================
+   RAISESHOT CRM — DESIGN SYSTEM
+   Estética: Editorial refinada, tipografia forte, roxo vibrante
+============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap');
+
+:root {
+  --p: #7C3AED;
+  --p2: #6D28D9;
+  --p3: #EDE9FE;
+  --p4: #F5F3FF;
+  --bg: #FAFAF9;
+  --sur: #FFFFFF;
+  --bor: #E5E7EB;
+  --bor2: #D1D5DB;
+  --tx1: #111827;
+  --tx2: #374151;
+  --tx3: #6B7280;
+  --tx4: #9CA3AF;
+  --ok: #059669;
+  --ok2: #D1FAE5;
+  --warn: #D97706;
+  --warn2: #FEF3C7;
+  --err: #DC2626;
+  --err2: #FEE2E2;
+  --info: #2563EB;
+  --info2: #DBEAFE;
+  --sidebar: 240px;
+  --r: 10px;
+  --r2: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow2: 0 4px 16px rgba(124,58,237,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx1);font-size:14px;line-height:1.5}
+h1,h2,h3,.brand{font-family:'Syne',sans-serif}
+button{cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;border:none;outline:none;transition:all .15s}
+input,select,textarea{font-family:'DM Sans',sans-serif;font-size:14px;outline:none;border:1px solid var(--bor2);border-radius:var(--r2);padding:8px 12px;width:100%;background:var(--sur);color:var(--tx1);transition:border .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--p)}
+textarea{resize:vertical;min-height:80px}
+a{color:var(--p);text-decoration:none}
+
+/* ---- PORTAL SELECTOR ---- */
+#portal-selector{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;flex-direction:column;gap:32px}
+.ps-brand{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--p);letter-spacing:-1px}
+.ps-sub{color:var(--tx3);font-size:15px;margin-top:-20px}
+.ps-cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.ps-card{background:var(--sur);border:2px solid var(--bor);border-radius:var(--r);padding:28px 36px;cursor:pointer;text-align:center;transition:all .2s;min-width:160px}
+.ps-card:hover,.ps-card.active{border-color:var(--p);background:var(--p4);box-shadow:var(--shadow2)}
+.ps-card-icon{font-size:32px;margin-bottom:12px}
+.ps-card-label{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--tx1)}
+.ps-card-desc{font-size:12px;color:var(--tx3);margin-top:4px}
+.ps-select-row{display:flex;flex-direction:column;gap:8px;align-items:center}
+.ps-select-row label{font-size:13px;color:var(--tx2);font-weight:500}
+.ps-select-row select{max-width:280px}
+.ps-enter{background:var(--p);color:#fff;padding:12px 32px;border-radius:var(--r2);font-weight:600;font-size:15px;letter-spacing:.3px}
+.ps-enter:hover{background:var(--p2);transform:translateY(-1px)}
+
+/* ---- LAYOUT ---- */
+#app{display:flex;height:100vh;overflow:hidden}
+#sidebar{width:var(--sidebar);background:var(--sur);border-right:1px solid var(--bor);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+#main{flex:1;overflow-y:auto;background:var(--bg)}
+
+/* ---- SIDEBAR ---- */
+.sb-header{padding:20px 16px 16px;border-bottom:1px solid var(--bor)}
+.sb-brand{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--p);letter-spacing:-0.5px}
+.sb-portal-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--p3);color:var(--p);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.sb-user{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--bor)}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.sb-user-name{font-size:13px;font-weight:500;color:var(--tx1)}
+.sb-user-role{font-size:11px;color:var(--tx3)}
+.sb-nav{padding:8px 0;flex:1}
+.sb-section{padding:16px 16px 4px;font-size:10px;font-weight:600;color:var(--tx4);text-transform:uppercase;letter-spacing:.8px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;border-radius:0;transition:all .15s;color:var(--tx2);font-size:13px;font-weight:400;border-left:3px solid transparent;margin:1px 0}
+.sb-item:hover{background:var(--p4);color:var(--p)}
+.sb-item.active{background:var(--p4);color:var(--p);border-left-color:var(--p);font-weight:500}
+.sb-item-icon{font-size:16px;width:20px;text-align:center}
+.sb-footer{padding:12px 16px;border-top:1px solid var(--bor)}
+.sb-switch{font-size:12px;color:var(--p);cursor:pointer;font-weight:500}
+.sb-switch:hover{text-decoration:underline}
+
+/* ---- TOPBAR ---- */
+#topbar{background:var(--sur);border-bottom:1px solid var(--bor);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:100}
+.tb-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--tx1)}
+.tb-right{display:flex;align-items:center;gap:12px}
+.tb-badge{background:var(--err2);color:var(--err);font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px}
+
+/* ---- CONTENT ---- */
+#content{padding:24px}
+.page{display:none}
+.page.active{display:block}
+
+/* ---- CARDS ---- */
+.card{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:20px;box-shadow:var(--shadow)}
+.card-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--tx1);margin-bottom:16px}
+
+/* ---- GRID STATS ---- */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+.stat-label{font-size:11px;color:var(--tx3);font-weight:500;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.stat-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--tx1);line-height:1}
+.stat-sub{font-size:11px;color:var(--tx3);margin-top:4px}
+.stat-card.accent{background:var(--p);border-color:var(--p)}
+.stat-card.accent .stat-label,.stat-card.accent .stat-val,.stat-card.accent .stat-sub{color:#fff}
+
+/* ---- BUTTONS ---- */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--r2);font-weight:500;font-size:13px;transition:all .15s;cursor:pointer;border:none}
+.btn-primary{background:var(--p);color:#fff}
+.btn-primary:hover{background:var(--p2);transform:translateY(-1px);box-shadow:var(--shadow2)}
+.btn-secondary{background:var(--sur);color:var(--tx2);border:1px solid var(--bor2)}
+.btn-secondary:hover{border-color:var(--p);color:var(--p)}
+.btn-danger{background:var(--err2);color:var(--err);border:1px solid #FCA5A5}
+.btn-danger:hover{background:var(--err)}
+.btn-success{background:var(--ok2);color:var(--ok);border:1px solid #6EE7B7}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-xs{padding:3px 8px;font-size:11px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ---- BADGES ---- */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-ok{background:var(--ok2);color:var(--ok)}
+.badge-warn{background:var(--warn2);color:var(--warn)}
+.badge-err{background:var(--err2);color:var(--err)}
+.badge-info{background:var(--info2);color:var(--info)}
+.badge-purple{background:var(--p3);color:var(--p)}
+
+/* ---- TABLE ---- */
+.table-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--bor)}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--bg)}
+th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--bor)}
+td{padding:10px 14px;border-bottom:1px solid var(--bor);font-size:13px;color:var(--tx2)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--p4)}
+
+/* ---- MODAL ---- */
+.modal-overlay{position:absolute;inset:0;background:rgba(17,24,39,.5);display:none;align-items:center;justify-content:center;z-index:500;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--sur);border-radius:var(--r);max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);position:relative}
+.modal-header{padding:20px 24px 16px;border-bottom:1px solid var(--bor);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--sur);z-index:1}
+.modal-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700}
+.modal-close{width:28px;height:28px;border-radius:50%;background:var(--bg);border:1px solid var(--bor);color:var(--tx2);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.modal-body{padding:20px 24px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--bor);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--sur)}
+
+/* ---- FORM ---- */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--tx2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ---- TOAST ---- */
+#toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 16px;border-radius:var(--r2);font-size:13px;font-weight:500;max-width:320px;animation:slideIn .2s ease;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.toast-ok{background:var(--ok);color:#fff}
+.toast-err{background:var(--err);color:#fff}
+.toast-warn{background:var(--warn);color:#fff}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ---- SAÚDE ---- */
+.saude-bar{height:6px;border-radius:3px;background:var(--bor);overflow:hidden;margin-top:6px}
+.saude-fill{height:100%;border-radius:3px;transition:width .4s}
+.saude-verde .saude-fill{background:var(--ok)}
+.saude-amarela .saude-fill{background:var(--warn)}
+.saude-vermelha .saude-fill{background:var(--err)}
+
+/* ---- PROJETO CARD ---- */
+.projeto-card{background:var(--sur);border:1px solid var(--bor);border-radius:var(--r);padding:16px;transition:box-shadow .2s}
+.projeto-card:hover{box-shadow:var(--shadow2);border-color:var(--p)}
+.pj-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.pj-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700}
+.pj-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.pj-meta-item{font-size:12px;color:var(--tx3)}
+.pj-meta-val{font-weight:600;color:var(--tx1)}
+
+/* ---- ALERTA CARD ---- */
+.alerta-item{display:flex;gap:12px;padding:12px 16px;border-radius:var(--r2);border:1px solid var(--bor);background:var(--sur);margin-bottom:8px;align-items:flex-start}
+.alerta-icon{font-size:18px;flex-shrink:0;margin-top:2px}
+.alerta-msg{font-size:13px;color:var(--tx1)}
+.alerta-criador{font-size:11px;color:var(--tx3);margin-top:2px}
+.alerta-item.alta{border-left:3px solid var(--err);background:var(--err2)}
+.alerta-item.media{border-left:3px solid var(--warn);background:var(--warn2)}
+.alerta-item.baixa{border-left:3px solid var(--info);background:var(--info2)}
+
+/* ---- ROTINA ---- */
+.rotina-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--r2);border:1px solid var(--bor);background:var(--sur);margin-bottom:8px;transition:all .2s}
+.rotina-item.feito{opacity:.6;background:var(--bg)}
+.rotina-item.feito .ri-desc{text-decoration:line-through;color:var(--tx3)}
+.ri-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--bor2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s}
+.ri-check.done{background:var(--ok);border-color:var(--ok)}
+.ri-desc{font-size:13px;flex:1}
+.ri-resp{font-size:11px;color:var(--tx3)}
+
+/* ---- CHAMADO ---- */
+.chamado-item{border:1px solid var(--bor);border-radius:var(--r2);padding:14px 16px;margin-bottom:10px;background:var(--sur)}
+.chamado-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.chamado-titulo{font-weight:600;font-size:13px}
+.chamado-meta{font-size:11px;color:var(--tx3);margin-top:4px}
+
+/* ---- NOTIFICAÇÃO ---- */
+.notif-item{display:flex;gap:12px;padding:14px 16px;border-radius:var(--r2);border:1px solid var(--bor);background:var(--sur);margin-bottom:8px;align-items:center}
+.notif-item.prioritaria{border-left:4px solid var(--err);background:var(--err2);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.85}}
+.notif-msg{flex:1;font-size:13px}
+.notif-item.prioritaria .notif-msg{font-weight:600;color:var(--err)}
+
+/* ---- FINANCEIRO ---- */
+.fin-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bor)}
+.fin-tipo{font-size:12px;font-weight:600}
+.fin-desc{font-size:12px;color:var(--tx3)}
+.fin-val{font-weight:700;font-size:14px}
+.fin-entrada{color:var(--ok)}
+.fin-saida{color:var(--err)}
+
+/* ---- TABS ---- */
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--bor);margin-bottom:20px;overflow-x:auto}
+.tab{padding:8px 16px;cursor:pointer;font-size:13px;font-weight:500;color:var(--tx3);border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
+.tab.active{color:var(--p);border-bottom-color:var(--p)}
+.tab:hover{color:var(--p)}
+
+/* ---- EMPTY STATE ---- */
+.empty{text-align:center;padding:48px 24px;color:var(--tx3)}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:.4}
+.empty-msg{font-size:14px}
+
+/* ---- PROGRESS ---- */
+.progress{height:8px;background:var(--bor);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;background:var(--p);transition:width .4s}
+
+/* ---- MOBILE ---- */
+#menu-toggle{display:none;background:var(--sur);border:1px solid var(--bor);border-radius:var(--r2);padding:6px 10px;font-size:18px;color:var(--tx1)}
+@media(max-width:768px){
+  #menu-toggle{display:flex;align-items:center}
+  #sidebar{position:fixed;left:-var(--sidebar);top:0;bottom:0;z-index:200;transition:transform .3s;transform:translateX(-100%)}
+  #sidebar.open{transform:translateX(0)}
+  #main{width:100%}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .form-row{grid-template-columns:1fr}
+  .ps-cards{flex-direction:column;align-items:center}
+}
+
+/* ---- MISC ---- */
+.sep{height:1px;background:var(--bor);margin:20px 0}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--tx1)}
+.text-muted{color:var(--tx3);font-size:12px}
+.mt-4{margin-top:16px}
+.mb-4{margin-bottom:16px}
+.gap-2{gap:8px}
+.flex{display:flex}
+.items-center{align-items:center}
+.justify-between{justify-content:space-between}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.cofre-field{background:var(--bg);border:1px solid var(--bor);border-radius:var(--r2);padding:8px 12px;font-family:monospace;font-size:12px;filter:blur(4px);cursor:pointer;transition:.2s}
+.cofre-field.revealed{filter:none}
 </style>
 </head>
 <body>
-<div class="top">
-  <div class="brand">Raise<span>Hot</span></div>
-  <button class="portal-btn on" data-portal="adm">Admin</button>
-  <button class="portal-btn" data-portal="ope">Operador</button>
-  <button class="portal-btn" data-portal="cri">Criador</button>
-  <div class="clock" id="clock"></div>
-</div>
-<div class="app-error" id="app-error"></div>
-<div class="layout">
-  <aside class="side">
-    <div class="side-title">CRM V3</div>
-    <div class="side-sub">Sem login/senha</div>
-    <div id="nav"></div>
-  </aside>
-  <main class="main" id="main"></main>
-</div>
-<div class="toast" id="toast"></div>
 
-<div class="modal" id="modal"><div class="box"><h3 id="modal-title"></h3><div id="modal-body"></div></div></div>
+<!-- PORTAL SELECTOR -->
+<div id="portal-selector">
+  <div class="ps-brand">🔥 RaiseHot</div>
+  <div class="ps-sub">Selecione seu portal de acesso</div>
+  <div class="ps-cards">
+    <div class="ps-card" onclick="selectPortal('admin')">
+      <div class="ps-card-icon">🛡️</div>
+      <div class="ps-card-label">Admin</div>
+      <div class="ps-card-desc">Visão total do CRM</div>
+    </div>
+    <div class="ps-card" onclick="selectPortal('operador')">
+      <div class="ps-card-icon">👤</div>
+      <div class="ps-card-label">Operador</div>
+      <div class="ps-card-desc">Gerenciar criadores</div>
+    </div>
+    <div class="ps-card" onclick="selectPortal('criador')">
+      <div class="ps-card-icon">⭐</div>
+      <div class="ps-card-label">Criador</div>
+      <div class="ps-card-desc">Meu painel</div>
+    </div>
+  </div>
+  <div id="portal-sub-select" style="display:none" class="ps-select-row">
+    <label id="portal-sub-label"></label>
+    <select id="portal-sub-dropdown"></select>
+  </div>
+  <button class="btn btn-primary ps-enter" onclick="enterPortal()" style="display:none" id="btn-enter">Entrar no CRM →</button>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;position:relative">
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="sb-header">
+      <div class="sb-brand">🔥 RaiseHot</div>
+      <div class="sb-portal-badge" id="sb-portal-badge">Admin</div>
+    </div>
+    <div class="sb-user">
+      <div class="sb-avatar" id="sb-avatar">A</div>
+      <div>
+        <div class="sb-user-name" id="sb-user-name">Carregando...</div>
+        <div class="sb-user-role" id="sb-user-role">CRM</div>
+      </div>
+    </div>
+    <nav class="sb-nav" id="sb-nav"></nav>
+    <div class="sb-footer">
+      <div class="sb-switch" onclick="showPortalSelector()">↩ Trocar portal</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div id="topbar">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button id="menu-toggle" onclick="toggleSidebar()">☰</button>
+        <div class="tb-title" id="tb-title">Dashboard</div>
+      </div>
+      <div class="tb-right">
+        <span class="text-muted" id="tb-date"></span>
+        <span class="tb-badge" id="tb-alertas" style="display:none"></span>
+      </div>
+    </div>
+    <div id="content"></div>
+  </div>
+
+  <!-- MODAL CONTAINER -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal" id="modal-box">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-title">Modal</div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-footer" id="modal-footer" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
 
 <script>
-const SUPABASE_URL='https://jgqetqltkmokkbbnoxts.supabase.co';
-const SUPABASE_ANON_KEY='sb_publishable_FZbMpNFtR90ysZcLkoj-sQ_9_CSZv3Q';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+// ============================================================
+// CONFIG SUPABASE
+// ============================================================
+const SUPABASE_URL = 'https://jgqetqltkmokkbbnoxts.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpncWV0cWx0a21va2tiYm5veHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODYyNzQsImV4cCI6MjA5MjQ2MjI3NH0.duNrxbiUkzVBuuMKpdMZrCgx_bWRtPXIWrsNwdwbwSc';
 
-const $=id=>document.getElementById(id);
-const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-const today=()=>new Date();
-const pad=n=>String(n).padStart(2,'0');
-const diaKey=(d=today())=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
-const mesKey=(d=today())=>`${d.getFullYear()}-${pad(d.getMonth()+1)}`;
-const semanaKey=(d=today())=>{const first=new Date(d.getFullYear(),d.getMonth(),1);const w=Math.ceil((d.getDate()+first.getDay())/7);return `${mesKey(d)}-S${w}`};
-const semanaNum=(d=today())=>Number(semanaKey(d).split('S')[1]);
-const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
-const compact=n=>{n=Number(n||0);if(Math.abs(n)>=1000000)return (n/1000000).toLocaleString('pt-BR',{maximumFractionDigits:1})+'Ml';if(Math.abs(n)>=1000)return (n/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+'k';return n.toLocaleString('pt-BR')};
-const uid=p=>p+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
-const byId=(arr,id)=>arr.find(x=>x.id===id)||{};
-const active=x=>x.ativo!==false;
-const emptyK={fatMes:{},fatSem:{},kpiMes:{},rotina:{},midias:{},saude:{},motivos:{},receita:0,exec:0,alertas:0};
-const state={portal:'adm',screen:'dash',operador:'cl01',criador:'cr01',k:{...emptyK},db:{operadores:[],criadores:[],obrigacoes:[],rotina_status:[],midias_status:[],faturamento:[],kpis_manuais:[],plataformas_status:[],chamados:[],financeiro_interno:[],advertencias:[],notificacoes:[],logs_extra:[],leads:[],onboarding_status:[],dossies:[],crm_config:[]}};
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const NAV={
- adm:[['Visão geral','dash','Dashboard'],['Operação','projetos','Projetos'],['Operação','alertas','Alertas'],['Operação','rotina','Rotina semanal'],['Operação','onboarding','Onboarding'],['Operação','midias','Mídias'],['Operação','chamados','Chamados'],['Gestão','dossie','Dossiê'],['Gestão','financeiro','Financeiro'],['Gestão','interno','Controle interno'],['Gestão','equipe','Equipe'],['Gestão','crm','Gestão do CRM']],
- ope:[['Colaborador','opHome','Minha rotina'],['Colaborador','opCriadores','Meus criadores'],['Colaborador','opMidias','Mídias'],['Colaborador','opChamados','Chamados'],['Colaborador','opDossie','Dossiê'],['Colaborador','opLogs','Log extra']],
- cri:[['Criador','crHome','Visão geral'],['Criador','crTarefas','Minhas tarefas'],['Criador','crMidias','Enviar mídias'],['Criador','crPend','Pendências'],['Criador','crChamados','Chamados']]
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+let STATE = {
+  portal: null,       // 'admin' | 'operador' | 'criador'
+  userId: null,       // id do operador ou criador selecionado
+  userName: null,
+  currentPage: null,
+  // cache
+  criadores: [],
+  operadores: [],
+  admins: [],
+  plataformas: [],
+  metricasKpi: [],
 };
 
-function errMsg(e){return e?.message||e?.details||String(e||'Erro desconhecido')}
-function showError(msg){const el=$('app-error');if(!el)return;el.textContent=msg;el.classList.add('on')}
-function clearError(){const el=$('app-error');if(el)el.classList.remove('on')}
-async function dbGet(table){const {data,error}=await sb.from(table).select('*');if(error){console.warn(table,error.message);return []}return data||[]}
-async function dbUpsert(table,row){const {data,error}=await sb.from(table).upsert(row).select();if(error)throw error;return data?.[0]}
-async function dbInsert(table,row){const {data,error}=await sb.from(table).insert(row).select();if(error)throw error;return data?.[0]}
-async function dbUpdate(table,id,row){let res=await sb.from(table).update({...row,updated_at:new Date().toISOString()}).eq('id',id).select();if(res.error&&/updated_at/i.test(res.error.message||''))res=await sb.from(table).update(row).eq('id',id).select();if(res.error)throw res.error;return res.data?.[0]}
-async function dbDelete(table,id){const {error}=await sb.from(table).delete().eq('id',id);if(error)throw error}
+// ============================================================
+// UTILITÁRIOS
+// ============================================================
+const hoje = () => new Date().toISOString().split('T')[0];
+const mesAtual = () => new Date().toISOString().slice(0,7);
+const diasSemana = ['domingo','segunda','terca','quarta','quinta','sexta','sabado'];
+const diaNome = () => diasSemana[new Date().getDay()];
 
-function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2600)}
-function openModal(title,html){$('modal-title').textContent=title;$('modal-body').innerHTML='<button class="modal-close" onclick="closeModal()">×</button>'+html;$('modal').classList.add('on');document.body.classList.add('modal-open')}
-function closeModal(){$('modal').classList.remove('on');document.body.classList.remove('modal-open')}
-$('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
-
-async function load(){
- const tables=Object.keys(state.db);
- const values=await Promise.all(tables.map(dbGet));
- tables.forEach((t,i)=>state.db[t]=values[i]);
- ensureSelection();
- calc();
- render();
+function fmt(val) {
+  const n = Number(val) || 0;
+  if (n >= 1_000_000) return (n/1_000_000).toFixed(1).replace('.0','') + 'Ml';
+  if (n >= 1_000) return (n/1_000).toFixed(1).replace('.0','') + 'k';
+  return n.toString();
 }
-async function safeLoad(){
- try{await load();clearError()}
- catch(e){showError('Erro ao carregar o CRM: '+errMsg(e));console.error(e)}
+function fmtBRL(val) {
+  return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(val)||0);
 }
-function ensureSelection(){
- const ops=state.db.operadores.filter(active); const cris=state.db.criadores.filter(active);
- if(!ops.some(o=>o.id===state.operador))state.operador=ops[0]?.id||'';
- if(!cris.some(c=>c.id===state.criador))state.criador=cris[0]?.id||'';
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d+'T12:00:00').toLocaleDateString('pt-BR');
 }
-function calc(){
- const d=state.db, mk=mesKey(), sk=semanaKey(), dk=diaKey(), day=String(today().getDay());
- const cris=d.criadores.filter(active), obs=d.obrigacoes.filter(o=>active(o)&&(o.dia==='todos'||o.dia===day));
- const fatMes={}, fatSem={}, kpiMes={}, rotina={}, midias={};
- d.faturamento.forEach(f=>{if(f.mes_key===mk)fatMes[f.criador_id]=(fatMes[f.criador_id]||0)+Number(f.total||0);if(f.semana_key===sk)fatSem[f.criador_id]=(fatSem[f.criador_id]||0)+Number(f.total||0)});
- d.kpis_manuais.forEach(k=>{if(k.mes_key===mk){const a=kpiMes[k.criador_id]||{seguidores:0,visualizacoes:0,assinantes:0,engajamento:0};a.seguidores+=Number(k.seguidores||0);a.visualizacoes+=Number(k.visualizacoes||0);a.assinantes+=Number(k.assinantes||0);a.engajamento+=Number(k.engajamento||0);kpiMes[k.criador_id]=a}});
- cris.forEach(c=>{const total=obs.length;const feitos=obs.filter(o=>d.rotina_status.some(r=>r.criador_id===c.id&&r.obrigacao_id===o.id&&r.dia_key===dk&&r.feito)).length;rotina[c.id]=total?Math.round(feitos/total*100):100;const tipos=['rotineiro','ideias','adulto'];midias[c.id]=tipos.filter(tp=>d.midias_status.some(m=>m.criador_id===c.id&&m.tipo===tp&&m.semana_key===sk&&m.feito)).length});
- const saude={}; const motivos={};
- cris.forEach(c=>{let s=45;let m=[];if(rotina[c.id]>=80)s+=25;else m.push('rotina baixa');if((fatMes[c.id]||0)>0)s+=15;else m.push('sem faturamento no mês');if(midias[c.id]>=3)s+=15;else m.push('mídias pendentes');const ab=d.chamados.filter(ch=>ch.criador_id===c.id&&ch.status!=='resolvido').length;if(ab){s-=Math.min(20,ab*8);m.push(`${ab} chamado(s) aberto(s)`)}saude[c.id]=Math.max(0,Math.min(100,s));motivos[c.id]=m});
- state.k={fatMes,fatSem,kpiMes,rotina,midias,saude,motivos,receita:Object.values(fatMes).reduce((a,b)=>a+b,0),exec:cris.length?Math.round(Object.values(rotina).reduce((a,b)=>a+b,0)/cris.length):0,alertas:cris.filter(c=>saude[c.id]<70).length};
+function initials(name) {
+  if (!name) return '?';
+  return name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+}
+function saudeClass(score) {
+  if (score >= 80) return 'verde';
+  if (score >= 50) return 'amarela';
+  return 'vermelha';
+}
+function saudeBadge(score) {
+  if (score >= 80) return '<span class="badge badge-ok">Saudável</span>';
+  if (score >= 50) return '<span class="badge badge-warn">Atenção</span>';
+  return '<span class="badge badge-err">Crise</span>';
 }
 
-function render(){
- renderNav();
- const screen=state.screen;
- const map={dash:adminDash,projetos:adminProjetos,alertas:adminAlertas,rotina:adminRotina,onboarding:adminOnboarding,midias:adminMidias,chamados:adminChamados,dossie:adminDossie,financeiro:adminFinanceiro,interno:adminInterno,equipe:adminEquipe,crm:adminCRM,opHome:opHome,opCriadores:opCriadores,opMidias:opMidias,opChamados:opChamados,opDossie:opDossie,opLogs:opLogs,crHome:crHome,crTarefas:crTarefas,crMidias:crMidias,crPend:crPend,crChamados:crChamados};
- $('main').innerHTML=(map[screen]||adminDash)();
- bindScreenControls();
-}
-function renderNav(){
- const items=NAV[state.portal], nav=$('nav');let last='';
- nav.innerHTML=items.map(([sec,id,label])=>{let h=sec!==last?`<div class="nav-sec">${sec}</div>`:'';last=sec;return h+`<button class="nav ${state.screen===id?'on':''}" data-screen="${id}">${label}</button>`}).join('');
- nav.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{state.screen=b.dataset.screen;render()});
-}
-document.querySelectorAll('.portal-btn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.portal-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');state.portal=b.dataset.portal;state.screen=NAV[state.portal][0][1];render()});
-
-function head(title,sub,actions=''){return `<div class="page-head"><div><div class="title">${title}</div><div class="sub">${sub}</div></div><div class="actions">${actions}</div></div>`}
-function metric(v,l,cls=''){return `<div class="metric"><b class="${cls}">${v}</b><span>${l}</span></div>`}
-function opName(id){return byId(state.db.operadores,id).nome||'Sem responsável'}
-function crName(id){return byId(state.db.criadores,id).nome||'Criador'}
-function statusPill(s){return `<span class="pill ${s==='resolvido'?'ok':s==='andamento'?'warn':s==='urgente'?'bad':'info'}">${esc(s||'aberto')}</span>`}
-function saudePill(v){return `<span class="pill ${v>=75?'ok':v>=60?'warn':'bad'}">${v>=75?'Saudável':v>=60?'Atenção':'Crise'} ${v}%</span>`}
-function selectCri(id='sel-cri',current=state.criador){return `<select class="select" id="${id}">${state.db.criadores.filter(active).map(c=>`<option value="${c.id}" ${c.id===current?'selected':''}>${esc(c.nome)}</option>`).join('')}</select>`}
-function selectOp(id='sel-op',current=state.operador){return `<select class="select" id="${id}">${state.db.operadores.filter(active).map(o=>`<option value="${o.id}" ${o.id===current?'selected':''}>${esc(o.nome)}</option>`).join('')}</select>`}
-function bindScreenControls(){
- const bindings=[
-  ['dossieSel','criador'],
-  ['opPick','operador'],
-  ['opPick2','operador'],
-  ['crPick','criador']
- ];
- bindings.forEach(([id,key])=>{
-  const el=$(id);
-  if(el)el.onchange=()=>{state[key]=el.value;calc();render()};
- });
+// ============================================================
+// TOAST
+// ============================================================
+function toast(msg, type='ok') {
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(()=>el.remove(), 3500);
 }
 
-function adminDash(){
- const cris=state.db.criadores.filter(active), chamados=state.db.chamados.filter(c=>c.status!=='resolvido').length;
- return head('Dashboard','Visão geral do CRM aberto e conectado ao Supabase')+
- `<div class="metrics">${metric(cris.length,'Projetos ativos','info')}${metric(state.k.exec+'%','Execução geral',state.k.exec>=75?'ok':'warn')}${metric(state.k.alertas,'Alertas','bad')}${metric(money(state.k.receita),'Receita do mês','ok')}${metric(chamados,'Chamados abertos','warn')}</div>
- <div class="card"><div class="card-h"><div class="card-t">Saúde dos projetos</div></div><div class="card-b">${cris.map(c=>`<div class="row"><b class="grow">${esc(c.nome)}</b><span class="muted small">${esc(opName(c.operador_id))}</span>${saudePill(state.k.saude[c.id]||0)}</div>`).join('')||empty('Nenhum criador cadastrado.')}</div></div>`;
+// ============================================================
+// MODAL
+// ============================================================
+function openModal(title, bodyHTML, footerHTML='', size='') {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = bodyHTML;
+  const footer = document.getElementById('modal-footer');
+  if (footerHTML) { footer.innerHTML = footerHTML; footer.style.display='flex'; }
+  else { footer.style.display='none'; }
+  if (size) document.getElementById('modal-box').style.maxWidth = size;
+  else document.getElementById('modal-box').style.maxWidth = '520px';
+  document.getElementById('modal-overlay').classList.add('open');
 }
-function adminProjetos(){return head('Projetos','Criadores, responsáveis, saúde e motivo da classificação',`<button class="btn p" onclick="modalCriador()">+ Criador</button>`)+state.db.criadores.filter(active).map(c=>`<div class="card"><div class="card-h"><div><div class="card-t">${esc(c.nome)}</div><div class="muted small">Responsável: ${esc(opName(c.operador_id))}</div></div>${saudePill(state.k.saude[c.id]||0)}</div><div class="card-b"><div class="row"><span class="grow">Faturamento mês</span><b>${money(state.k.fatMes[c.id]||0)}</b></div><div class="row"><span class="grow">Execução rotina</span><b>${state.k.rotina[c.id]||0}%</b></div><div class="row"><span class="grow">Motivo</span><span class="muted">${(state.k.motivos[c.id]||[]).join(', ')||'Tudo estável'}</span></div></div></div>`).join('')}
-function adminAlertas(){const cris=state.db.criadores.filter(c=>active(c)&&(state.k.saude[c.id]||0)<70);return head('Alertas','Gerados pela saúde, rotina, mídia, faturamento e chamados')+(cris.map(c=>`<div class="card"><div class="card-b"><div class="row"><b class="grow">${esc(c.nome)}</b>${saudePill(state.k.saude[c.id]||0)}</div><div class="muted">${(state.k.motivos[c.id]||[]).join(', ')}</div></div></div>`).join('')||empty('Nenhum alerta crítico agora.'))}
-function adminRotina(){const day=String(today().getDay()), obs=state.db.obrigacoes.filter(o=>active(o)&&(o.dia==='todos'||o.dia===day));return head('Rotina semanal','Mostra apenas obrigações do dia atual')+state.db.criadores.filter(active).map(c=>`<div class="card"><div class="card-h"><div class="card-t">${esc(c.nome)}</div><span class="pill info">${state.k.rotina[c.id]||0}%</span></div><div class="card-b">${obs.map(o=>checkRow(c.id,o)).join('')||empty('Sem obrigações hoje.')}</div></div>`).join('')}
-function checkRow(cri,o){const r=state.db.rotina_status.find(x=>x.criador_id===cri&&x.obrigacao_id===o.id&&x.dia_key===diaKey());return `<div class="row"><span class="grow">${esc(o.nome)}</span><span class="pill ${r?.feito?'ok':'warn'}">${r?.feito?'feito':'pendente'}</span><button class="btn s" onclick="toggleRotina('${cri}','${o.id}')">${r?.feito?'Desfazer':'Feito'}</button></div>`}
-function adminOnboarding(){return head('Onboarding','Passos editáveis por criador')+state.db.criadores.filter(active).map(c=>{const ob=state.db.onboarding_status.find(o=>o.criador_id===c.id);const passos=ob?.passos||['Contrato assinado','Dossiê preenchido','Plataformas conferidas','Primeira rotina concluída'];return `<div class="card"><div class="card-h"><div class="card-t">${esc(c.nome)}</div><div class="actions"><span class="pill ${ob?.finalizado?'ok':'warn'}">${ob?.finalizado?'finalizado':'em aberto'}</span><button class="btn s" onclick="modalOnboarding('${c.id}')">Editar passos</button></div></div><div class="card-b">${passos.map((p,i)=>`<div class="row"><span class="grow">${esc(p.texto||p)}</span><span class="pill ${(p.feito)?'ok':'info'}">${p.feito?'feito':'aberto'}</span><button class="btn s" onclick="toggleOnboardingPasso('${c.id}',${i})">${p.feito?'Desfazer':'Feito'}</button></div>`).join('')}<button class="btn g" onclick="finalizarOnboarding('${c.id}')">Finalizar onboarding</button></div></div>`}).join('')}
-function adminMidias(){return head('Mídias','Controle semanal de entregas')+midiasList(state.db.criadores.filter(active))}
-function adminChamados(){return head('Chamados','Abertos por admin, operador ou criador',`<button class="btn p" onclick="modalChamado()">+ Chamado</button>`)+chamadosList(state.db.chamados)}
-function adminDossie(){return head('Dossiê','Informações editáveis dos criadores',`<button class="btn p" onclick="modalDossie()">Editar dossiê</button>`)+selectCri('dossieSel')+dossieCard(state.criador)}
-function adminFinanceiro(){return head('Financeiro','Faturamento por criador e plataforma',`<button class="btn p" onclick="modalFaturamento()">+ Faturamento</button><button class="btn" onclick="modalKPI()">+ KPI social</button>`)+financeiroResumo()}
-function adminInterno(){return head('Controle interno','Entradas, saídas e saldo do mês',`<button class="btn p" onclick="modalInterno()">+ Lançamento</button>`)+internoResumo()}
-function adminEquipe(){return head('Equipe','Operadores, criadores atribuídos e remoção segura',`<button class="btn p" onclick="modalOperador()">+ Operador</button>`)+`<div class="card"><div class="card-b">${state.db.operadores.filter(active).map(o=>`<div class="row"><b class="grow">${esc(o.nome)}</b><span class="muted">${state.db.criadores.filter(c=>active(c)&&c.operador_id===o.id).length} criadores</span><button class="btn s" onclick="modalOperador('${o.id}')">Editar</button><button class="btn r s" onclick="removerOperador('${o.id}')">Remover</button></div>`).join('')}</div></div>`}
-function adminCRM(){return head('Gestão do CRM','Cadastros principais e reset mensal',`<button class="btn" onclick="auditarCRM()">Auditar CRM</button><button class="btn r" onclick="resetMes()">Reset mês atual</button>`)+`<div class="grid g2"><div class="card"><div class="card-h"><div class="card-t">Criadores</div><button class="btn s" onclick="modalCriador()">Adicionar</button></div><div class="card-b">${state.db.criadores.filter(active).map(c=>`<div class="row"><span class="grow">${esc(c.nome)}</span><button class="btn s" onclick="modalCriador('${c.id}')">Editar</button><button class="btn r s" onclick="removerCriador('${c.id}')">Remover</button></div>`).join('')}</div></div><div class="card"><div class="card-h"><div class="card-t">Obrigações</div><button class="btn s" onclick="modalObrigacao()">Adicionar</button></div><div class="card-b">${state.db.obrigacoes.filter(active).map(o=>`<div class="row"><span class="grow">${esc(o.nome)}</span><span class="pill info">${esc(o.responsavel)}</span><button class="btn s" onclick="modalObrigacao('${o.id}')">Editar</button><button class="btn r s" onclick="removerObrigacao('${o.id}')">Remover</button></div>`).join('')}</div></div></div>`}
-
-function opHome(){const crs=state.db.criadores.filter(c=>active(c)&&c.operador_id===state.operador);const media=crs.length?Math.round(crs.reduce((a,c)=>a+(state.k.rotina[c.id]||0),0)/crs.length):0;return head('Portal do colaborador','Escolha o operador e veja apenas seus criadores',selectOp('opPick',state.operador))+`<div class="metrics">${metric(crs.length,'Meus criadores','info')}${metric(media+'%','Rotina média','ok')}</div>${midiasList(crs)}`}
-function opCriadores(){return head('Meus criadores','Projetos atribuídos ao operador',selectOp('opPick2',state.operador))+state.db.criadores.filter(c=>active(c)&&c.operador_id===state.operador).map(c=>`<div class="card"><div class="card-h"><div class="card-t">${esc(c.nome)}</div>${saudePill(state.k.saude[c.id]||0)}</div></div>`).join('')}
-function opMidias(){return head('Mídias','Marcação semanal dos meus criadores')+midiasList(state.db.criadores.filter(c=>active(c)&&c.operador_id===state.operador))}
-function opChamados(){return head('Chamados','Chamados dos meus criadores',`<button class="btn p" onclick="modalChamado()">+ Chamado</button>`)+chamadosList(state.db.chamados.filter(c=>byId(state.db.criadores,c.criador_id).operador_id===state.operador||c.responsavel_id===state.operador))}
-function opDossie(){return head('Dossiê','Informações básicas, sem foco em senhas')+state.db.criadores.filter(c=>active(c)&&c.operador_id===state.operador).map(c=>dossieCard(c.id,true)).join('')}
-function opLogs(){return head('Log extra','Registre algo para aparecer ao admin',`<button class="btn p" onclick="modalLog()">+ Log</button>`)+state.db.logs_extra.filter(l=>l.operador_id===state.operador).map(l=>`<div class="card"><div class="card-b">${esc(l.descricao)}<div class="muted small">${new Date(l.created_at).toLocaleString('pt-BR')}</div></div></div>`).join('')}
-
-function crHome(){return `<div class="clean-creator">${head('Portal do criador','Tela limpa e simples',selectCri('crPick',state.criador))}${criadorResumo(state.criador)}</div>`}
-function crTarefas(){const day=String(today().getDay()), obs=state.db.obrigacoes.filter(o=>active(o)&&(o.dia==='todos'||o.dia===day)&&(o.responsavel==='criador'||o.responsavel==='ambos'));return `<div class="clean-creator">${head('Minhas tarefas','Somente as obrigações de hoje')}${obs.map(o=>checkRow(state.criador,o)).join('')||empty('Você não tem tarefas hoje.')}</div>`}
-function crMidias(){return `<div class="clean-creator">${head('Enviar mídias','Marque o que já enviou esta semana')}${midiasCreator(state.criador)}</div>`}
-function crPend(){const n=state.db.notificacoes.filter(n=>n.criador_id===state.criador&&n.status!=='resolvida');return `<div class="clean-creator">${head('Pendências','Alertas e avisos importantes')}${n.map(x=>`<div class="card"><div class="card-b"><b>${esc(x.titulo)}</b><p>${esc(x.mensagem)}</p><button class="btn g" onclick="resolverNotif('${x.id}')">Resolvido</button></div></div>`).join('')||empty('Nenhuma pendência agora.')}</div>`}
-function crChamados(){return `<div class="clean-creator">${head('Chamados','Abra um chamado para a equipe',`<button class="btn p" onclick="modalChamado('${state.criador}')">+ Chamado</button>`)}${chamadosList(state.db.chamados.filter(c=>c.criador_id===state.criador))}</div>`}
-
-function empty(msg){return `<div class="card"><div class="card-b muted">${msg}</div></div>`}
-function midiasList(cris){return cris.map(c=>`<div class="card"><div class="card-h"><div class="card-t">${esc(c.nome)}</div><div class="actions"><span class="pill info">${state.k.midias[c.id]||0}/3</span><button class="btn s" onclick="notificarMidias('${c.id}')">Notificar</button></div></div><div class="card-b">${midiasCreator(c.id)}</div></div>`).join('')||empty('Nenhum criador.')}
-function midiasCreator(id){return ['rotineiro','ideias','adulto'].map(t=>{const m=state.db.midias_status.find(x=>x.criador_id===id&&x.tipo===t&&x.semana_key===semanaKey());return `<div class="row"><span class="grow">${t==='adulto'?'Mídias +18':t==='ideias'?'Ideias de conteúdo':'Conteúdo rotineiro'}</span><span class="pill ${m?.feito?'ok':'warn'}">${m?.feito?'enviado':'pendente'}</span><button class="btn s" onclick="toggleMidia('${id}','${t}')">${m?.feito?'Desfazer':'Marcar'}</button></div>`}).join('')}
-function chamadosList(list){return list.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(c=>`<div class="card"><div class="card-h"><div><div class="card-t">${esc(c.titulo||'Chamado')}</div><div class="muted small">${esc(crName(c.criador_id))} • ${esc(opName(c.responsavel_id))}</div></div>${statusPill(c.status)}</div><div class="card-b"><p>${esc(c.descricao||'')}</p><button class="btn s" onclick="statusChamado('${c.id}','andamento')">Andamento</button> <button class="btn g s" onclick="statusChamado('${c.id}','resolvido')">Resolver</button></div></div>`).join('')||empty('Nenhum chamado.')}
-function dossieCard(id,basico=false){const d=state.db.dossies.find(x=>x.criador_id===id)?.dados||{};return `<div class="card"><div class="card-h"><div class="card-t">${esc(crName(id))}</div></div><div class="card-b"><div class="row"><span class="grow">E-mail</span><b>${esc(d.email||'-')}</b></div><div class="row"><span class="grow">Telefone</span><b>${esc(d.telefone||'-')}</b></div><div class="row"><span class="grow">Nascimento</span><b>${esc(d.nascimento||'-')}</b></div>${basico?'':`<div class="row"><span class="grow">Cofre</span><b>${esc(d.senhas||'-')}</b></div>`}</div></div>`}
-function financeiroResumo(){const cris=state.db.criadores.filter(active);return `<div class="metrics">${metric(money(state.k.receita),'Receita mensal','ok')}${metric(cris.filter(c=>(state.k.fatMes[c.id]||0)>0).length+'/'+cris.length,'Criadores faturando','info')}</div><table class="table"><thead><tr><th>Criador</th><th>Mês</th><th>Semana</th><th>Ações</th></tr></thead><tbody>${cris.map(c=>`<tr><td>${esc(c.nome)}</td><td>${money(state.k.fatMes[c.id]||0)}</td><td>${money(state.k.fatSem[c.id]||0)}</td><td><button class="btn s" onclick="modalFaturamento('${c.id}')">Lançar</button></td></tr>`).join('')}</tbody></table>`}
-function internoResumo(){const mk=mesKey(), mov=state.db.financeiro_interno.filter(f=>f.mes_key===mk), total=mov.reduce((a,f)=>a+Number(f.valor||0),0);return `<div class="metrics">${metric(money(total),'Saldo do mês',total>=0?'ok':'bad')}${metric(mov.length,'Lançamentos','info')}</div>${mov.map(f=>`<div class="row"><b class="grow">${esc(f.descricao)}</b><span>${money(f.valor)}</span></div>`).join('')}`}
-function criadorResumo(id){const k=state.k.kpiMes[id]||{};return `<div class="metrics">${metric(money(state.k.fatMes[id]||0),'Faturamento mês','ok')}${metric(compact(k.seguidores),'Seguidores','info')}${metric(compact(k.assinantes),'Assinantes','blue')}${metric((state.k.rotina[id]||0)+'%','Rotina hoje','warn')}</div>${midiasCreator(id)}${dossieCard(id,true)}`}
-
-async function toggleRotina(cri,ob){const old=state.db.rotina_status.find(r=>r.criador_id===cri&&r.obrigacao_id===ob&&r.dia_key===diaKey());const row={id:old?.id||uid('rot'),chave:`${cri}_${ob}_${diaKey()}`,criador_id:cri,obrigacao_id:ob,dia_key:diaKey(),feito:!old?.feito,feito_por:'CRM'};try{await dbUpsert('rotina_status',row);toast('Rotina salva.');await safeLoad()}catch(e){showError('Erro ao salvar rotina: '+errMsg(e));toast('Erro ao salvar rotina.')}}
-async function toggleMidia(cri,tipo){const old=state.db.midias_status.find(m=>m.criador_id===cri&&m.tipo===tipo&&m.semana_key===semanaKey());const row={id:old?.id||uid('mid'),chave:`${cri}_${tipo}_${semanaKey()}`,criador_id:cri,tipo,semana_key:semanaKey(),feito:!old?.feito};try{await dbUpsert('midias_status',row);toast('Mídia salva.');await safeLoad()}catch(e){showError('Erro ao salvar mídia: '+errMsg(e));toast('Erro ao salvar mídia.')}}
-async function statusChamado(id,status){try{await dbUpdate('chamados',id,{status});toast('Chamado atualizado.');await safeLoad()}catch(e){showError('Erro ao atualizar chamado: '+errMsg(e));toast('Erro ao atualizar chamado.')}}
-async function resolverNotif(id){try{await dbUpdate('notificacoes',id,{status:'resolvida'});await safeLoad()}catch(e){showError('Erro ao resolver notificação: '+errMsg(e));toast('Erro ao resolver notificação.')}}
-
-function modalFaturamento(cri=state.criador){openModal('Lançar faturamento',`${selectCri('f-cri',cri)}<div class="grid g2"><div class="field"><label>Privacy</label><input class="input" id="f-pri" type="number"></div><div class="field"><label>OnlyFans</label><input class="input" id="f-of" type="number"></div><div class="field"><label>Telegram VIP</label><input class="input" id="f-tg" type="number"></div><div class="field"><label>Venda avulsa</label><input class="input" id="f-av" type="number"></div></div><button class="btn p" onclick="salvarFaturamento()">Salvar</button> <button class="btn" onclick="closeModal()">Cancelar</button>`)}
-async function salvarFaturamento(){const pri=+($('f-pri').value||0),of=+($('f-of').value||0),tg=+($('f-tg').value||0),av=+($('f-av').value||0);await dbInsert('faturamento',{id:uid('fat'),criador_id:$('f-cri').value,data_ref:diaKey(),semana_key:semanaKey(),mes_key:mesKey(),privacy:pri,onlyfans:of,telegram_vip:tg,venda_avulsa:av,total:pri+of+tg+av});closeModal();toast('Faturamento salvo.');await safeLoad()}
-function modalKPI(cri=state.criador){openModal('Lançar KPI social',`${selectCri('k-cri',cri)}<div class="field"><label>Plataforma</label><select class="select" id="k-plat"><option>Instagram</option><option>TikTok</option><option>X</option><option>Privacy</option><option>OnlyFans</option></select></div><div class="grid g2"><div class="field"><label>Seguidores</label><input class="input" id="k-seg" type="number"></div><div class="field"><label>Visualizações</label><input class="input" id="k-vis" type="number"></div><div class="field"><label>Assinantes</label><input class="input" id="k-ass" type="number"></div><div class="field"><label>Engajamento %</label><input class="input" id="k-eng" type="number"></div></div><button class="btn p" onclick="salvarKPI()">Salvar</button> <button class="btn" onclick="closeModal()">Cancelar</button>`)}
-async function salvarKPI(){await dbInsert('kpis_manuais',{id:uid('kpi'),criador_id:$('k-cri').value,plataforma:$('k-plat').value,data_ref:diaKey(),semana_key:semanaKey(),mes_key:mesKey(),seguidores:+$('k-seg').value||0,visualizacoes:+$('k-vis').value||0,assinantes:+$('k-ass').value||0,engajamento:+$('k-eng').value||0});closeModal();toast('KPI salvo.');await safeLoad()}
-function modalChamado(cri=state.criador){openModal('Novo chamado',`${selectCri('ch-cri',cri)}${selectOp('ch-op',state.operador)}<div class="field"><label>Título</label><input class="input" id="ch-t"></div><div class="field"><label>Descrição</label><textarea class="area" id="ch-d"></textarea></div><button class="btn p" onclick="salvarChamado()">Salvar</button> <button class="btn" onclick="closeModal()">Cancelar</button>`)}
-async function salvarChamado(){await dbInsert('chamados',{criador_id:$('ch-cri').value,responsavel_id:$('ch-op').value,titulo:$('ch-t').value||'Chamado',descricao:$('ch-d').value,status:'aberto',prioridade:'normal',criado_por:'CRM'});closeModal();toast('Chamado salvo.');await safeLoad()}
-function modalInterno(){openModal('Lançamento interno',`<div class="field"><label>Tipo</label><select class="select" id="i-t"><option>Receita</option><option>Despesa</option><option>Retirada</option><option>Salário</option></select></div><div class="field"><label>Descrição</label><input class="input" id="i-d"></div><div class="field"><label>Valor: use negativo para saída</label><input class="input" id="i-v" type="number"></div><button class="btn p" onclick="salvarInterno()">Salvar</button> <button class="btn" onclick="closeModal()">Cancelar</button>`)}
-async function salvarInterno(){await dbInsert('financeiro_interno',{tipo:$('i-t').value,descricao:$('i-d').value,valor:+$('i-v').value||0,data_ref:diaKey(),mes_key:mesKey()});closeModal();toast('Lançamento salvo.');await safeLoad()}
-function modalOperador(id=''){const o=byId(state.db.operadores,id);openModal(id?'Editar operador':'Novo operador',`<div class="field"><label>Nome</label><input class="input" id="op-n" value="${esc(o.nome||'')}"></div><div class="field"><label>Função</label><input class="input" id="op-f" value="${esc(o.funcao||'Operador')}"></div><button class="btn p" onclick="salvarOperador('${id}')">Salvar</button> <button class="btn" onclick="closeModal()">Cancelar</button>`)}
-async function salvarOperador(id){await dbUpsert('operadores',{id:id||uid('op'),nome:$('op-n').value,funcao:$('op-f').value||'Operador',ativo:true});closeModal();toast('Operador salvo.');await safeLoad()}
-async function removerOperador(id){if(!confirm('Remover operador?'))return;await dbUpdate('operadores',id,{ativo:false});await safeLoad()}
-function modalCriador(id=''){const c=byId(state.db.criadores,id);openModal(id?'Editar criador':'Novo criador',`<div class="field"><label>Nome</label><input class="input" id="cr-n" value="${esc(c.nome||'')}"></div><div class="field"><label>Responsável</label>${selectOp('cr-op',c.operador_id||state.operador)}</div><button class="btn p" onclick="salvarCriador('${id}')">Salvar</button> <button class="btn" onclick="closeModal()">Cancelar</button>`)}
-async function salvarCriador(id){await dbUpsert('criadores',{id:id||uid('cr'),nome:$('cr-n').value,operador_id:$('cr-op').value,ativo:true});closeModal();toast('Criador salvo.');await safeLoad()}
-async function removerCriador(id){if(!confirm('Remover criador?'))return;await dbUpdate('criadores',id,{ativo:false});await safeLoad()}
-function modalObrigacao(id=''){const o=byId(state.db.obrigacoes,id);openModal(id?'Editar obrigação':'Nova obrigação',`<div class="field"><label>Nome</label><input class="input" id="ob-n" value="${esc(o.nome||'')}"></div><div class="field"><label>Responsável</label><select class="select" id="ob-r"><option ${o.responsavel==='raise'?'selected':''}>raise</option><option ${o.responsavel==='criador'?'selected':''}>criador</option><option ${o.responsavel==='ambos'?'selected':''}>ambos</option></select></div><div class="field"><label>Dia</label><select class="select" id="ob-d">${['todos','0','1','2','3','4','5','6'].map(d=>`<option ${o.dia===d?'selected':''}>${d}</option>`).join('')}</select></div><button class="btn p" onclick="salvarObrigacao('${id}')">Salvar</button> <button class="btn" onclick="closeModal()">Cancelar</button>`)}
-async function salvarObrigacao(id){await dbUpsert('obrigacoes',{id:id||uid('ob'),nome:$('ob-n').value,responsavel:$('ob-r').value,dia:$('ob-d').value,ativo:true});closeModal();toast('Obrigação salva.');await safeLoad()}
-async function removerObrigacao(id){await dbUpdate('obrigacoes',id,{ativo:false});await safeLoad()}
-function modalDossie(){openModal('Editar dossiê',`${selectCri('ds-cri',state.criador)}<div class="field"><label>Email</label><input class="input" id="ds-email"></div><div class="field"><label>Telefone</label><input class="input" id="ds-tel"></div><div class="field"><label>Nascimento</label><input class="input" id="ds-nasc"></div><div class="field"><label>Cofre / observações</label><textarea class="area" id="ds-sen"></textarea></div><button class="btn p" onclick="salvarDossie()">Salvar</button>`)}
-async function salvarDossie(){const cri=$('ds-cri').value;await dbUpsert('dossies',{id:'dos_'+cri,criador_id:cri,dados:{email:$('ds-email').value,telefone:$('ds-tel').value,nascimento:$('ds-nasc').value,senhas:$('ds-sen').value}});closeModal();toast('Dossiê salvo.');await safeLoad()}
-function modalLog(){openModal('Novo log',`${selectCri('lg-cri',state.criador)}<div class="field"><label>Descrição</label><textarea class="area" id="lg-d"></textarea></div><button class="btn p" onclick="salvarLog()">Salvar</button>`)}
-async function salvarLog(){await dbInsert('logs_extra',{operador_id:state.operador,criador_id:$('lg-cri').value,descricao:$('lg-d').value});closeModal();toast('Log salvo.');await safeLoad()}
-async function notificarMidias(cri){try{await dbInsert('notificacoes',{criador_id:cri,operador_id:state.operador,titulo:'Enviar mídias',mensagem:'Você tem mídias pendentes para enviar esta semana.',prioridade:'alta',status:'aberta'});toast('Criador notificado.');await safeLoad()}catch(e){showError('Erro ao notificar: '+errMsg(e));toast('Erro ao notificar.')}}
-function modalOnboarding(cri=state.criador){const ob=state.db.onboarding_status.find(o=>o.criador_id===cri);const passos=(ob?.passos||['Contrato assinado','Dossiê preenchido','Plataformas conferidas','Primeira rotina concluída']).map(p=>p.texto||p).join('\n');openModal('Editar onboarding',`${selectCri('onb-cri',cri)}<div class="field"><label>Passos, um por linha</label><textarea class="area" id="onb-passos" style="min-height:150px">${esc(passos)}</textarea></div><button class="btn p" onclick="salvarOnboarding()">Salvar passos</button> <button class="btn" onclick="closeModal()">Cancelar</button>`)}
-async function salvarOnboarding(){try{const cri=$('onb-cri').value;const atual=state.db.onboarding_status.find(o=>o.criador_id===cri);const antigos=atual?.passos||[];const passos=$('onb-passos').value.split('\n').map(x=>x.trim()).filter(Boolean).map(txt=>{const old=antigos.find(p=>(p.texto||p)===txt);return {texto:txt,feito:!!old?.feito}});await dbUpsert('onboarding_status',{id:'onb_'+cri,criador_id:cri,passos,finalizado:!!atual?.finalizado});closeModal();toast('Onboarding salvo.');await safeLoad()}catch(e){showError('Erro ao salvar onboarding: '+errMsg(e));toast('Erro ao salvar onboarding.')}}
-async function toggleOnboardingPasso(cri,i){try{const atual=state.db.onboarding_status.find(o=>o.criador_id===cri);const passos=[...(atual?.passos||['Contrato assinado','Dossiê preenchido','Plataformas conferidas','Primeira rotina concluída'].map(texto=>({texto,feito:false})))];passos[i]=typeof passos[i]==='string'?{texto:passos[i],feito:true}:{...passos[i],feito:!passos[i].feito};await dbUpsert('onboarding_status',{id:'onb_'+cri,criador_id:cri,passos,finalizado:!!atual?.finalizado});await safeLoad()}catch(e){showError('Erro ao atualizar onboarding: '+errMsg(e));toast('Erro ao atualizar onboarding.')}}
-async function finalizarOnboarding(cri){if(!confirm('Finalizar onboarding deste criador?'))return;try{await dbUpsert('onboarding_status',{id:'onb_'+cri,criador_id:cri,finalizado:true});await safeLoad()}catch(e){showError('Erro ao finalizar onboarding: '+errMsg(e));toast('Erro ao finalizar onboarding.')}}
-const waitFrame=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-async function auditarCRM(){
- const out=[], temp='audit_'+Date.now();
- const ok=(nome,msg='OK')=>out.push({ok:true,nome,msg});
- const fail=(nome,e)=>out.push({ok:false,nome,msg:errMsg(e)});
- const test=async(nome,fn)=>{try{await fn();ok(nome)}catch(e){fail(nome,e)}};
- openModal('Teste de janela','<div class="muted">Testando abertura da janela...</div>');
- await waitFrame();
- try{
-  const r=document.querySelector('.box').getBoundingClientRect();
-  if(r.top<0||r.left<0||r.right>innerWidth+1||r.bottom>innerHeight+1)throw new Error(`janela fora da tela: topo ${Math.round(r.top)}, base ${Math.round(r.bottom)}, altura da tela ${innerHeight}`);
-  ok('Janela/modal centralizada',`topo ${Math.round(r.top)} / base ${Math.round(r.bottom)}`);
- }catch(e){fail('Janela/modal centralizada',e)}
- closeModal();
- await test('Carregar tabelas do CRM',async()=>{await load()});
- await test('Operador: criar, editar e remover',async()=>{await dbUpsert('operadores',{id:temp+'_op',nome:'Teste auditoria',funcao:'Teste',ativo:true});await dbUpdate('operadores',temp+'_op',{nome:'Teste auditoria editado'});await dbDelete('operadores',temp+'_op')});
- await test('Criador: criar, atribuir e remover',async()=>{await dbUpsert('operadores',{id:temp+'_op2',nome:'Operador auditoria',funcao:'Teste',ativo:true});await dbUpsert('criadores',{id:temp+'_cr',nome:'Criador auditoria',operador_id:temp+'_op2',ativo:true});await dbUpdate('criadores',temp+'_cr',{nome:'Criador auditoria editado'});await dbDelete('criadores',temp+'_cr');await dbDelete('operadores',temp+'_op2')});
- await test('Obrigação diária: criar, marcar e remover',async()=>{await dbUpsert('criadores',{id:temp+'_cr2',nome:'Criador auditoria',ativo:true});await dbUpsert('obrigacoes',{id:temp+'_ob',nome:'Obrigação auditoria',responsavel:'criador',dia:'todos',ativo:true});await dbUpsert('rotina_status',{id:temp+'_rot',chave:temp+'_rot_chave',criador_id:temp+'_cr2',obrigacao_id:temp+'_ob',dia_key:diaKey(),feito:true});await dbDelete('rotina_status',temp+'_rot');await dbDelete('obrigacoes',temp+'_ob');await dbDelete('criadores',temp+'_cr2')});
- await test('Mídias: marcar e desmarcar',async()=>{await dbUpsert('criadores',{id:temp+'_cr3',nome:'Criador auditoria',ativo:true});await dbUpsert('midias_status',{id:temp+'_mid',chave:temp+'_mid_chave',criador_id:temp+'_cr3',tipo:'rotineiro',semana_key:semanaKey(),feito:true});await dbDelete('midias_status',temp+'_mid');await dbDelete('criadores',temp+'_cr3')});
- await test('Faturamento e KPI social',async()=>{await dbUpsert('criadores',{id:temp+'_cr4',nome:'Criador auditoria',ativo:true});await dbInsert('faturamento',{id:temp+'_fat',criador_id:temp+'_cr4',data_ref:diaKey(),semana_key:semanaKey(),mes_key:mesKey(),total:10});await dbInsert('kpis_manuais',{id:temp+'_kpi',criador_id:temp+'_cr4',plataforma:'Instagram',data_ref:diaKey(),semana_key:semanaKey(),mes_key:mesKey(),assinantes:1});await dbDelete('kpis_manuais',temp+'_kpi');await dbDelete('faturamento',temp+'_fat');await dbDelete('criadores',temp+'_cr4')});
- await test('Chamados, notificações, log e dossiê',async()=>{await dbUpsert('operadores',{id:temp+'_op3',nome:'Operador auditoria',funcao:'Teste',ativo:true});await dbUpsert('criadores',{id:temp+'_cr5',nome:'Criador auditoria',operador_id:temp+'_op3',ativo:true});const ch=await dbInsert('chamados',{criador_id:temp+'_cr5',responsavel_id:temp+'_op3',titulo:'Auditoria',descricao:'Teste',status:'aberto'});const nt=await dbInsert('notificacoes',{criador_id:temp+'_cr5',operador_id:temp+'_op3',titulo:'Auditoria',mensagem:'Teste',status:'aberta'});const lg=await dbInsert('logs_extra',{criador_id:temp+'_cr5',operador_id:temp+'_op3',descricao:'Teste auditoria'});await dbUpsert('dossies',{id:temp+'_dos',criador_id:temp+'_cr5',dados:{email:'teste@auditoria.com'}});await dbDelete('dossies',temp+'_dos');if(lg?.id)await dbDelete('logs_extra',lg.id);if(nt?.id)await dbDelete('notificacoes',nt.id);if(ch?.id)await dbDelete('chamados',ch.id);await dbDelete('criadores',temp+'_cr5');await dbDelete('operadores',temp+'_op3')});
- await test('Financeiro interno',async()=>{const f=await dbInsert('financeiro_interno',{tipo:'Auditoria',descricao:'Teste auditoria',valor:1,mes_key:mesKey()});if(f?.id)await dbDelete('financeiro_interno',f.id)});
- await safeLoad();
- const html=`<div class="card-b">${out.map(x=>`<div class="row"><span class="grow"><b>${esc(x.nome)}</b><div class="muted small">${esc(x.msg)}</div></span><span class="pill ${x.ok?'ok':'bad'}">${x.ok?'OK':'ERRO'}</span></div>`).join('')}</div>`;
- openModal('Resultado da auditoria',html);
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
 }
-async function resetMes(){if(!confirm('Resetar dados alimentados somente do mês atual?'))return;const mk=mesKey();for(const [t,arr] of [['faturamento',state.db.faturamento],['kpis_manuais',state.db.kpis_manuais],['financeiro_interno',state.db.financeiro_interno]]){for(const r of arr.filter(x=>x.mes_key===mk))await dbDelete(t,r.id)}for(const r of state.db.notificacoes.filter(x=>x.created_at?.slice(0,7)===mk))await dbDelete('notificacoes',r.id);toast('Mês atual resetado.');await safeLoad()}
+function closeModalOnOverlay(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
 
-function tick(){const d=today();$('clock').textContent=d.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'})+' • '+pad(d.getHours())+':'+pad(d.getMinutes())}
-tick();setInterval(tick,1000);
-safeLoad();
-setInterval(safeLoad,12000);
-window.addEventListener('unhandledrejection',e=>{
- const msg='Erro ao usar o CRM: '+errMsg(e.reason);
- showError(msg);
- toast(msg);
-});
-window.addEventListener('error',e=>{
- const msg='Erro interno no CRM: '+(e.message||'verifique o arquivo publicado');
- showError(msg);
-});
+// ============================================================
+// PORTAL SELECTOR
+// ============================================================
+function selectPortal(type) {
+  STATE.portal = type;
+  document.querySelectorAll('.ps-card').forEach(c=>c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  const subSel = document.getElementById('portal-sub-select');
+  const dd = document.getElementById('portal-sub-dropdown');
+  const label = document.getElementById('portal-sub-label');
+  const btnEnter = document.getElementById('btn-enter');
+  if (type === 'admin') {
+    subSel.style.display = 'none';
+    btnEnter.style.display = 'inline-flex';
+  } else {
+    subSel.style.display = 'flex';
+    btnEnter.style.display = 'inline-flex';
+    if (type === 'operador') {
+      label.textContent = 'Selecione o operador:';
+      dd.innerHTML = STATE.operadores.filter(o=>o.ativo).map(o=>`<option value="${o.id}">${o.nome}</option>`).join('');
+    } else {
+      label.textContent = 'Selecione o criador:';
+      dd.innerHTML = STATE.criadores.filter(c=>c.ativo).map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
+    }
+  }
+}
+
+async function enterPortal() {
+  const type = STATE.portal;
+  if (!type) { toast('Selecione um portal','warn'); return; }
+  if (type === 'admin') {
+    STATE.userId = 'adm01';
+    STATE.userName = STATE.admins[0]?.nome || 'Admin';
+  } else {
+    const dd = document.getElementById('portal-sub-dropdown');
+    STATE.userId = dd.value;
+    if (type === 'operador') {
+      STATE.userName = STATE.operadores.find(o=>o.id===STATE.userId)?.nome || 'Operador';
+    } else {
+      STATE.userName = STATE.criadores.find(c=>c.id===STATE.userId)?.nome || 'Criador';
+    }
+  }
+  localStorage.setItem('rh_portal', type);
+  localStorage.setItem('rh_userId', STATE.userId);
+  localStorage.setItem('rh_userName', STATE.userName);
+  document.getElementById('portal-selector').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  initApp();
+}
+
+function showPortalSelector() {
+  document.getElementById('portal-selector').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function boot() {
+  // Data no topbar
+  document.getElementById('tb-date').textContent = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+
+  // Carregar dados base
+  const [adm, ops, crs, cfg1, cfg2] = await Promise.all([
+    sb.from('admins').select('*').eq('ativo',true),
+    sb.from('operadores').select('*').eq('ativo',true),
+    sb.from('criadores').select('*').eq('ativo',true),
+    sb.from('crm_config').select('*').eq('id','plataformas'),
+    sb.from('crm_config').select('*').eq('id','metricas_kpi'),
+  ]);
+  STATE.admins = adm.data || [];
+  STATE.operadores = ops.data || [];
+  STATE.criadores = crs.data || [];
+  STATE.plataformas = cfg1.data?.[0]?.valor || [];
+  STATE.metricasKpi = cfg2.data?.[0]?.valor || [];
+
+  // Restaurar sessão
+  const savedPortal = localStorage.getItem('rh_portal');
+  const savedId = localStorage.getItem('rh_userId');
+  const savedName = localStorage.getItem('rh_userName');
+  if (savedPortal && savedId) {
+    STATE.portal = savedPortal;
+    STATE.userId = savedId;
+    STATE.userName = savedName;
+    document.getElementById('portal-selector').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    initApp();
+  }
+}
+
+function initApp() {
+  setupSidebar();
+  const firstPage = getNavItems()[0]?.id;
+  if (firstPage) navigateTo(firstPage);
+  updateAlertBadge();
+}
+
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
+function getNavItems() {
+  if (STATE.portal === 'admin') return [
+    {id:'dashboard',label:'Dashboard',icon:'📊'},
+    {id:'projetos',label:'Projetos',icon:'🗂️'},
+    {id:'alertas',label:'Alertas',icon:'🚨'},
+    {id:'rotina',label:'Rotina Semanal',icon:'📅'},
+    {id:'midias',label:'Mídias',icon:'🎬'},
+    {id:'chamados',label:'Chamados',icon:'💬'},
+    {id:'dossie',label:'Dossiê',icon:'📋'},
+    {id:'financeiro',label:'Financeiro',icon:'💰'},
+    {id:'equipe',label:'Equipe',icon:'👥'},
+    {id:'onboarding',label:'Onboarding',icon:'🚀'},
+    {id:'advertencias',label:'Advertências',icon:'⚠️'},
+    {id:'leads',label:'Leads',icon:'🎯'},
+    {id:'decisoes',label:'Decisões',icon:'🧠'},
+    {id:'relatorios',label:'Relatórios',icon:'📈'},
+    {id:'gestao',label:'Gestão do CRM',icon:'⚙️'},
+  ];
+  if (STATE.portal === 'operador') return [
+    {id:'op-rotina',label:'Minha Rotina',icon:'📅'},
+    {id:'op-criadores',label:'Meus Criadores',icon:'⭐'},
+    {id:'op-midias',label:'Mídias',icon:'🎬'},
+    {id:'op-chamados',label:'Chamados',icon:'💬'},
+    {id:'op-dossie',label:'Dossiê',icon:'📋'},
+    {id:'op-log',label:'Log Extra',icon:'📝'},
+    {id:'op-resultados',label:'Meus Resultados',icon:'📊'},
+  ];
+  return [
+    {id:'cr-visao',label:'Visão Geral',icon:'🏠'},
+    {id:'cr-tarefas',label:'Minhas Tarefas',icon:'✅'},
+    {id:'cr-midias',label:'Enviar Mídias',icon:'🎬'},
+    {id:'cr-pendencias',label:'Pendências',icon:'🔔'},
+    {id:'cr-chamados',label:'Chamados',icon:'💬'},
+  ];
+}
+
+function setupSidebar() {
+  const portalNames = {admin:'Admin',operador:'Operador',criador:'Criador'};
+  document.getElementById('sb-portal-badge').textContent = portalNames[STATE.portal];
+  document.getElementById('sb-avatar').textContent = initials(STATE.userName);
+  document.getElementById('sb-user-name').textContent = STATE.userName;
+  document.getElementById('sb-user-role').textContent = STATE.portal === 'admin' ? 'Administrador' : STATE.portal === 'operador' ? 'Operador' : 'Criador';
+
+  const nav = document.getElementById('sb-nav');
+  nav.innerHTML = '';
+  getNavItems().forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'sb-item';
+    el.id = `nav-${item.id}`;
+    el.innerHTML = `<span class="sb-item-icon">${item.icon}</span><span>${item.label}</span>`;
+    el.onclick = () => navigateTo(item.id);
+    nav.appendChild(el);
+  });
+}
+
+function navigateTo(pageId) {
+  STATE.currentPage = pageId;
+  document.querySelectorAll('.sb-item').forEach(el=>el.classList.remove('active'));
+  const navEl = document.getElementById(`nav-${pageId}`);
+  if (navEl) navEl.classList.add('active');
+  const navItem = getNavItems().find(n=>n.id===pageId);
+  if (navItem) document.getElementById('tb-title').textContent = navItem.label;
+  renderPage(pageId);
+  // fechar sidebar mobile
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ============================================================
+// RENDER PAGES
+// ============================================================
+async function renderPage(id) {
+  const content = document.getElementById('content');
+  content.innerHTML = '<div style="padding:40px;text-align:center;color:var(--tx3)">Carregando...</div>';
+  try {
+    switch(id) {
+      case 'dashboard': await renderDashboard(); break;
+      case 'projetos': await renderProjetos(); break;
+      case 'alertas': await renderAlertas(); break;
+      case 'rotina': await renderRotina(); break;
+      case 'midias': await renderMidias(); break;
+      case 'chamados': await renderChamados(); break;
+      case 'dossie': await renderDossie(); break;
+      case 'financeiro': await renderFinanceiro(); break;
+      case 'equipe': await renderEquipe(); break;
+      case 'onboarding': await renderOnboarding(); break;
+      case 'advertencias': await renderAdvertencias(); break;
+      case 'leads': await renderLeads(); break;
+      case 'decisoes': await renderDecisoes(); break;
+      case 'relatorios': await renderRelatorios(); break;
+      case 'gestao': await renderGestao(); break;
+      case 'op-rotina': await renderOpRotina(); break;
+      case 'op-criadores': await renderOpCriadores(); break;
+      case 'op-midias': await renderOpMidias(); break;
+      case 'op-chamados': await renderChamados('operador'); break;
+      case 'op-dossie': await renderOpDossie(); break;
+      case 'op-log': await renderOpLog(); break;
+      case 'op-resultados': await renderOpResultados(); break;
+      case 'cr-visao': await renderCrVisao(); break;
+      case 'cr-tarefas': await renderCrTarefas(); break;
+      case 'cr-midias': await renderCrMidias(); break;
+      case 'cr-pendencias': await renderCrPendencias(); break;
+      case 'cr-chamados': await renderCrChamados(); break;
+      default: content.innerHTML = '<div style="padding:40px;text-align:center;color:var(--tx3)">Página não encontrada</div>';
+    }
+  } catch(err) {
+    content.innerHTML = `<div style="padding:24px"><div class="alerta-item alta"><div class="alerta-icon">❌</div><div><div class="alerta-msg">Erro ao carregar: ${err.message}</div><div class="alerta-criador">Verifique a conexão com o Supabase</div></div></div></div>`;
+    console.error(err);
+  }
+}
+
+// ============================================================
+// SAÚDE DO PROJETO
+// ============================================================
+async function calcularSaude(criador_id) {
+  const mes = mesAtual();
+  const hoje_ = hoje();
+  const motivos = [];
+  let score = 0;
+
+  // Rotina (25pts)
+  const { data: rotinas } = await sb.from('rotina_status').select('feito').eq('criador_id', criador_id).gte('data', mes+'-01');
+  const total = rotinas?.length || 0;
+  const feitas = rotinas?.filter(r=>r.feito).length || 0;
+  const pct = total > 0 ? feitas/total : 0;
+  score += Math.round(pct * 25);
+  if (pct < 0.5) motivos.push('Rotina baixa');
+
+  // Faturamento (20pts)
+  const { data: fat } = await sb.from('faturamento').select('valor').eq('criador_id', criador_id).eq('mes', mes);
+  const totalFat = fat?.reduce((a,b)=>a+Number(b.valor),0) || 0;
+  if (totalFat > 0) score += 20;
+  else motivos.push('Sem faturamento no mês');
+
+  // Mídias (20pts)
+  const semanaInicio = new Date(); semanaInicio.setDate(semanaInicio.getDate() - semanaInicio.getDay());
+  const { data: midias } = await sb.from('midias_status').select('status').eq('criador_id', criador_id).gte('semana', semanaInicio.toISOString().split('T')[0]);
+  const pendentes = midias?.filter(m=>m.status==='pendente').length || 0;
+  if (pendentes === 0) score += 20;
+  else motivos.push('Mídias pendentes');
+
+  // Chamados (15pts)
+  const diasAtras3 = new Date(); diasAtras3.setDate(diasAtras3.getDate()-3);
+  const { data: chAbertos } = await sb.from('chamados').select('id').eq('criador_id', criador_id).eq('status','aberto').lt('created_at', diasAtras3.toISOString());
+  if (!chAbertos?.length) score += 15;
+  else motivos.push('Chamados abertos há +3 dias');
+
+  // KPIs (10pts)
+  const { data: kpis } = await sb.from('kpis_manuais').select('id').eq('criador_id', criador_id).eq('mes', mes);
+  if (kpis?.length) score += 10;
+  else motivos.push('KPIs não alimentados');
+
+  // Advertências (10pts)
+  const { data: adv } = await sb.from('advertencias').select('id').eq('criador_id', criador_id).eq('ativo', true);
+  if (!adv?.length) score += 10;
+  else motivos.push(`${adv.length} advertência(s) ativa(s)`);
+
+  score = Math.min(100, score);
+  const status = score >= 80 ? 'saudável' : score >= 50 ? 'atenção' : 'crise';
+  return { score, status, motivos };
+}
+
+// ============================================================
+// ALERTAS
+// ============================================================
+async function gerarAlertas() {
+  const alertas = [];
+  const mes = mesAtual();
+  const diasAtras3 = new Date(); diasAtras3.setDate(diasAtras3.getDate()-3);
+  const criadores = STATE.criadores.filter(c=>c.ativo);
+
+  for (const cr of criadores) {
+    // Rotina atrasada
+    const { data: rot } = await sb.from('rotina_status').select('feito').eq('criador_id', cr.id).eq('data', hoje());
+    if (rot?.some(r=>!r.feito)) alertas.push({criador_id:cr.id, criador:cr.nome, tipo:'rotina', mensagem:`Rotina pendente hoje`, urgencia:'media'});
+
+    // Mídias pendentes
+    const { data: mid } = await sb.from('midias_status').select('tipo').eq('criador_id', cr.id).eq('status','pendente');
+    if (mid?.length) alertas.push({criador_id:cr.id, criador:cr.nome, tipo:'midia', mensagem:`${mid.length} mídia(s) pendente(s)`, urgencia:'media'});
+
+    // KPI ausente no mês
+    const { data: kpi } = await sb.from('kpis_manuais').select('id').eq('criador_id', cr.id).eq('mes', mes);
+    if (!kpi?.length) alertas.push({criador_id:cr.id, criador:cr.nome, tipo:'kpi', mensagem:'KPIs não alimentados no mês', urgencia:'baixa'});
+
+    // Faturamento zero
+    const { data: fat } = await sb.from('faturamento').select('valor').eq('criador_id', cr.id).eq('mes', mes);
+    if (!fat?.length) alertas.push({criador_id:cr.id, criador:cr.nome, tipo:'faturamento', mensagem:'Sem faturamento lançado no mês', urgencia:'alta'});
+
+    // Chamados abertos +3 dias
+    const { data: ch } = await sb.from('chamados').select('id').eq('criador_id', cr.id).eq('status','aberto').lt('created_at', diasAtras3.toISOString());
+    if (ch?.length) alertas.push({criador_id:cr.id, criador:cr.nome, tipo:'chamado', mensagem:`${ch.length} chamado(s) aberto(s) há +3 dias`, urgencia:'alta'});
+
+    // Advertências ativas
+    const { data: adv } = await sb.from('advertencias').select('id').eq('criador_id', cr.id).eq('ativo', true);
+    if (adv?.length) alertas.push({criador_id:cr.id, criador:cr.nome, tipo:'advertencia', mensagem:`${adv.length} advertência(s) ativa(s)`, urgencia:'alta'});
+  }
+
+  // Logs não vistos
+  const { data: logs } = await sb.from('logs_extra').select('*, operadores(nome), criadores(nome)').eq('visto_admin', false);
+  if (logs?.length) alertas.push({criador_id:null, criador:'Equipe', tipo:'log', mensagem:`${logs.length} log(s) não visto(s) pelo admin`, urgencia:'media'});
+
+  return alertas;
+}
+
+async function updateAlertBadge() {
+  try {
+    const alertas = await gerarAlertas();
+    const altas = alertas.filter(a=>a.urgencia==='alta').length;
+    const badge = document.getElementById('tb-alertas');
+    if (altas > 0) {
+      badge.textContent = `${altas} alerta(s)`;
+      badge.style.display = 'inline-block';
+    } else {
+      badge.style.display = 'none';
+    }
+  } catch(e) {}
+}
+
+// ============================================================
+// DASHBOARD ADMIN
+// ============================================================
+async function renderDashboard() {
+  const mes = mesAtual();
+  const content = document.getElementById('content');
+
+  // Dados
+  const [fatData, chamData, midData, advData] = await Promise.all([
+    sb.from('faturamento').select('valor').eq('mes', mes),
+    sb.from('chamados').select('status').neq('status','resolvido'),
+    sb.from('midias_status').select('status').eq('status','pendente'),
+    sb.from('advertencias').select('id').eq('ativo',true),
+  ]);
+
+  const totalFat = fatData.data?.reduce((a,b)=>a+Number(b.valor),0) || 0;
+
+  // Semana atual
+  const semInicio = new Date(); semInicio.setDate(semInicio.getDate() - semInicio.getDay());
+  const { data: fatSem } = await sb.from('faturamento').select('valor').gte('data', semInicio.toISOString().split('T')[0]);
+  const fatSemana = fatSem?.reduce((a,b)=>a+Number(b.valor),0) || 0;
+
+  // Rotina média
+  const { data: rotAll } = await sb.from('rotina_status').select('feito').gte('data', mes+'-01');
+  const rotTotal = rotAll?.length || 0;
+  const rotFeitas = rotAll?.filter(r=>r.feito).length || 0;
+  const rotPct = rotTotal > 0 ? Math.round((rotFeitas/rotTotal)*100) : 0;
+
+  // Projetos e saúde
+  const criadores = STATE.criadores.filter(c=>c.ativo);
+
+  let htmlStats = `
+  <div class="stats-grid">
+    <div class="stat-card accent">
+      <div class="stat-label">Receita do Mês</div>
+      <div class="stat-val">${fmt(totalFat)}</div>
+      <div class="stat-sub">${fmtBRL(totalFat)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Faturamento Semana</div>
+      <div class="stat-val">${fmt(fatSemana)}</div>
+      <div class="stat-sub">${fmtBRL(fatSemana)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Projetos Ativos</div>
+      <div class="stat-val">${criadores.length}</div>
+      <div class="stat-sub">criadores</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Execução Geral</div>
+      <div class="stat-val">${rotPct}%</div>
+      <div class="stat-sub">rotinas cumpridas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Chamados Abertos</div>
+      <div class="stat-val" style="color:var(--err)">${chamData.data?.length || 0}</div>
+      <div class="stat-sub">aguardando resolução</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Mídias Pendentes</div>
+      <div class="stat-val" style="color:var(--warn)">${midData.data?.length || 0}</div>
+      <div class="stat-sub">para enviar</div>
+    </div>
+  </div>`;
+
+  // Alertas críticos
+  const alertas = await gerarAlertas();
+  const alertasAltas = alertas.filter(a=>a.urgencia==='alta').slice(0,5);
+
+  let htmlAlertas = '';
+  if (alertasAltas.length) {
+    htmlAlertas = `<div class="card mb-4">
+      <div class="card-title">🚨 Alertas Críticos</div>
+      ${alertasAltas.map(a=>`<div class="alerta-item alta">
+        <div class="alerta-icon">${tipoIcon(a.tipo)}</div>
+        <div><div class="alerta-msg">${a.mensagem}</div><div class="alerta-criador">${a.criador}</div></div>
+      </div>`).join('')}
+    </div>`;
+  }
+
+  content.innerHTML = `<div id="content">${htmlStats}${htmlAlertas}
+    <div class="section-header">
+      <div class="section-title">Saúde dos Projetos</div>
+    </div>
+    <div id="dash-projetos" class="grid-2"></div>
+  </div>`;
+
+  // Saúde por projeto
+  const grid = document.getElementById('dash-projetos');
+  for (const cr of criadores.slice(0,8)) {
+    const s = await calcularSaude(cr.id);
+    const op = STATE.operadores.find(o=>o.id===cr.operador_id);
+    grid.innerHTML += `<div class="projeto-card">
+      <div class="pj-header">
+        <div class="pj-name">${cr.nome}</div>
+        ${saudeBadge(s.score)}
+      </div>
+      <div class="saude-bar saude-${saudeClass(s.score)}">
+        <div class="saude-fill" style="width:${s.score}%"></div>
+      </div>
+      <div class="text-muted mt-4">${s.motivos.slice(0,2).join(' · ') || '✓ Projeto saudável'}</div>
+      <div class="pj-meta">
+        <div class="pj-meta-item">Operador<br><span class="pj-meta-val">${op?.nome || '—'}</span></div>
+        <div class="pj-meta-item">Score<br><span class="pj-meta-val">${s.score}/100</span></div>
+      </div>
+    </div>`;
+  }
+}
+
+function tipoIcon(tipo) {
+  return {rotina:'📅',midia:'🎬',kpi:'📊',faturamento:'💰',chamado:'💬',advertencia:'⚠️',log:'📝'}[tipo] || '🔔';
+}
+
+// ============================================================
+// PROJETOS
+// ============================================================
+async function renderProjetos() {
+  const content = document.getElementById('content');
+  const criadores = STATE.criadores.filter(c=>c.ativo);
+  const mes = mesAtual();
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Projetos (${criadores.length})</div>
+      <button class="btn btn-primary" onclick="modalNovoCriador()">+ Novo Criador</button>
+    </div>
+    <div id="projetos-grid" class="grid-2"></div>
+  </div>`;
+
+  const grid = document.getElementById('projetos-grid');
+
+  for (const cr of criadores) {
+    const [saude, fatData] = await Promise.all([
+      calcularSaude(cr.id),
+      sb.from('faturamento').select('valor').eq('criador_id', cr.id).eq('mes', mes),
+    ]);
+    const op = STATE.operadores.find(o=>o.id===cr.operador_id);
+    const totalFat = fatData.data?.reduce((a,b)=>a+Number(b.valor),0) || 0;
+
+    const card = document.createElement('div');
+    card.className = 'projeto-card';
+    card.innerHTML = `
+      <div class="pj-header">
+        <div>
+          <div class="pj-name">${cr.nome}</div>
+          <div class="text-muted">${cr.codigo}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${saudeBadge(saude.score)}
+          <button class="btn btn-secondary btn-sm" onclick="modalEditarCriador('${cr.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="removerCriador('${cr.id}','${cr.nome}')">🗑️</button>
+        </div>
+      </div>
+      <div class="saude-bar saude-${saudeClass(saude.score)}">
+        <div class="saude-fill" style="width:${saude.score}%"></div>
+      </div>
+      <div class="text-muted mt-4">${saude.motivos.slice(0,2).join(' · ') || '✓ Projeto saudável'}</div>
+      <div class="pj-meta">
+        <div class="pj-meta-item">Faturamento Mês<br><span class="pj-meta-val">${fmtBRL(totalFat)}</span></div>
+        <div class="pj-meta-item">Operador<br><span class="pj-meta-val">${op?.nome || '—'}</span></div>
+        <div class="pj-meta-item">Score<br><span class="pj-meta-val">${saude.score}/100</span></div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn btn-secondary btn-sm" onclick="modalFaturamento('${cr.id}','${cr.nome}')">💰 Lançar</button>
+        <button class="btn btn-secondary btn-sm" onclick="modalKpi('${cr.id}','${cr.nome}')">📊 KPI</button>
+        <button class="btn btn-secondary btn-sm" onclick="modalAdvertencia('${cr.id}','${cr.nome}')">⚠️ Advertência</button>
+      </div>`;
+    grid.appendChild(card);
+  }
+}
+
+function modalNovoCriador() {
+  openModal('Novo Criador', `
+    <div class="form-group"><label class="form-label">Nome</label><input id="nc-nome" placeholder="Nome do criador"></div>
+    <div class="form-group"><label class="form-label">Código</label><input id="nc-codigo" placeholder="ex: cr09"></div>
+    <div class="form-group"><label class="form-label">Operador Responsável</label>
+      <select id="nc-op">${STATE.operadores.filter(o=>o.ativo).map(o=>`<option value="${o.id}">${o.nome}</option>`).join('')}</select>
+    </div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarNovoCriador()">Salvar</button>`
+  );
+}
+
+async function salvarNovoCriador() {
+  const nome = document.getElementById('nc-nome').value.trim();
+  const codigo = document.getElementById('nc-codigo').value.trim();
+  const opId = document.getElementById('nc-op').value;
+  if (!nome || !codigo) { toast('Preencha todos os campos','warn'); return; }
+  const id = codigo;
+  const { error } = await sb.from('criadores').insert({id, nome, codigo, operador_id: opId});
+  if (error) { toast('Erro: '+error.message,'err'); return; }
+  // Criar dossiê vazio
+  await sb.from('dossies').insert({id}).catch(()=>{});
+  toast('Criador adicionado!','ok');
+  closeModal();
+  // Atualizar cache
+  STATE.criadores.push({id, nome, codigo, operador_id: opId, ativo: true});
+  renderPage('projetos');
+}
+
+function modalEditarCriador(id) {
+  const cr = STATE.criadores.find(c=>c.id===id);
+  if (!cr) return;
+  openModal('Editar Criador', `
+    <div class="form-group"><label class="form-label">Nome</label><input id="ec-nome" value="${cr.nome}"></div>
+    <div class="form-group"><label class="form-label">Operador Responsável</label>
+      <select id="ec-op">${STATE.operadores.filter(o=>o.ativo).map(o=>`<option value="${o.id}" ${o.id===cr.operador_id?'selected':''}>${o.nome}</option>`).join('')}</select>
+    </div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarEditarCriador('${id}')">Salvar</button>`
+  );
+}
+
+async function salvarEditarCriador(id) {
+  const nome = document.getElementById('ec-nome').value.trim();
+  const opId = document.getElementById('ec-op').value;
+  const { error } = await sb.from('criadores').update({nome, operador_id: opId}).eq('id', id);
+  if (error) { toast('Erro: '+error.message,'err'); return; }
+  const cr = STATE.criadores.find(c=>c.id===id);
+  if (cr) { cr.nome = nome; cr.operador_id = opId; }
+  toast('Criador atualizado!','ok');
+  closeModal();
+  renderPage('projetos');
+}
+
+async function removerCriador(id, nome) {
+  if (!confirm(`Desativar criador "${nome}"? Isso é reversível.`)) return;
+  const { error } = await sb.from('criadores').update({ativo: false}).eq('id', id);
+  if (error) { toast('Erro: '+error.message,'err'); return; }
+  STATE.criadores = STATE.criadores.filter(c=>c.id!==id);
+  toast('Criador desativado','ok');
+  renderPage('projetos');
+}
+
+// ============================================================
+// ALERTAS
+// ============================================================
+async function renderAlertas() {
+  const content = document.getElementById('content');
+  const alertas = await gerarAlertas();
+
+  if (!alertas.length) {
+    content.innerHTML = `<div class="empty"><div class="empty-icon">✅</div><div class="empty-msg">Nenhum alerta no momento. Tudo em ordem!</div></div>`;
+    return;
+  }
+
+  const grouped = {alta: alertas.filter(a=>a.urgencia==='alta'), media: alertas.filter(a=>a.urgencia==='media'), baixa: alertas.filter(a=>a.urgencia==='baixa')};
+
+  content.innerHTML = `
+    <div class="section-header"><div class="section-title">Alertas (${alertas.length})</div>
+      <button class="btn btn-secondary" onclick="renderPage('alertas')">🔄 Atualizar</button>
+    </div>
+    ${renderAlertGroup('🔴 Alta prioridade', grouped.alta)}
+    ${renderAlertGroup('🟡 Média prioridade', grouped.media)}
+    ${renderAlertGroup('🔵 Baixa prioridade', grouped.baixa)}
+  `;
+}
+
+function renderAlertGroup(title, items) {
+  if (!items.length) return '';
+  return `<div class="mb-4"><div class="section-title" style="font-size:13px;margin-bottom:10px">${title}</div>
+    ${items.map(a=>`<div class="alerta-item ${a.urgencia}">
+      <div class="alerta-icon">${tipoIcon(a.tipo)}</div>
+      <div><div class="alerta-msg">${a.mensagem}</div><div class="alerta-criador">${a.criador}</div></div>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ============================================================
+// ROTINA SEMANAL
+// ============================================================
+async function renderRotina() {
+  const content = document.getElementById('content');
+  const diaHoje = diaNome();
+  const { data: obrigacoes } = await sb.from('obrigacoes').select('*').eq('ativo', true);
+  const rotinaHoje = obrigacoes?.filter(o => o.dia === 'todos' || o.dia === diaHoje) || [];
+  const criadores = STATE.criadores.filter(c=>c.ativo);
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Rotina de Hoje — ${diaHoje.charAt(0).toUpperCase()+diaHoje.slice(1)}</div>
+      <button class="btn btn-primary" onclick="modalNovaObrigacao()">+ Obrigação</button>
+    </div>
+    ${rotinaHoje.length === 0 ? '<div class="empty"><div class="empty-icon">😌</div><div class="empty-msg">Nenhuma obrigação para hoje</div></div>' : ''}
+    <div id="rotina-lista"></div>
+    <div class="sep"></div>
+    <div class="section-title mb-4">Status por Criador</div>
+    <div id="rotina-criadores"></div>
+  </div>`;
+
+  const lista = document.getElementById('rotina-lista');
+  for (const ob of rotinaHoje) {
+    const el = document.createElement('div');
+    el.className = 'rotina-item';
+    el.innerHTML = `<div class="ri-check" onclick="toggleObrigacaoGlobal(this,'${ob.id}')"></div>
+      <div><div class="ri-desc">${ob.descricao}</div><div class="ri-resp">${ob.responsavel} · ${ob.dia}</div></div>`;
+    lista.appendChild(el);
+  }
+
+  const crDiv = document.getElementById('rotina-criadores');
+  for (const cr of criadores) {
+    const { data: status } = await sb.from('rotina_status').select('*').eq('criador_id', cr.id).eq('data', hoje());
+    const feitas = status?.filter(r=>r.feito).length || 0;
+    const total = rotinaHoje.filter(o=>o.responsavel==='criador'||o.responsavel==='ambos').length;
+    crDiv.innerHTML += `<div class="card mb-4" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>${cr.nome}</strong><span class="text-muted" style="margin-left:8px">${cr.codigo}</span></div>
+        <div class="text-muted">${feitas}/${total} feitas</div>
+      </div>
+      <div class="progress mt-4"><div class="progress-fill" style="width:${total>0?Math.round(feitas/total*100):0}%"></div></div>
+    </div>`;
+  }
+}
+
+function toggleObrigacaoGlobal(el, obId) {
+  const item = el.parentElement;
+  const feito = !el.classList.contains('done');
+  el.classList.toggle('done', feito);
+  el.innerHTML = feito ? '✓' : '';
+  item.classList.toggle('feito', feito);
+  toast(feito ? 'Obrigação marcada como feita!' : 'Desmarcada','ok');
+}
+
+function modalNovaObrigacao() {
+  openModal('Nova Obrigação', `
+    <div class="form-group"><label class="form-label">Descrição</label><textarea id="no-desc" rows="2" placeholder="Descreva a obrigação"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Responsável</label>
+        <select id="no-resp"><option value="agencia">Agência</option><option value="criador">Criador</option><option value="ambos">Ambos</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Dia</label>
+        <select id="no-dia">
+          <option value="todos">Todos os dias</option>
+          <option value="segunda">Segunda</option><option value="terca">Terça</option>
+          <option value="quarta">Quarta</option><option value="quinta">Quinta</option>
+          <option value="sexta">Sexta</option><option value="sabado">Sábado</option>
+          <option value="domingo">Domingo</option>
+        </select>
+      </div>
+    </div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarNovaObrigacao()">Salvar</button>`
+  );
+}
+
+async function salvarNovaObrigacao() {
+  const descricao = document.getElementById('no-desc').value.trim();
+  const responsavel = document.getElementById('no-resp').value;
+  const dia = document.getElementById('no-dia').value;
+  if (!descricao) { toast('Preencha a descrição','warn'); return; }
+  const { error } = await sb.from('obrigacoes').insert({descricao, responsavel, dia});
+  if (error) { toast('Erro: '+error.message,'err'); return; }
+  toast('Obrigação criada!','ok');
+  closeModal();
+  renderPage('rotina');
+}
+
+// ============================================================
+// MÍDIAS
+// ============================================================
+async function renderMidias() {
+  const content = document.getElementById('content');
+  const criadores = STATE.criadores.filter(c=>c.ativo);
+  const semInicio = new Date(); semInicio.setDate(semInicio.getDate() - semInicio.getDay());
+  const semStr = semInicio.toISOString().split('T')[0];
+
+  const { data: midiasData } = await sb.from('midias_status').select('*').gte('semana', semStr);
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Mídias da Semana</div>
+      <button class="btn btn-primary" onclick="modalLancarMidia()">+ Lançar</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Criador</th><th>Tipo</th><th>Status</th><th>Notificado</th><th>Ações</th></tr></thead>
+        <tbody id="midias-tbody"></tbody>
+      </table>
+    </div>
+  </div>`;
+
+  const tbody = document.getElementById('midias-tbody');
+  if (!midiasData?.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--tx3);padding:24px">Nenhuma mídia esta semana</td></tr>';
+    return;
+  }
+  for (const m of midiasData) {
+    const cr = STATE.criadores.find(c=>c.id===m.criador_id);
+    tbody.innerHTML += `<tr>
+      <td><strong>${cr?.nome || m.criador_id}</strong></td>
+      <td>${m.tipo}</td>
+      <td>${statusBadge(m.status)}</td>
+      <td>${m.notificado ? '<span class="badge badge-ok">Sim</span>' : '<span class="badge badge-warn">Não</span>'}</td>
+      <td style="display:flex;gap:6px">
+        <select class="btn btn-secondary btn-xs" onchange="atualizarStatusMidia('${m.id}', this.value)" style="padding:3px 6px">
+          ${['pendente','enviado','aprovado','recusado'].map(s=>`<option ${m.status===s?'selected':''} value="${s}">${s}</option>`).join('')}
+        </select>
+        ${!m.notificado ? `<button class="btn btn-secondary btn-xs" onclick="notificarCriador('${m.criador_id}','${m.id}')">🔔 Notificar</button>` : ''}
+      </td>
+    </tr>`;
+  }
+}
+
+function statusBadge(s) {
+  const map = {pendente:'warn',enviado:'info',aprovado:'ok',recusado:'err'};
+  return `<span class="badge badge-${map[s]||'info'}">${s}</span>`;
+}
+
+async function atualizarStatusMidia(id, status) {
+  const { error } = await sb.from('midias_status').update({status, updated_at: new Date().toISOString()}).eq('id', id);
+  if (error) toast('Erro: '+error.message,'err');
+  else toast('Status atualizado!','ok');
+}
+
+async function notificarCriador(criadorId, midiaId) {
+  const { error: e1 } = await sb.from('midias_status').update({notificado: true}).eq('id', midiaId);
+  const { error: e2 } = await sb.from('notificacoes').insert({criador_id: criadorId, mensagem: '⚠️ Atenção: você tem mídias pendentes para enviar esta semana!', prioritaria: true, lida: false});
+  if (e1 || e2) toast('Erro ao notificar','err');
+  else { toast('Criador notificado!','ok'); renderPage('midias'); }
+}
+
+function modalLancarMidia() {
+  openModal('Lançar Mídia', `
+    <div class="form-group"><label class="form-label">Criador</label>
+      <select id="lm-cr">${STATE.criadores.filter(c=>c.ativo).map(c=>`<option value="${c.id}">${c.nome}</option>`).join('')}</select>
+    </div>
+    <div class="form-group"><label class="form-label">Tipo</label>
+      <select id="lm-tipo"><option value="rotineiro">Conteúdo Rotineiro</option><option value="ideia">Ideia de Conteúdo</option><option value="adulto">Mídia +18</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Status</label>
+      <select id="lm-status"><option value="pendente">Pendente</option><option value="enviado">Enviado</option><option value="aprovado">Aprovado</option></select>
+    </div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarMidia()">Salvar</button>`
+  );
+}
+
+async function salvarMidia() {
+  const criador_id = document.getElementById('lm-cr').value;
+  const tipo = document.getElementById('lm-tipo').value;
+  const status = document.getElementById('lm-status').value;
+  const semInicio = new Date(); semInicio.setDate(semInicio.getDate() - semInicio.getDay());
+  const semana = semInicio.toISOString().split('T')[0];
+  const { error } = await sb.from('midias_status').insert({criador_id, tipo, status, semana});
+  if (error) { toast('Erro: '+error.message,'err'); return; }
+  toast('Mídia lançada!','ok');
+  closeModal();
+  renderPage('midias');
+}
+
+// ============================================================
+// CHAMADOS
+// ============================================================
+async function renderChamados(contexto='admin') {
+  const content = document.getElementById('content');
+  let query = sb.from('chamados').select('*, criadores(nome), operadores(nome)').order('created_at', {ascending: false});
+
+  if (contexto === 'operador') {
+    const meusCriadores = STATE.criadores.filter(c=>c.operador_id===STATE.userId && c.ativo).map(c=>c.id);
+    query = query.in('criador_id', meusCriadores.length ? meusCriadores : ['none']);
+  }
+
+  const { data: chamados } = await query;
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Chamados (${chamados?.length || 0})</div>
+      <button class="btn btn-primary" onclick="modalNovoChamado()">+ Abrir Chamado</button>
+    </div>
+    <div class="tabs">
+      ${['todos','aberto','andamento','revisao','resolvido'].map(s=>`<div class="tab ${s==='todos'?'active':''}" onclick="filtrarChamados('${s}',this)">${s.charAt(0).toUpperCase()+s.slice(1)}</div>`).join('')}
+    </div>
+    <div id="chamados-lista"></div>
+  </div>`;
+
+  window._chamadosData = chamados || [];
+  renderChamadosList('todos');
+}
+
+function filtrarChamados(status, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderChamadosList(status);
+}
+
+function renderChamadosList(status) {
+  const lista = document.getElementById('chamados-lista');
+  let data = window._chamadosData || [];
+  if (status !== 'todos') data = data.filter(c=>c.status===status);
+  if (!data.length) { lista.innerHTML = '<div class="empty"><div class="empty-icon">💬</div><div class="empty-msg">Nenhum chamado</div></div>'; return; }
+  lista.innerHTML = data.map(c=>`<div class="chamado-item">
+    <div class="chamado-header">
+      <div class="chamado-titulo">${c.titulo}</div>
+      ${statusBadge(c.status)}
+    </div>
+    <div class="chamado-meta">${c.criadores?.nome || c.criador_id} · Aberto por: ${c.aberto_por} · ${fmtDate(c.created_at?.split('T')[0])}</div>
+    ${c.descricao ? `<div style="font-size:12px;color:var(--tx3);margin-top:6px">${c.descricao}</div>` : ''}
+    <div style="display:flex;gap:6px;margin-top:10px">
+      ${['aberto','andamento','revisao','resolvido'].map(s=>`<button class="btn btn-secondary btn-xs ${c.status===s?'btn-primary':''}" onclick="atualizarChamado('${c.id}','${s}')">${s}</button>`).join('')}
+    </div>
+  </div>`).join('');
+}
+
+function modalNovoChamado() {
+  openModal('Abrir Chamado', `
+    <div class="form-group"><label class="form-label">Título</label><input id="ch-titulo" placeholder="Descreva o chamado"></div>
+    <div class="form-group"><label class="form-label">Criador</label>
+      <select id="ch-cr">${STATE.criadores.filter(c=>c.ativo).map(c=>`<option value="${c.id}">${c.nome}</option>`).join('')}</select>
+    </div>
+    <div class="form-group"><label class="form-label">Descrição</label><textarea id="ch-desc" placeholder="Detalhes do chamado"></textarea></div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarChamado()">Salvar</button>`
+  );
+}
+
+async function salvarChamado() {
+  const titulo = document.getElementById('ch-titulo').value.trim();
+  const criador_id = document.getElementById('ch-cr').value;
+  const descricao = document.getElementById('ch-desc').value.trim();
+  if (!titulo) { toast('Informe o título','warn'); return; }
+  const aberto_por = STATE.portal === 'admin' ? 'admin' : STATE.portal === 'operador' ? STATE.userName : STATE.userName;
+  const { error } = await sb.from('chamados').insert({titulo, criador_id, descricao, aberto_por, operador_id: STATE.portal==='operador'?STATE.userId:null});
+  if (error) { toast('Erro: '+error.message,'err'); return; }
+  toast('Chamado aberto!','ok');
+  closeModal();
+  renderPage('chamados');
+}
+
+async function atualizarChamado(id, status) {
+  const { error } = await sb.from('chamados').update({status, updated_at: new Date().toISOString()}).eq('id', id);
+  if (error) toast('Erro: '+error.message,'err');
+  else { toast(`Status: ${status}`,'ok'); renderPage('chamados'); }
+}
+
+// ============================================================
+// DOSSIÊ
+// ============================================================
+async function renderDossie() {
+  const content = document.getElementById('content');
+  const criadores = STATE.criadores.filter(c=>c.ativo);
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Dossiê dos Criadores</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="dossie-tabs">
+      ${criadores.map((c,i)=>`<button class="btn btn-secondary ${i===0?'btn-primary':''}" onclick="carregarDossie('${c.id}',this)">${c.nome}</button>`).join('')}
+    </div>
+    <div id="dossie-content"></div>
+  </div>`;
+
+  if (criadores.length) carregarDossie(criadores[0].id, document.querySelector('#dossie-tabs button'));
+}
+
+async function carregarDossie(id, btnEl) {
+  document.querySelectorAll('#dossie-tabs button').forEach(b=>{b.classList.remove('btn-primary');b.classList.add('btn-secondary')});
+  btnEl.classList.add('btn-primary');
+  btnEl.classList.remove('btn-secondary');
+
+  const { data } = await sb.from('dossies').select('*').eq('id', id).single();
+  const cr = STATE.criadores.find(c=>c.id===id);
+  const d = data || {};
+
+  document.getElementById('dossie-content').innerHTML = `<div class="card">
+    <div class="card-title">${cr?.nome} — Informações</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Email</label><input id="d-email" value="${d.email||''}" placeholder="email@exemplo.com"></div>
+      <div class="form-group"><label class="form-label">Telefone</label><input id="d-telefone" value="${d.telefone||''}" placeholder="(xx) xxxxx-xxxx"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Observações</label><textarea id="d-obs">${d.observacoes||''}</textarea></div>
+    <div class="form-group"><label class="form-label">Links</label><input id="d-links" value="${JSON.stringify(d.links||[])}" placeholder='["https://..."]'></div>
+    <div class="form-group"><label class="form-label">Documentos / Anotações</label><textarea id="d-docs">${d.documentos||''}</textarea></div>
+    ${STATE.portal === 'admin' ? `<div class="sep"></div>
+    <div class="card-title" style="color:var(--err)">🔒 Cofre de Senhas (somente Admin)</div>
+    <div class="form-group"><label class="form-label">Cofre (JSON)</label>
+      <div class="cofre-field" id="cofre-field" onclick="revelarCofre(this)">${JSON.stringify(d.cofre||{}, null, 2)}</div>
+      <textarea id="d-cofre" style="margin-top:8px">${JSON.stringify(d.cofre||{}, null, 2)}</textarea>
+    </div>` : ''}
+    <div style="margin-top:16px">
+      <button class="btn btn-primary" onclick="salvarDossie('${id}')">💾 Salvar Dossiê</button>
+    </div>
+  </div>`;
+}
+
+function revelarCofre(el) { el.classList.toggle('revealed'); }
+
+async function salvarDossie(id) {
+  const updates = {
+    email: document.getElementById('d-email').value.trim(),
+    telefone: document.getElementById('d-telefone').value.trim(),
+    observacoes: document.getElementById('d-obs').value.trim(),
+    documentos: document.getElementById('d-docs').value.trim(),
+    updated_at: new Date().toISOString(),
+  };
+  try { updates.links = JSON.parse(document.getElementById('d-links').value || '[]'); } catch(e) { updates.links = []; }
+  if (STATE.portal === 'admin') {
+    try { updates.cofre = JSON.parse(document.getElementById('d-cofre').value || '{}'); } catch(e) { updates.cofre = {}; }
+  }
+  const { error } = await sb.from('dossies').upsert({id, ...updates});
+  if (error) toast('Erro: '+error.message,'err');
+  else toast('Dossiê salvo!','ok');
+}
+
+// ============================================================
+// FINANCEIRO
+// ============================================================
+async function renderFinanceiro() {
+  const content = document.getElementById('content');
+  const mes = mesAtual();
+  const { data: lancs } = await sb.from('financeiro_interno').select('*').eq('mes', mes).order('created_at', {ascending: false});
+
+  const entradas = lancs?.filter(l=>['entrada','receita'].includes(l.tipo)).reduce((a,b)=>a+Number(b.valor),0) || 0;
+  const saidas = lancs?.filter(l=>!['entrada','receita'].includes(l.tipo)).reduce((a,b)=>a+Number(b.valor),0) || 0;
+  const saldo = entradas - saidas;
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Financeiro — ${mes}</div>
+      <button class="btn btn-primary" onclick="modalNovoLancamento()">+ Lançamento</button>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card" style="border-left:3px solid var(--ok)">
+        <div class="stat-label">Entradas</div>
+        <div class="stat-val" style="color:var(--ok)">${fmt(entradas)}</div>
+        <div class="stat-sub">${fmtBRL(entradas)}</div>
+      </div>
+      <div class="stat-card" style="border-left:3px solid var(--err)">
+        <div class="stat-label">Saídas</div>
+        <div class="stat-val" style="color:var(--err)">${fmt(saidas)}</div>
+        <div class="stat-sub">${fmtBRL(saidas)}</div>
+      </div>
+      <div class="stat-card accent">
+        <div class="stat-label">Saldo</div>
+        <div class="stat-val">${fmt(saldo)}</div>
+        <div class="stat-sub">${fmtBRL(saldo)}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Lançamentos do Mês</div>
+      ${lancs?.map(l=>`<div class="fin-item">
+        <div>
+          <div class="fin-tipo ${['entrada','receita'].includes(l.tipo)?'fin-entrada':'fin-saida'}">${l.tipo.toUpperCase()}</div>
+          <div class="fin-desc">${l.descricao||'Sem descrição'}</div>
+        </div>
+        <div>
+          <div class="fin-val ${['entrada','receita'].includes(l.tipo)?'fin-entrada':'fin-saida'}">${['entrada','receita'].includes(l.tipo)?'+':'-'} ${fmtBRL(l.valor)}</div>
+          <div class="text-muted" style="text-align:right">${fmtDate(l.created_at?.split('T')[0])}</div>
+        </div>
+      </div>`).join('') || '<div class="empty"><div class="empty-msg">Nenhum lançamento este mês</div></div>'}
+    </div>
+  </div>`;
+}
+
+function modalNovoLancamento() {
+  openModal('Novo Lançamento', `
+    <div class="form-group"><label class="form-label">Tipo</label>
+      <select id="nl-tipo"><option value="entrada">Entrada</option><option value="saida">Saída</option><option value="salario">Salário</option><option value="retirada">Retirada</option><option value="despesa">Despesa</option><option value="receita">Receita</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Valor (R$)</label><input id="nl-valor" type="number" step="0.01" placeholder="0.00"></div>
+    <div class="form-group"><label class="form-label">Descrição</label><input id="nl-desc" placeholder="Descreva o lançamento"></div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarLancamento()">Salvar</button>`
+  );
+}
+
+async function salvarLancamento() {
+  const tipo = document.getElementById('nl-tipo').value;
+  const valor = parseFloat(document.getElementById('nl-valor').value);
+  const descricao = document.getElementById('nl-desc').value.trim();
+  if (!valor || valor <= 0) { toast('Informe um valor válido','warn'); return; }
+  const { error } = await sb.from('financeiro_interno').insert({tipo, valor, descricao, mes: mesAtual()});
+  if (error) { toast('Erro: '+error.message,'err'); return; }
+  toast('Lançamento salvo!','ok');
+  closeModal();
+  renderPage('financeiro');
+}
+
+// ============================================================
+// EQUIPE
+// ============================================================
+async function renderEquipe() {
+  const content = document.getElementById('content');
+  const operadores = STATE.operadores.filter(o=>o.ativo);
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Equipe (${operadores.length} operadores)</div>
+      <button class="btn btn-primary" onclick="modalNovoOperador()">+ Operador</button>
+    </div>
+    <div class="grid-2" id="equipe-grid"></div>
+    <div class="sep"></div>
+    <div class="section-title mb-4">Admins</div>
+    <div class="table-wrap">
+      <table><thead><tr><th>ID</th><th>Nome</th><th>Código</th></tr></thead>
+        <tbody>${STATE.admins.map(a=>`<tr><td>${a.id}</td><td><strong>${a.nome}</strong></td><td><span class="badge badge-purple">${a.codigo}</span></td></tr>`).join('')}</tbody>
+      </table>
+    </div>
+  </div>`;
+
+  const grid = document.getElementById('equipe-grid');
+  for (const op of operadores) {
+    const meusCriadores = STATE.criadores.filter(c=>c.operador_id===op.id && c.ativo);
+    grid.innerHTML += `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px">${op.nome}</div>
+          <div class="text-muted">${op.codigo}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-secondary btn-sm" onclick="modalEditarOperador('${op.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="removerOperador('${op.id}','${op.nome}')">🗑️</button>
+        </div>
+      </div>
+      <div class="sep" style="margin:12px 0"></div>
+      <div class="stat-label">Criadores (${meusCriadores.length})</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">
+        ${meusCriadores.map(c=>`<span class="badge badge-purple">${c.nome}</span>`).join('') || '<span class="text-muted">Nenhum criador</span>'}
+      </div>
+    </div>`;
+  }
+}
+
+function modalNovoOperador() {
+  openModal('Novo Operador', `
+    <div class="form-group"><label class="form-label">Nome</label><input id="no2-nome" placeholder="Nome do operador"></div>
+    <div class="form-group"><label class="form-label">Código</label><input id="no2-codigo" placeholder="ex: cl04"></div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarNovoOperador()">Salvar</button>`
+  );
+}
+
+async function salvarNovoOperador() {
+  const nome = document.getElementById('no2-nome').value.trim();
+  const codigo = document.getElementById('no2-codigo').value.trim();
+  if (!nome || !codigo) { toast('Preencha todos os campos','warn'); return; }
+  const { error } = await sb.from('operadores').insert({id: codigo, nome, codigo});
+  if (error) { toast('Erro: '+error.message,'err'); return; }
+  STATE.operadores.push({id: codigo, nome, codigo, ativo: true});
+  toast('Operador adicionado!','ok');
+  closeModal();
+  renderPage('equipe');
+}
+
+function modalEditarOperador(id) {
+  const op = STATE.operadores.find(o=>o.id===id);
+  if (!op) return;
+  const criadores = STATE.criadores.filter(c=>c.ativo);
+  openModal('Editar Operador', `
+    <div class="form-group"><label class="form-label">Nome</label><input id="eo-nome" value="${op.nome}"></div>
+    <div class="form-group"><label class="form-label">Atribuir Criadores</label>
+      <div style="display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto">
+        ${criadores.map(c=>`<label style="display:flex;align-items:center;gap:8px;font-size:13px">
+          <input type="checkbox" value="${c.id}" ${c.operador_id===id?'checked':''} id="op-cr-${c.id}">
+          ${c.nome}
+        </label>`).join('')}
+      </div>
+    </div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarEditarOperador('${id}')">Salvar</button>`
+  );
+}
+
+async function salvarEditarOperador(id) {
+  const nome = document.getElementById('eo-nome').value.trim();
+  await sb.from('operadores').update({nome}).eq('id', id);
+  const op = STATE.operadores.find(o=>o.id===id);
+  if (op) op.nome = nome;
+
+  // Atualizar atribuições
+  const criadores = STATE.criadores.filter(c=>c.ativo);
+  for (const cr of criadores) {
+    const checked = document.getElementById(`op-cr-${cr.id}`)?.checked;
+    if (checked && cr.operador_id !== id) {
+      await sb.from('criadores').update({operador_id: id}).eq('id', cr.id);
+      cr.operador_id = id;
+    } else if (!checked && cr.operador_id === id) {
+      await sb.from('criadores').update({operador_id: null}).eq('id', cr.id);
+      cr.operador_id = null;
+    }
+  }
+  toast('Operador atualizado!','ok');
+  closeModal();
+  renderPage('equipe');
+}
+
+async function removerOperador(id, nome) {
+  if (!confirm(`Desativar operador "${nome}"?`)) return;
+  await sb.from('operadores').update({ativo: false}).eq('id', id);
+  STATE.operadores = STATE.operadores.filter(o=>o.id!==id);
+  toast('Operador desativado','ok');
+  renderPage('equipe');
+}
+
+// ============================================================
+// ONBOARDING
+// ============================================================
+async function renderOnboarding() {
+  const content = document.getElementById('content');
+  const criadores = STATE.criadores.filter(c=>c.ativo);
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Onboarding</div>
+      <button class="btn btn-primary" onclick="modalAddPassoOnboarding()">+ Adicionar Passo</button>
+    </div>
+    <div id="onboarding-content"></div>
+  </div>`;
+
+  const div = document.getElementById('onboarding-content');
+  for (const cr of criadores) {
+    const { data: passos } = await sb.from('onboarding_status').select('*').eq('criador_id', cr.id).order('ordem');
+    const total = passos?.length || 0;
+    const feitos = passos?.filter(p=>p.feito).length || 0;
+    const finalizado = passos?.some(p=>p.finalizado) || false;
+
+    div.innerHTML += `<div class="card mb-4" style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:700;font-size:14px">${cr.nome}</div>
+          <div class="text-muted">${feitos}/${total} passos completos ${finalizado ? '✅ Finalizado' : ''}</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          ${!finalizado ? `<button class="btn btn-success btn-sm" onclick="finalizarOnboarding('${cr.id}')">✅ Finalizar</button>` : ''}
+          <button class="btn btn-primary btn-sm" onclick="modalAddPassoOnboarding('${cr.id}')">+ Passo</button>
+        </div>
+      </div>
+      <div class="progress mt-4"><div class="progress-fill" style="width:${total>0?Math.round(feitos/total*100):0}%"></div></div>
+      <div style="margin-top:12px">
+        ${passos?.map(p=>`<div class="rotina-item ${p.feito?'feito':''}">
+          <div class="ri-check ${p.feito?'done':''}" onclick="togglePasso('${p.id}',${p.feito},this)">${p.feito?'✓':''}</div>
+          <div class="ri-desc">${p.passo}</div>
+          <button class="btn btn-danger btn-xs" onclick="removerPasso('${p.id}')">✕</button>
+        </div>`).join('') || '<div class="text-muted">Nenhum passo cadastrado</div>'}
+      </div>
+    </div>`;
+  }
+}
+
+async function togglePasso(id, atual, el) {
+  const novo = !atual;
+  await sb.from('onboarding_status').update({feito: novo}).eq('id', id);
+  el.classList.toggle('done', novo);
+  el.innerHTML = novo ? '✓' : '';
+  el.parentElement.classList.toggle('feito', novo);
+  toast(novo ? 'Passo concluído!' : 'Desmarcado','ok');
+}
+
+async function removerPasso(id) {
+  await sb.from('onboarding_status').delete().eq('id', id);
+  toast('Passo removido','ok');
+  renderPage('onboarding');
+}
+
+async function finalizarOnboarding(criadorId) {
+  if (!confirm('Finalizar onboarding deste criador? Confirme para prosseguir.')) return;
+  if (!confirm('Tem certeza? Esta ação marca o onboarding como completo.')) return;
+  await sb.from('onboarding_status').update({finalizado: true}).eq('criador_id', criadorId);
+  toast('Onboarding finalizado!','ok');
+  renderPage('onboarding');
+}
+
+function modalAddPassoOnboarding(criadorId='') {
+  openModal('Adicionar Passo de Onboarding', `
+    <div class="form-group"><label class="form-label">Criador</label>
+      <select id="op-cr-sel">${STATE.criadores.filter(c=>c.ativo).map(c=>`<option value="${c.id}" ${c.id===criadorId?'selected':''}>${c.nome}</option>`).join('')}</select>
+    </div>
+    <div class="form-group"><label class="form-label">Passo</label><input id="op-passo" placeholder="Descreva o passo"></div>
+    <div class="form-group"><label class="form-label">Ordem</label><input id="op-ordem" type="number" value="1"></div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarPassoOnboarding()">Salvar</button>`
+  );
+}
+
+async function salvarPassoOnboarding() {
+  const criador_id = document.getElementById('op-cr-sel').value;
+  const passo = document.getElementById('op-passo').value.trim();
+  const ordem = parseInt(document.getElementById('op-ordem').value) || 1;
+  if (!passo) { toast('Informe o passo','warn'); return; }
+  await sb.from('onboarding_status').insert({criador_id, passo, ordem});
+  toast('Passo adicionado!','ok');
+  closeModal();
+  renderPage('onboarding');
+}
+
+// ============================================================
+// ADVERTÊNCIAS
+// ============================================================
+async function renderAdvertencias() {
+  const content = document.getElementById('content');
+  const { data: advs } = await sb.from('advertencias').select('*, criadores(nome)').eq('ativo', true).order('created_at', {ascending:false});
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Advertências (${advs?.length || 0})</div>
+      <button class="btn btn-primary" onclick="modalNovaAdvertencia()">+ Advertência</button>
+    </div>
+    ${advs?.length ? `<div class="table-wrap"><table>
+      <thead><tr><th>Criador</th><th>Motivo</th><th>Gravidade</th><th>Data</th><th>Ações</th></tr></thead>
+      <tbody>${advs.map(a=>`<tr>
+        <td><strong>${a.criadores?.nome || a.criador_id}</strong></td>
+        <td>${a.motivo}</td>
+        <td>${a.gravidade==='alta'?'<span class="badge badge-err">Alta</span>':a.gravidade==='media'?'<span class="badge badge-warn">Média</span>':'<span class="badge badge-info">Baixa</span>'}</td>
+        <td>${fmtDate(a.created_at?.split('T')[0])}</td>
+        <td><button class="btn btn-secondary btn-sm" onclick="resolverAdvertencia('${a.id}')">✓ Resolver</button></td>
+      </tr>`).join('')}</tbody>
+    </table></div>` : '<div class="empty"><div class="empty-icon">✅</div><div class="empty-msg">Nenhuma advertência ativa</div></div>'}
+  </div>`;
+}
+
+function modalNovaAdvertencia(criadorId='') {
+  openModal('Nova Advertência', `
+    <div class="form-group"><label class="form-label">Criador</label>
+      <select id="adv-cr">${STATE.criadores.filter(c=>c.ativo).map(c=>`<option value="${c.id}" ${c.id===criadorId?'selected':''}>${c.nome}</option>`).join('')}</select>
+    </div>
+    <div class="form-group"><label class="form-label">Motivo</label><textarea id="adv-motivo" placeholder="Descreva o motivo da advertência"></textarea></div>
+    <div class="form-group"><label class="form-label">Gravidade</label>
+      <select id="adv-grav"><option value="baixa">Baixa</option><option value="media" selected>Média</option><option value="alta">Alta</option></select>
+    </div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarAdvertencia()">Salvar</button>`
+  );
+}
+
+async function salvarAdvertencia() {
+  const criador_id = document.getElementById('adv-cr').value;
+  const motivo = document.getElementById('adv-motivo').value.trim();
+  const gravidade = document.getElementById('adv-grav').value;
+  if (!motivo) { toast('Informe o motivo','warn'); return; }
+  await sb.from('advertencias').insert({criador_id, motivo, gravidade});
+  toast('Advertência registrada!','ok');
+  closeModal();
+  renderPage('advertencias');
+}
+
+async function resolverAdvertencia(id) {
+  await sb.from('advertencias').update({ativo: false}).eq('id', id);
+  toast('Advertência resolvida','ok');
+  renderPage('advertencias');
+}
+
+function modalAdvertencia(criadorId, nome) {
+  modalNovaAdvertencia(criadorId);
+}
+
+// ============================================================
+// LEADS
+// ============================================================
+async function renderLeads() {
+  const content = document.getElementById('content');
+  const { data: leads } = await sb.from('leads').select('*').order('created_at', {ascending:false});
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Leads (${leads?.length || 0})</div>
+      <button class="btn btn-primary" onclick="modalNovoLead()">+ Lead</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nome</th><th>Etapa</th><th>Status</th><th>Responsável</th><th>Data</th><th>Ações</th></tr></thead>
+        <tbody>${leads?.map(l=>`<tr>
+          <td><strong>${l.nome}</strong>${l.observacoes?`<br><span class="text-muted">${l.observacoes.slice(0,40)}</span>`:''}</td>
+          <td>${l.etapa||'—'}</td>
+          <td>${l.status==='ativo'?'<span class="badge badge-ok">Ativo</span>':'<span class="badge badge-err">Inativo</span>'}</td>
+          <td>${l.responsavel||'—'}</td>
+          <td>${fmtDate(l.data)}</td>
+          <td>
+            <button class="btn btn-secondary btn-xs" onclick="modalEditarLead('${l.id}','${l.nome.replace(/'/g,"\\'")}','${l.etapa}','${l.responsavel||''}','${l.observacoes?.replace(/'/g,"\\'")||''}')">✏️</button>
+            <button class="btn btn-danger btn-xs" onclick="removerLead('${l.id}')">🗑️</button>
+          </td>
+        </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--tx3)">Nenhum lead</td></tr>'}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function modalNovoLead() {
+  openModal('Novo Lead', `
+    <div class="form-group"><label class="form-label">Nome</label><input id="nl2-nome" placeholder="Nome do lead"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Etapa</label><input id="nl2-etapa" placeholder="ex: Prospecção"></div>
+      <div class="form-group"><label class="form-label">Responsável</label><input id="nl2-resp" placeholder="Nome do responsável"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Observações</label><textarea id="nl2-obs" placeholder="Observações sobre o lead"></textarea></div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarLead()">Salvar</button>`
+  );
+}
+
+async function salvarLead() {
+  const nome = document.getElementById('nl2-nome').value.trim();
+  const etapa = document.getElementById('nl2-etapa').value.trim();
+  const responsavel = document.getElementById('nl2-resp').value.trim();
+  const observacoes = document.getElementById('nl2-obs').value.trim();
+  if (!nome) { toast('Informe o nome','warn'); return; }
+  await sb.from('leads').insert({nome, etapa, responsavel, observacoes, data: hoje()});
+  toast('Lead adicionado!','ok');
+  closeModal();
+  renderPage('leads');
+}
+
+function modalEditarLead(id, nome, etapa, responsavel, obs) {
+  openModal('Editar Lead', `
+    <div class="form-group"><label class="form-label">Nome</label><input id="el-nome" value="${nome}"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Etapa</label><input id="el-etapa" value="${etapa||''}"></div>
+      <div class="form-group"><label class="form-label">Responsável</label><input id="el-resp" value="${responsavel}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Observações</label><textarea id="el-obs">${obs}</textarea></div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="atualizarLead('${id}')">Salvar</button>`
+  );
+}
+
+async function atualizarLead(id) {
+  const nome = document.getElementById('el-nome').value.trim();
+  const etapa = document.getElementById('el-etapa').value.trim();
+  const responsavel = document.getElementById('el-resp').value.trim();
+  const observacoes = document.getElementById('el-obs').value.trim();
+  await sb.from('leads').update({nome, etapa, responsavel, observacoes}).eq('id', id);
+  toast('Lead atualizado!','ok');
+  closeModal();
+  renderPage('leads');
+}
+
+async function removerLead(id) {
+  if (!confirm('Remover este lead?')) return;
+  await sb.from('leads').delete().eq('id', id);
+  toast('Lead removido','ok');
+  renderPage('leads');
+}
+
+// ============================================================
+// DECISÕES
+// ============================================================
+async function renderDecisoes() {
+  const content = document.getElementById('content');
+  const { data: decs } = await sb.from('decisoes').select('*, criadores(nome)').order('created_at', {ascending:false});
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Tomada de Decisão (${decs?.length || 0})</div>
+      <button class="btn btn-primary" onclick="modalNovaDecisao()">+ Decisão</button>
+    </div>
+    <div id="decisoes-lista"></div>
+  </div>`;
+
+  const lista = document.getElementById('decisoes-lista');
+  if (!decs?.length) { lista.innerHTML = '<div class="empty"><div class="empty-icon">🧠</div><div class="empty-msg">Nenhuma decisão registrada</div></div>'; return; }
+  lista.innerHTML = decs.map(d=>`<div class="chamado-item">
+    <div class="chamado-header">
+      <div class="chamado-titulo">${d.descricao}</div>
+      ${d.tomada ? '<span class="badge badge-ok">Tomada</span>' : '<span class="badge badge-warn">Pendente</span>'}
+    </div>
+    <div class="chamado-meta">${d.criadores?.nome ? 'Criador: '+d.criadores.nome+' · ' : ''}${fmtDate(d.created_at?.split('T')[0])}</div>
+    <div style="margin-top:8px;display:flex;gap:6px">
+      <button class="btn btn-success btn-sm" onclick="marcarDecisao('${d.id}',${!d.tomada})">${d.tomada ? '↩ Reabrir' : '✓ Marcar como tomada'}</button>
+      <button class="btn btn-danger btn-sm" onclick="excluirDecisao('${d.id}')">🗑️</button>
+    </div>
+  </div>`).join('');
+}
+
+function modalNovaDecisao() {
+  openModal('Nova Decisão', `
+    <div class="form-group"><label class="form-label">Descrição</label><textarea id="nd-desc" placeholder="Descreva a decisão a tomar"></textarea></div>
+    <div class="form-group"><label class="form-label">Criador relacionado (opcional)</label>
+      <select id="nd-cr"><option value="">Nenhum</option>${STATE.criadores.filter(c=>c.ativo).map(c=>`<option value="${c.id}">${c.nome}</option>`).join('')}</select>
+    </div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarDecisao()">Salvar</button>`
+  );
+}
+
+async function salvarDecisao() {
+  const descricao = document.getElementById('nd-desc').value.trim();
+  const criador_id = document.getElementById('nd-cr').value || null;
+  if (!descricao) { toast('Informe a descrição','warn'); return; }
+  await sb.from('decisoes').insert({descricao, criador_id});
+  toast('Decisão registrada!','ok');
+  closeModal();
+  renderPage('decisoes');
+}
+
+async function marcarDecisao(id, tomada) {
+  await sb.from('decisoes').update({tomada}).eq('id', id);
+  toast(tomada ? 'Decisão marcada como tomada' : 'Decisão reaberta','ok');
+  renderPage('decisoes');
+}
+
+async function excluirDecisao(id) {
+  if (!confirm('Excluir esta decisão?')) return;
+  await sb.from('decisoes').delete().eq('id', id);
+  toast('Decisão excluída','ok');
+  renderPage('decisoes');
+}
+
+// ============================================================
+// RELATÓRIOS
+// ============================================================
+async function renderRelatorios() {
+  const content = document.getElementById('content');
+  const mes = mesAtual();
+  const criadores = STATE.criadores.filter(c=>c.ativo);
+
+  const { data: fatTotal } = await sb.from('faturamento').select('criador_id, valor, plataforma').eq('mes', mes);
+  const { data: chamTodos } = await sb.from('chamados').select('status, criador_id');
+  const { data: midTodos } = await sb.from('midias_status').select('status, criador_id');
+
+  // Faturamento por criador
+  const fatPorCriador = {};
+  fatTotal?.forEach(f => { fatPorCriador[f.criador_id] = (fatPorCriador[f.criador_id]||0) + Number(f.valor); });
+
+  // Faturamento por plataforma
+  const fatPorPlat = {};
+  fatTotal?.forEach(f => { fatPorPlat[f.plataforma] = (fatPorPlat[f.plataforma]||0) + Number(f.valor); });
+
+  content.innerHTML = `<div>
+    <div class="section-header"><div class="section-title">Relatórios — ${mes}</div></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">💰 Faturamento por Criador</div>
+        ${criadores.map(c=>`<div class="fin-item">
+          <div><div class="fin-tipo">${c.nome}</div></div>
+          <div class="fin-val fin-entrada">${fmtBRL(fatPorCriador[c.id]||0)}</div>
+        </div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="card-title">📦 Faturamento por Plataforma</div>
+        ${Object.entries(fatPorPlat).map(([p,v])=>`<div class="fin-item">
+          <div><div class="fin-tipo">${p}</div></div>
+          <div class="fin-val fin-entrada">${fmtBRL(v)}</div>
+        </div>`).join('') || '<div class="text-muted">Sem dados</div>'}
+      </div>
+    </div>
+    <div class="card mt-4" style="margin-top:16px">
+      <div class="card-title">📊 Saúde dos Projetos</div>
+      <div id="rel-saude"></div>
+    </div>
+  </div>`;
+
+  const saudeDiv = document.getElementById('rel-saude');
+  for (const cr of criadores) {
+    const s = await calcularSaude(cr.id);
+    saudeDiv.innerHTML += `<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--bor)">
+      <div style="min-width:140px;font-weight:500">${cr.nome}</div>
+      <div style="flex:1" class="saude-bar saude-${saudeClass(s.score)}"><div class="saude-fill" style="width:${s.score}%"></div></div>
+      <div style="min-width:40px;text-align:right;font-weight:600">${s.score}%</div>
+      ${saudeBadge(s.score)}
+    </div>`;
+  }
+}
+
+// ============================================================
+// GESTÃO DO CRM
+// ============================================================
+async function renderGestao() {
+  const content = document.getElementById('content');
+  content.innerHTML = `<div>
+    <div class="section-header"><div class="section-title">Gestão do CRM</div></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">🔄 Reset Mensal</div>
+        <p style="font-size:13px;color:var(--tx3);margin-bottom:16px">Zera indicadores do mês atual sem apagar histórico. Usa flag, não apaga dados.</p>
+        <button class="btn btn-danger" onclick="executarReset()">⚠️ Reset do Mês Atual</button>
+      </div>
+      <div class="card">
+        <div class="card-title">🔧 Correção de Lançamentos</div>
+        <p style="font-size:13px;color:var(--tx3);margin-bottom:16px">Editar ou excluir lançamentos incorretos de faturamento e financeiro.</p>
+        <button class="btn btn-secondary" onclick="renderCorrecoes()">Abrir Correções</button>
+      </div>
+    </div>
+    <div class="card mt-4" style="margin-top:16px">
+      <div class="card-title">🧪 Auditoria do CRM</div>
+      <p style="font-size:13px;color:var(--tx3);margin-bottom:16px">Testa todos os módulos principais e exibe resultado.</p>
+      <button class="btn btn-primary" onclick="executarAuditoria()">▶ Executar Auditoria</button>
+      <div id="auditoria-result" style="margin-top:16px"></div>
+    </div>
+    <div id="correcoes-area"></div>
+  </div>`;
+}
+
+async function executarReset() {
+  if (!confirm('Executar reset do mês atual? Os dados permanecem, apenas um flag é criado.')) return;
+  if (!confirm('Confirmar reset mensal?')) return;
+  const { error } = await sb.from('crm_resets').insert({mes: mesAtual()});
+  if (error) toast('Erro: '+error.message,'err');
+  else toast('Reset mensal executado!','ok');
+}
+
+async function renderCorrecoes() {
+  const mes = mesAtual();
+  const { data: fatLancs } = await sb.from('faturamento').select('*, criadores(nome)').eq('mes', mes).order('created_at', {ascending:false});
+  const { data: finLancs } = await sb.from('financeiro_interno').select('*').eq('mes', mes).order('created_at', {ascending:false});
+
+  const div = document.getElementById('correcoes-area');
+  div.innerHTML = `<div class="card" style="margin-top:16px">
+    <div class="card-title">Lançamentos de Faturamento — ${mes}</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Criador</th><th>Plataforma</th><th>Valor</th><th>Data</th><th>Ações</th></tr></thead>
+        <tbody>${fatLancs?.map(f=>`<tr>
+          <td>${f.criadores?.nome||f.criador_id}</td>
+          <td>${f.plataforma}</td>
+          <td>${fmtBRL(f.valor)}</td>
+          <td>${fmtDate(f.data)}</td>
+          <td><button class="btn btn-danger btn-xs" onclick="excluirFaturamento('${f.id}')">🗑️ Excluir</button></td>
+        </tr>`).join('') || '<tr><td colspan="5" style="text-align:center;padding:16px">Nenhum lançamento</td></tr>'}
+        </tbody>
+      </table>
+    </div>
+    <div class="sep"></div>
+    <div class="card-title">Lançamentos Financeiros — ${mes}</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tipo</th><th>Descrição</th><th>Valor</th><th>Ações</th></tr></thead>
+        <tbody>${finLancs?.map(f=>`<tr>
+          <td>${f.tipo}</td>
+          <td>${f.descricao||'—'}</td>
+          <td>${fmtBRL(f.valor)}</td>
+          <td><button class="btn btn-danger btn-xs" onclick="excluirFinanceiro('${f.id}')">🗑️ Excluir</button></td>
+        </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;padding:16px">Nenhum lançamento</td></tr>'}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+async function excluirFaturamento(id) {
+  if (!confirm('Excluir este lançamento de faturamento?')) return;
+  await sb.from('faturamento').delete().eq('id', id);
+  toast('Lançamento excluído','ok');
+  renderCorrecoes();
+}
+
+async function excluirFinanceiro(id) {
+  if (!confirm('Excluir este lançamento?')) return;
+  await sb.from('financeiro_interno').delete().eq('id', id);
+  toast('Lançamento excluído','ok');
+  renderCorrecoes();
+}
+
+// ============================================================
+// AUDITORIA
+// ============================================================
+async function executarAuditoria() {
+  const div = document.getElementById('auditoria-result');
+  div.innerHTML = '<div style="color:var(--tx3)">Executando testes...</div>';
+  const resultados = [];
+
+  async function testar(nome, fn) {
+    try {
+      await fn();
+      resultados.push({nome, ok: true});
+    } catch(e) {
+      resultados.push({nome, ok: false, erro: e.message});
+    }
+  }
+
+  // Testes
+  await testar('Carregar admins', async () => {
+    const {data,error} = await sb.from('admins').select('*').limit(1);
+    if (error) throw error;
+    if (!data) throw new Error('Sem dados');
+  });
+  await testar('Carregar operadores', async () => {
+    const {data,error} = await sb.from('operadores').select('*').limit(1);
+    if (error) throw error;
+  });
+  await testar('Carregar criadores', async () => {
+    const {data,error} = await sb.from('criadores').select('*').limit(1);
+    if (error) throw error;
+  });
+  await testar('Carregar obrigações', async () => {
+    const {data,error} = await sb.from('obrigacoes').select('*').limit(1);
+    if (error) throw error;
+  });
+  await testar('Lançar e ler faturamento', async () => {
+    const id = 'cr01';
+    const {error: e1} = await sb.from('faturamento').insert({criador_id:id, plataforma:'Teste', valor:1, data:hoje()});
+    if (e1) throw e1;
+    const {data,error:e2} = await sb.from('faturamento').select('*').eq('criador_id',id).eq('plataforma','Teste');
+    if (e2) throw e2;
+    // Limpeza
+    await sb.from('faturamento').delete().eq('plataforma','Teste').eq('criador_id',id);
+  });
+  await testar('Lançar e ler KPI', async () => {
+    const {error:e1} = await sb.from('kpis_manuais').insert({criador_id:'cr01', plataforma:'Teste', metrica:'seguidores', valor:100, data:hoje()});
+    if (e1) throw e1;
+    await sb.from('kpis_manuais').delete().eq('plataforma','Teste');
+  });
+  await testar('Abrir e ler chamado', async () => {
+    const {error:e1} = await sb.from('chamados').insert({criador_id:'cr01', titulo:'Teste Auditoria', aberto_por:'auditoria'});
+    if (e1) throw e1;
+    await sb.from('chamados').delete().eq('titulo','Teste Auditoria');
+  });
+  await testar('Ler dossiê', async () => {
+    const {error} = await sb.from('dossies').select('*').eq('id','cr01').single();
+    if (error) throw error;
+  });
+  await testar('Lançar financeiro interno', async () => {
+    const {error:e1} = await sb.from('financeiro_interno').insert({tipo:'entrada', valor:1, descricao:'Teste', mes:mesAtual()});
+    if (e1) throw e1;
+    await sb.from('financeiro_interno').delete().eq('descricao','Teste');
+  });
+  await testar('Criar notificação', async () => {
+    const {error} = await sb.from('notificacoes').insert({criador_id:'cr01', mensagem:'Teste notificação', prioritaria:false});
+    if (error) throw error;
+    await sb.from('notificacoes').delete().eq('mensagem','Teste notificação');
+  });
+  await testar('Criar log extra', async () => {
+    const {error} = await sb.from('logs_extra').insert({operador_id:'cl01', criador_id:'cr01', mensagem:'Teste log'});
+    if (error) throw error;
+    await sb.from('logs_extra').delete().eq('mensagem','Teste log');
+  });
+  await testar('Criar lead', async () => {
+    const {error} = await sb.from('leads').insert({nome:'Lead Teste', etapa:'teste'});
+    if (error) throw error;
+    await sb.from('leads').delete().eq('nome','Lead Teste');
+  });
+  await testar('Ler config CRM', async () => {
+    const {error} = await sb.from('crm_config').select('*').eq('id','plataformas').single();
+    if (error) throw error;
+  });
+  await testar('Gerador de alertas', async () => {
+    const alertas = await gerarAlertas();
+    if (!Array.isArray(alertas)) throw new Error('Não retornou array');
+  });
+  await testar('Cálculo de saúde', async () => {
+    const s = await calcularSaude('cr01');
+    if (typeof s.score !== 'number') throw new Error('Score inválido');
+  });
+
+  const ok = resultados.filter(r=>r.ok).length;
+  const total = resultados.length;
+
+  div.innerHTML = `<div style="margin-bottom:12px">
+    <strong>${ok}/${total} testes passaram</strong>
+    <div class="progress mt-4"><div class="progress-fill" style="width:${Math.round(ok/total*100)}%;background:${ok===total?'var(--ok)':'var(--warn)'}"></div></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Teste</th><th>Resultado</th><th>Observação</th></tr></thead>
+      <tbody>${resultados.map(r=>`<tr>
+        <td>${r.nome}</td>
+        <td>${r.ok ? '<span class="badge badge-ok">OK</span>' : '<span class="badge badge-err">ERRO</span>'}</td>
+        <td style="font-size:12px;color:var(--tx3)">${r.erro||'—'}</td>
+      </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+// ============================================================
+// PORTAL OPERADOR
+// ============================================================
+async function renderOpRotina() {
+  const content = document.getElementById('content');
+  const meusCriadores = STATE.criadores.filter(c=>c.operador_id===STATE.userId && c.ativo);
+  const diaHoje = diaNome();
+  const { data: obrigacoes } = await sb.from('obrigacoes').select('*').eq('ativo', true).in('responsavel',['agencia','ambos']);
+  const rotinaHoje = obrigacoes?.filter(o => o.dia === 'todos' || o.dia === diaHoje) || [];
+
+  content.innerHTML = `<div>
+    <div class="section-header"><div class="section-title">Minha Rotina — ${diaHoje.charAt(0).toUpperCase()+diaHoje.slice(1)}</div></div>
+    <div id="op-rotina-lista"></div>
+    <div class="sep"></div>
+    <div class="section-title mb-4">Criadores sob minha responsabilidade</div>
+    <div id="op-criadores-rotina"></div>
+  </div>`;
+
+  const lista = document.getElementById('op-rotina-lista');
+  for (const ob of rotinaHoje) {
+    lista.innerHTML += `<div class="rotina-item">
+      <div class="ri-check" onclick="toggleObrigacaoGlobal(this,'${ob.id}')"></div>
+      <div><div class="ri-desc">${ob.descricao}</div><div class="ri-resp">${ob.dia}</div></div>
+    </div>`;
+  }
+
+  const crDiv = document.getElementById('op-criadores-rotina');
+  if (!meusCriadores.length) { crDiv.innerHTML = '<div class="empty"><div class="empty-msg">Nenhum criador atribuído</div></div>'; return; }
+
+  for (const cr of meusCriadores) {
+    const { data: status } = await sb.from('rotina_status').select('feito').eq('criador_id', cr.id).eq('data', hoje());
+    const feitas = status?.filter(r=>r.feito).length || 0;
+    const total = rotinaHoje.length;
+    crDiv.innerHTML += `<div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between"><strong>${cr.nome}</strong><span class="text-muted">${feitas}/${total}</span></div>
+      <div class="progress mt-4"><div class="progress-fill" style="width:${total>0?Math.round(feitas/total*100):0}%"></div></div>
+    </div>`;
+  }
+}
+
+async function renderOpCriadores() {
+  const content = document.getElementById('content');
+  const meusCriadores = STATE.criadores.filter(c=>c.operador_id===STATE.userId && c.ativo);
+  const mes = mesAtual();
+
+  content.innerHTML = `<div>
+    <div class="section-header"><div class="section-title">Meus Criadores (${meusCriadores.length})</div></div>
+    <div class="grid-2" id="op-cr-grid"></div>
+  </div>`;
+
+  const grid = document.getElementById('op-cr-grid');
+  for (const cr of meusCriadores) {
+    const [saude, fatData] = await Promise.all([
+      calcularSaude(cr.id),
+      sb.from('faturamento').select('valor').eq('criador_id', cr.id).eq('mes', mes),
+    ]);
+    const totalFat = fatData.data?.reduce((a,b)=>a+Number(b.valor),0) || 0;
+
+    grid.innerHTML += `<div class="projeto-card">
+      <div class="pj-header">
+        <div><div class="pj-name">${cr.nome}</div><div class="text-muted">${cr.codigo}</div></div>
+        ${saudeBadge(saude.score)}
+      </div>
+      <div class="saude-bar saude-${saudeClass(saude.score)}"><div class="saude-fill" style="width:${saude.score}%"></div></div>
+      <div class="pj-meta">
+        <div class="pj-meta-item">Faturamento<br><span class="pj-meta-val">${fmtBRL(totalFat)}</span></div>
+        <div class="pj-meta-item">Score<br><span class="pj-meta-val">${saude.score}/100</span></div>
+      </div>
+      <div style="margin-top:12px">
+        <button class="btn btn-secondary btn-sm" onclick="modalFaturamento('${cr.id}','${cr.nome}')">💰 Lançar Fat.</button>
+        <button class="btn btn-secondary btn-sm" onclick="modalKpi('${cr.id}','${cr.nome}')">📊 KPI</button>
+      </div>
+    </div>`;
+  }
+}
+
+async function renderOpMidias() {
+  const content = document.getElementById('content');
+  const meusCriadores = STATE.criadores.filter(c=>c.operador_id===STATE.userId && c.ativo).map(c=>c.id);
+  const semInicio = new Date(); semInicio.setDate(semInicio.getDate() - semInicio.getDay());
+  const { data: midias } = await sb.from('midias_status').select('*, criadores(nome)').in('criador_id', meusCriadores.length ? meusCriadores : ['none']).gte('semana', semInicio.toISOString().split('T')[0]);
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Mídias da Semana</div>
+      <button class="btn btn-primary" onclick="modalLancarMidia()">+ Lançar</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Criador</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody>${midias?.map(m=>`<tr>
+          <td><strong>${m.criadores?.nome||m.criador_id}</strong></td>
+          <td>${m.tipo}</td>
+          <td>${statusBadge(m.status)}</td>
+          <td style="display:flex;gap:6px">
+            <select class="btn btn-secondary btn-xs" onchange="atualizarStatusMidia('${m.id}',this.value)">
+              ${['pendente','enviado','aprovado','recusado'].map(s=>`<option ${m.status===s?'selected':''} value="${s}">${s}</option>`).join('')}
+            </select>
+            ${!m.notificado ? `<button class="btn btn-secondary btn-xs" onclick="notificarCriador('${m.criador_id}','${m.id}')">🔔</button>` : ''}
+          </td>
+        </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;padding:24px">Nenhuma mídia</td></tr>'}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+async function renderOpDossie() {
+  const meusCriadores = STATE.criadores.filter(c=>c.operador_id===STATE.userId && c.ativo);
+  const content = document.getElementById('content');
+
+  content.innerHTML = `<div>
+    <div class="section-header"><div class="section-title">Dossiê — Meus Criadores</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="opdossie-tabs">
+      ${meusCriadores.map((c,i)=>`<button class="btn btn-secondary ${i===0?'btn-primary':''}" onclick="carregarDossieOp('${c.id}',this)">${c.nome}</button>`).join('')}
+    </div>
+    <div id="opdossie-content"></div>
+  </div>`;
+
+  if (meusCriadores.length) carregarDossieOp(meusCriadores[0].id, document.querySelector('#opdossie-tabs button'));
+}
+
+async function carregarDossieOp(id, btnEl) {
+  document.querySelectorAll('#opdossie-tabs button').forEach(b=>{b.classList.remove('btn-primary');b.classList.add('btn-secondary')});
+  btnEl.classList.add('btn-primary'); btnEl.classList.remove('btn-secondary');
+
+  const { data: d } = await sb.from('dossies').select('email,telefone,observacoes,links,documentos').eq('id', id).single();
+  const cr = STATE.criadores.find(c=>c.id===id);
+
+  document.getElementById('opdossie-content').innerHTML = `<div class="card">
+    <div class="card-title">${cr?.nome}</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Email</label><input readonly value="${d?.email||'—'}"></div>
+      <div class="form-group"><label class="form-label">Telefone</label><input readonly value="${d?.telefone||'—'}"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Observações</label><textarea readonly>${d?.observacoes||'Sem observações'}</textarea></div>
+    <div class="form-group"><label class="form-label">Documentos</label><textarea readonly>${d?.documentos||'Sem documentos'}</textarea></div>
+  </div>`;
+}
+
+async function renderOpLog() {
+  const content = document.getElementById('content');
+  const { data: logs } = await sb.from('logs_extra').select('*, criadores(nome)').eq('operador_id', STATE.userId).order('created_at', {ascending:false});
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Log Extra (${logs?.length || 0})</div>
+      <button class="btn btn-primary" onclick="modalNovoLog()">+ Log</button>
+    </div>
+    ${logs?.map(l=>`<div class="chamado-item">
+      <div class="chamado-titulo">${l.mensagem}</div>
+      <div class="chamado-meta">${l.criadores?.nome||l.criador_id} · ${fmtDate(l.created_at?.split('T')[0])} ${l.visto_admin?'· <span class="badge badge-ok">Visto</span>':'· <span class="badge badge-warn">Não visto</span>'}</div>
+    </div>`).join('') || '<div class="empty"><div class="empty-icon">📝</div><div class="empty-msg">Nenhum log registrado</div></div>'}
+  </div>`;
+}
+
+function modalNovoLog() {
+  const meusCriadores = STATE.criadores.filter(c=>c.operador_id===STATE.userId && c.ativo);
+  openModal('Novo Log Extra', `
+    <div class="form-group"><label class="form-label">Criador</label>
+      <select id="nl3-cr">${meusCriadores.map(c=>`<option value="${c.id}">${c.nome}</option>`).join('')}</select>
+    </div>
+    <div class="form-group"><label class="form-label">Mensagem</label><textarea id="nl3-msg" placeholder="Descreva a ocorrência"></textarea></div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarLog()">Enviar</button>`
+  );
+}
+
+async function salvarLog() {
+  const criador_id = document.getElementById('nl3-cr').value;
+  const mensagem = document.getElementById('nl3-msg').value.trim();
+  if (!mensagem) { toast('Informe a mensagem','warn'); return; }
+  await sb.from('logs_extra').insert({operador_id: STATE.userId, criador_id, mensagem});
+  toast('Log enviado para admin!','ok');
+  closeModal();
+  renderPage('op-log');
+}
+
+async function renderOpResultados() {
+  const content = document.getElementById('content');
+  const mes = mesAtual();
+  const meusCriadores = STATE.criadores.filter(c=>c.operador_id===STATE.userId && c.ativo);
+  const ids = meusCriadores.map(c=>c.id);
+
+  if (!ids.length) { content.innerHTML = '<div class="empty"><div class="empty-msg">Nenhum criador atribuído</div></div>'; return; }
+
+  const { data: fatData } = await sb.from('faturamento').select('valor, criador_id').in('criador_id', ids).eq('mes', mes);
+  const totalFat = fatData?.reduce((a,b)=>a+Number(b.valor),0) || 0;
+
+  content.innerHTML = `<div>
+    <div class="section-header"><div class="section-title">Meus Resultados — ${mes}</div></div>
+    <div class="stats-grid">
+      <div class="stat-card accent">
+        <div class="stat-label">Faturamento Total</div>
+        <div class="stat-val">${fmt(totalFat)}</div>
+        <div class="stat-sub">${fmtBRL(totalFat)}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Criadores</div>
+        <div class="stat-val">${meusCriadores.length}</div>
+      </div>
+    </div>
+    <div class="card mt-4">
+      <div class="card-title">Faturamento por Criador</div>
+      ${meusCriadores.map(cr=>{
+        const fat = fatData?.filter(f=>f.criador_id===cr.id).reduce((a,b)=>a+Number(b.valor),0)||0;
+        return `<div class="fin-item"><div class="fin-tipo">${cr.nome}</div><div class="fin-val fin-entrada">${fmtBRL(fat)}</div></div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// FATURAMENTO MODAL (reutilizável)
+// ============================================================
+function modalFaturamento(criadorId, nome) {
+  openModal(`Lançar Faturamento — ${nome}`, `
+    <div class="form-group"><label class="form-label">Plataforma</label>
+      <select id="fat-plat">${STATE.plataformas.map(p=>`<option value="${p}">${p}</option>`).join('')}</select>
+    </div>
+    <div class="form-group"><label class="form-label">Valor (R$)</label><input id="fat-val" type="number" step="0.01" placeholder="0.00"></div>
+    <div class="form-group"><label class="form-label">Data</label><input id="fat-data" type="date" value="${hoje()}"></div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarFaturamento('${criadorId}')">Lançar</button>`
+  );
+}
+
+async function salvarFaturamento(criadorId) {
+  const plataforma = document.getElementById('fat-plat').value;
+  const valor = parseFloat(document.getElementById('fat-val').value);
+  const data = document.getElementById('fat-data').value;
+  if (!valor || valor <= 0) { toast('Informe um valor válido','warn'); return; }
+  const { error } = await sb.from('faturamento').insert({criador_id: criadorId, plataforma, valor, data});
+  if (error) { toast('Erro: '+error.message,'err'); return; }
+  toast(`Faturamento lançado! +${fmtBRL(valor)}`,'ok');
+  closeModal();
+  if (STATE.currentPage) renderPage(STATE.currentPage);
+}
+
+// ============================================================
+// KPI MODAL (reutilizável)
+// ============================================================
+function modalKpi(criadorId, nome) {
+  openModal(`Alimentar KPI — ${nome}`, `
+    <div class="form-group"><label class="form-label">Plataforma</label>
+      <select id="kpi-plat">${STATE.plataformas.map(p=>`<option value="${p}">${p}</option>`).join('')}</select>
+    </div>
+    <div class="form-group"><label class="form-label">Métrica</label>
+      <select id="kpi-met">${STATE.metricasKpi.map(m=>`<option value="${m}">${m}</option>`).join('')}</select>
+    </div>
+    <div class="form-group"><label class="form-label">Valor</label><input id="kpi-val" type="number" placeholder="ex: 1500"></div>
+    <div class="form-group"><label class="form-label">Data</label><input id="kpi-data" type="date" value="${hoje()}"></div>
+    <div style="background:var(--p4);border:1px solid var(--p3);border-radius:var(--r2);padding:10px;font-size:12px;color:var(--p)">
+      ℹ️ KPIs são acumulativos: cada lançamento é somado ao total do mês.
+    </div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarKpi('${criadorId}')">Salvar</button>`
+  );
+}
+
+async function salvarKpi(criadorId) {
+  const plataforma = document.getElementById('kpi-plat').value;
+  const metrica = document.getElementById('kpi-met').value;
+  const valor = parseFloat(document.getElementById('kpi-val').value);
+  const data = document.getElementById('kpi-data').value;
+  if (!valor) { toast('Informe o valor','warn'); return; }
+  const { error } = await sb.from('kpis_manuais').insert({criador_id: criadorId, plataforma, metrica, valor, data});
+  if (error) { toast('Erro: '+error.message,'err'); return; }
+  toast('KPI salvo!','ok');
+  closeModal();
+}
+
+// ============================================================
+// PORTAL CRIADOR
+// ============================================================
+async function renderCrVisao() {
+  const content = document.getElementById('content');
+  const mes = mesAtual();
+  const id = STATE.userId;
+  const cr = STATE.criadores.find(c=>c.id===id);
+
+  const [fatData, kpiData, notifData, chamData] = await Promise.all([
+    sb.from('faturamento').select('valor').eq('criador_id', id).eq('mes', mes),
+    sb.from('kpis_manuais').select('metrica, valor, plataforma').eq('criador_id', id).eq('mes', mes),
+    sb.from('notificacoes').select('*').eq('criador_id', id).eq('lida', false).order('created_at', {ascending:false}).limit(3),
+    sb.from('chamados').select('*').eq('criador_id', id).neq('status','resolvido'),
+  ]);
+
+  const totalFat = fatData.data?.reduce((a,b)=>a+Number(b.valor),0) || 0;
+  const seguidores = kpiData.data?.filter(k=>k.metrica==='seguidores').reduce((a,b)=>a+Number(b.valor),0) || 0;
+  const assinantes = kpiData.data?.filter(k=>k.metrica==='assinantes').reduce((a,b)=>a+Number(b.valor),0) || 0;
+
+  content.innerHTML = `<div>
+    <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:20px">Olá, ${cr?.nome?.split(' ')[0]} 👋</div>
+    <div class="stats-grid">
+      <div class="stat-card accent">
+        <div class="stat-label">Meu Faturamento</div>
+        <div class="stat-val">${fmt(totalFat)}</div>
+        <div class="stat-sub">${fmtBRL(totalFat)} este mês</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Seguidores</div>
+        <div class="stat-val">${fmt(seguidores)}</div>
+        <div class="stat-sub">acumulado do mês</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Assinantes</div>
+        <div class="stat-val">${fmt(assinantes)}</div>
+        <div class="stat-sub">acumulado do mês</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Chamados Abertos</div>
+        <div class="stat-val" style="color:${chamData.data?.length?'var(--warn)':'var(--ok)'}">${chamData.data?.length || 0}</div>
+      </div>
+    </div>
+    ${notifData.data?.length ? `<div class="card mb-4" style="border-left:4px solid var(--err);background:var(--err2)">
+      <div class="card-title" style="color:var(--err)">🔔 Atenção — Você tem recados importantes!</div>
+      ${notifData.data.map(n=>`<div style="padding:8px 0;border-bottom:1px solid rgba(220,38,38,.2);font-size:13px">${n.mensagem}</div>`).join('')}
+    </div>` : ''}
+  </div>`;
+}
+
+async function renderCrTarefas() {
+  const content = document.getElementById('content');
+  const diaHoje = diaNome();
+  const id = STATE.userId;
+
+  const { data: obrigacoes } = await sb.from('obrigacoes').select('*').eq('ativo', true).in('responsavel',['criador','ambos']);
+  const rotinaHoje = obrigacoes?.filter(o => o.dia === 'todos' || o.dia === diaHoje) || [];
+
+  // Status existentes hoje
+  const { data: statusHoje } = await sb.from('rotina_status').select('*').eq('criador_id', id).eq('data', hoje());
+
+  content.innerHTML = `<div>
+    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px">Minhas Tarefas de Hoje</div>
+    ${rotinaHoje.length === 0 ? '<div class="empty"><div class="empty-icon">🎉</div><div class="empty-msg">Nenhuma tarefa para hoje. Boa folga!</div></div>' : ''}
+    <div id="cr-tarefas-lista"></div>
+  </div>`;
+
+  const lista = document.getElementById('cr-tarefas-lista');
+  for (const ob of rotinaHoje) {
+    const statusExistente = statusHoje?.find(s=>s.obrigacao_id===ob.id);
+    const feito = statusExistente?.feito || false;
+    const el = document.createElement('div');
+    el.className = `rotina-item ${feito?'feito':''}`;
+    el.innerHTML = `<div class="ri-check ${feito?'done':''}" onclick="toggleTarefaCriador(this,'${ob.id}','${statusExistente?.id||''}',${feito})">${feito?'✓':''}</div>
+      <div><div class="ri-desc">${ob.descricao}</div></div>`;
+    lista.appendChild(el);
+  }
+}
+
+async function toggleTarefaCriador(el, obId, statusId, atual) {
+  const novo = !atual;
+  const item = el.parentElement;
+  el.classList.toggle('done', novo);
+  el.innerHTML = novo ? '✓' : '';
+  item.classList.toggle('feito', novo);
+
+  if (statusId) {
+    await sb.from('rotina_status').update({feito: novo}).eq('id', statusId);
+  } else {
+    const { data } = await sb.from('rotina_status').insert({criador_id: STATE.userId, obrigacao_id: obId, feito: novo, data: hoje()}).select().single();
+    if (data) el.setAttribute('onclick', `toggleTarefaCriador(this,'${obId}','${data.id}',${novo})`);
+  }
+  toast(novo ? 'Tarefa concluída! ✓' : 'Desmarcada','ok');
+}
+
+async function renderCrMidias() {
+  const content = document.getElementById('content');
+  const id = STATE.userId;
+  const semInicio = new Date(); semInicio.setDate(semInicio.getDate() - semInicio.getDay());
+  const { data: midias } = await sb.from('midias_status').select('*').eq('criador_id', id).gte('semana', semInicio.toISOString().split('T')[0]);
+
+  content.innerHTML = `<div>
+    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px">Minhas Mídias desta Semana</div>
+    ${midias?.map(m=>`<div class="rotina-item">
+      <div style="flex:1"><div class="ri-desc">${m.tipo==='rotineiro'?'📌 Conteúdo Rotineiro':m.tipo==='ideia'?'💡 Ideia de Conteúdo':'🔞 Mídia +18'}</div></div>
+      ${statusBadge(m.status)}
+    </div>`).join('') || '<div class="empty"><div class="empty-icon">🎬</div><div class="empty-msg">Nenhuma mídia lançada esta semana</div></div>'}
+    <div class="sep"></div>
+    <div style="font-size:14px;font-weight:500;margin-bottom:12px">Marcar envio de mídia</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-primary" onclick="marcarMidia('rotineiro')" style="width:100%;justify-content:center;padding:14px">📌 Enviei Conteúdo Rotineiro</button>
+      <button class="btn btn-secondary" onclick="marcarMidia('ideia')" style="width:100%;justify-content:center;padding:14px">💡 Enviei Ideia de Conteúdo</button>
+      <button class="btn btn-secondary" onclick="marcarMidia('adulto')" style="width:100%;justify-content:center;padding:14px">🔞 Enviei Mídia +18</button>
+    </div>
+  </div>`;
+}
+
+async function marcarMidia(tipo) {
+  const semInicio = new Date(); semInicio.setDate(semInicio.getDate() - semInicio.getDay());
+  await sb.from('midias_status').insert({criador_id: STATE.userId, tipo, status: 'enviado', semana: semInicio.toISOString().split('T')[0]});
+  toast('Mídia marcada como enviada!','ok');
+  renderPage('cr-midias');
+}
+
+async function renderCrPendencias() {
+  const content = document.getElementById('content');
+  const id = STATE.userId;
+  const { data: notifs } = await sb.from('notificacoes').select('*').eq('criador_id', id).eq('lida', false).order('prioritaria',{ascending:false}).order('created_at',{ascending:false});
+
+  content.innerHTML = `<div>
+    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px">Minhas Pendências</div>
+    ${notifs?.length === 0 ? '<div class="empty"><div class="empty-icon">✅</div><div class="empty-msg">Nenhuma pendência! Tudo certo.</div></div>' : ''}
+    <div id="pend-lista"></div>
+  </div>`;
+
+  const lista = document.getElementById('pend-lista');
+  notifs?.forEach(n => {
+    lista.innerHTML += `<div class="notif-item ${n.prioritaria?'prioritaria':''}">
+      <div class="notif-msg">${n.prioritaria?'⚠️ ':''} ${n.mensagem}</div>
+      <button class="btn btn-success btn-sm" onclick="marcarNotifLida('${n.id}')">✓ Ok</button>
+    </div>`;
+  });
+}
+
+async function marcarNotifLida(id) {
+  await sb.from('notificacoes').update({lida: true}).eq('id', id);
+  toast('Marcado como resolvido!','ok');
+  renderPage('cr-pendencias');
+}
+
+async function renderCrChamados() {
+  const content = document.getElementById('content');
+  const id = STATE.userId;
+  const { data: chamados } = await sb.from('chamados').select('*').eq('criador_id', id).order('created_at', {ascending:false});
+
+  content.innerHTML = `<div>
+    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px">Meus Chamados</div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:14px;margin-bottom:16px" onclick="modalCrNovoChamado()">+ Abrir Chamado</button>
+    ${chamados?.map(c=>`<div class="chamado-item">
+      <div class="chamado-header">
+        <div class="chamado-titulo">${c.titulo}</div>
+        ${statusBadge(c.status)}
+      </div>
+      <div class="chamado-meta">${fmtDate(c.created_at?.split('T')[0])}</div>
+      ${c.descricao ? `<div style="font-size:12px;color:var(--tx3);margin-top:6px">${c.descricao}</div>` : ''}
+    </div>`).join('') || '<div class="empty"><div class="empty-icon">💬</div><div class="empty-msg">Nenhum chamado aberto</div></div>'}
+  </div>`;
+}
+
+function modalCrNovoChamado() {
+  openModal('Abrir Chamado', `
+    <div class="form-group"><label class="form-label">O que aconteceu?</label><input id="cr-ch-titulo" placeholder="Resumo do problema"></div>
+    <div class="form-group"><label class="form-label">Mais detalhes</label><textarea id="cr-ch-desc" placeholder="Explique com mais detalhes (opcional)"></textarea></div>`,
+    `<button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+     <button class="btn btn-primary" onclick="salvarCrChamado()">Enviar</button>`
+  );
+}
+
+async function salvarCrChamado() {
+  const titulo = document.getElementById('cr-ch-titulo').value.trim();
+  const descricao = document.getElementById('cr-ch-desc').value.trim();
+  if (!titulo) { toast('Informe o problema','warn'); return; }
+  await sb.from('chamados').insert({criador_id: STATE.userId, titulo, descricao, aberto_por: STATE.userName, status: 'aberto'});
+  toast('Chamado enviado!','ok');
+  closeModal();
+  renderPage('cr-chamados');
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+boot();
 </script>
 </body>
 </html>
