@@ -252,7 +252,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
       <button class="btn btn-p" onclick="entrarCRM()">Entrar</button>
       <button class="btn" onclick="recuperarSenha()">Recuperar senha</button>
     </div>
-    <div id="login-erro" class="nf nf-r login-err"><span></span><span id="login-erro-txt">Erro ao entrar.</span></div>
+    <div id="login-erro" class="nf nf-r login-err" style="display:none!important"><span></span><span id="login-erro-txt"></span></div>
   </div>
 </div>
 <div id="app" class="auth-locked">
@@ -1158,11 +1158,19 @@ function perfilPodePortal(portal){
 function mostrarErroLogin(msg){
   const box=$('login-erro'),txt=$('login-erro-txt');
   if(txt)txt.textContent=msg;
-  if(box)box.classList.add('on');
+  if(box){
+    box.classList.add('on');
+    box.style.setProperty('display','flex','important');
+  }
 }
 function esconderErroLogin(){
   const box=$('login-erro');
-  if(box)box.classList.remove('on');
+  const txt=$('login-erro-txt');
+  if(txt)txt.textContent='';
+  if(box){
+    box.classList.remove('on');
+    box.style.setProperty('display','none','important');
+  }
 }
 async function carregarPerfilUsuario(user){
   const pessoaResp=await sb.from('pessoas').select('*').eq('auth_user_id',user.id).eq('ativo',true).maybeSingle().catch(()=>({data:null,error:null}));
