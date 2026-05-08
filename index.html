@@ -33,7 +33,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
 .login-brand span{color:var(--ac)}
 .login-sub{font-size:13px;color:var(--tx2);margin-bottom:18px}
 .login-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap}
-.login-err{display:none;margin-top:12px}.login-err.on{display:flex}
+.login-err{display:none!important;margin-top:12px}.login-err.on{display:flex!important}
 .auth-only{display:none!important}
 .auth-admin .for-admin,.auth-operador .for-operador,.auth-criador .for-criador{display:inline-flex!important}
 .topnav-user{font-size:12px;color:var(--tx2);font-weight:600}
@@ -1158,10 +1158,11 @@ function perfilPodePortal(portal){
 function mostrarErroLogin(msg){
   const box=$('login-erro'),txt=$('login-erro-txt');
   if(txt)txt.textContent=msg;
-  box.classList.add('on');
+  if(box)box.classList.add('on');
 }
 function esconderErroLogin(){
-  $('login-erro').classList.remove('on');
+  const box=$('login-erro');
+  if(box)box.classList.remove('on');
 }
 async function carregarPerfilUsuario(user){
   const pessoaResp=await sb.from('pessoas').select('*').eq('auth_user_id',user.id).eq('ativo',true).maybeSingle().catch(()=>({data:null,error:null}));
@@ -1222,6 +1223,7 @@ function reaplicarVinculoPerfil(){
   }
 }
 async function iniciarAuth(){
+  esconderErroLogin();
   const {data}=await sb.auth.getSession();
   const user=data.session?.user;
   if(!user){$('app').classList.add('auth-locked');return false;}
@@ -3292,6 +3294,13 @@ async function iniciarCRMLogado(){
   iniciarRealtime();
 }
 document.addEventListener('DOMContentLoaded',async()=>{
+  esconderErroLogin();
+  ['login-email','login-senha'].forEach(id=>{
+    const el=$(id);
+    if(el)el.addEventListener('input',esconderErroLogin);
+  });
+  const senhaEl=$('login-senha');
+  if(senhaEl)senhaEl.addEventListener('keydown',e=>{if(e.key==='Enter')entrarCRM();});
   initClock();
   const ok=await iniciarAuth();
   if(!ok)return;
