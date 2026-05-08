@@ -1238,7 +1238,7 @@ async function iniciarAuth(){
 async function entrarCRM(){
   esconderErroLogin();
   const email=$('login-email').value.trim().toLowerCase();
-  const senha=$('login-senha').value||'';
+  const senha=($('login-senha').value||'').trim();
   if(!email||!senha){mostrarErroLogin('Informe e-mail e senha.');return;}
   const {data,error}=await sb.auth.signInWithPassword({email,password:senha});
   if(error){
