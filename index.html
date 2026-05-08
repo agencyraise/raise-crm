@@ -1174,7 +1174,12 @@ function esconderErroLogin(){
 }
 async function carregarPerfilUsuario(user){
   const email=(user.email||'').trim().toLowerCase();
-  const pessoaResp=await sb.from('pessoas').select('*').eq('auth_user_id',user.id).eq('ativo',true).maybeSingle().catch(()=>({data:null,error:null}));
+  let pessoaResp={data:null,error:null};
+  try{
+    pessoaResp=await sb.from('pessoas').select('*').eq('auth_user_id',user.id).eq('ativo',true).maybeSingle();
+  }catch(e){
+    console.warn('[PESSOA-ID]',e);
+  }
   if(pessoaResp?.data){
     const p=pessoaResp.data;
     return {
@@ -1188,12 +1193,21 @@ async function carregarPerfilUsuario(user){
       ativo:p.ativo
     };
   }
-  const pessoaEmailResp=email
-    ? await sb.from('pessoas').select('*').ilike('email',email).eq('ativo',true).maybeSingle().catch(()=>({data:null,error:null}))
-    : {data:null,error:null};
+  let pessoaEmailResp={data:null,error:null};
+  if(email){
+    try{
+      pessoaEmailResp=await sb.from('pessoas').select('*').ilike('email',email).eq('ativo',true).maybeSingle();
+    }catch(e){
+      console.warn('[PESSOA-EMAIL]',e);
+    }
+  }
   if(pessoaEmailResp?.data){
     const p=pessoaEmailResp.data;
-    await sb.from('pessoas').update({auth_user_id:user.id,updated_at:new Date().toISOString()}).eq('id',p.id).catch(()=>null);
+    try{
+      await sb.from('pessoas').update({auth_user_id:user.id,updated_at:new Date().toISOString()}).eq('id',p.id);
+    }catch(e){
+      console.warn('[PESSOA-RELIGAR]',e);
+    }
     return {
       id:user.id,
       pessoa_id:p.id,
@@ -1208,10 +1222,21 @@ async function carregarPerfilUsuario(user){
   let {data,error}=await sb.from('perfis_usuarios').select('*').eq('id',user.id).eq('ativo',true).maybeSingle();
   if(error){console.error('[PERFIL-ID]',error.message);}
   if(!data&&email){
-    const resp=await sb.from('perfis_usuarios').select('*').ilike('email',email).eq('ativo',true).maybeSingle().catch(()=>({data:null,error:null}));
+    let resp={data:null,error:null};
+    try{
+      resp=await sb.from('perfis_usuarios').select('*').ilike('email',email).eq('ativo',true).maybeSingle();
+    }catch(e){
+      console.warn('[PERFIL-EMAIL]',e);
+    }
     data=resp.data;
     error=resp.error;
-    if(data)await sb.from('perfis_usuarios').update({id:user.id,updated_at:new Date().toISOString()}).ilike('email',email).catch(()=>null);
+    if(data){
+      try{
+        await sb.from('perfis_usuarios').update({id:user.id,updated_at:new Date().toISOString()}).ilike('email',email);
+      }catch(e){
+        console.warn('[PERFIL-RELIGAR]',e);
+      }
+    }
   }
   if(error){console.error('[PERFIL-EMAIL]',error.message);return null;}
   if(data?.pessoa_id&&!data.operador_id&&!data.criador_id){
