@@ -2036,7 +2036,7 @@ async function executarAuditoria() {
   });
   await testar('Lançar e ler faturamento', async () => {
     const id = 'cr01';
-    const {error: e1} = await sb.from('faturamento').insert({criador_id:id, plataforma:'Teste', valor:1, data:hoje()});
+    const {error: e1} = await sb.from('faturamento').insert({criador_id:id, plataforma:'Teste', valor:1, data:hoje(), mes:mesAtual()});
     if (e1) throw e1;
     const {data,error:e2} = await sb.from('faturamento').select('*').eq('criador_id',id).eq('plataforma','Teste');
     if (e2) throw e2;
@@ -2044,7 +2044,7 @@ async function executarAuditoria() {
     await sb.from('faturamento').delete().eq('plataforma','Teste').eq('criador_id',id);
   });
   await testar('Lançar e ler KPI', async () => {
-    const {error:e1} = await sb.from('kpis_manuais').insert({criador_id:'cr01', plataforma:'Teste', metrica:'seguidores', valor:100, data:hoje()});
+    const {error:e1} = await sb.from('kpis_manuais').insert({criador_id:'cr01', plataforma:'Teste', metrica:'seguidores', valor:100, data:hoje(), mes:mesAtual()});
     if (e1) throw e1;
     await sb.from('kpis_manuais').delete().eq('plataforma','Teste');
   });
@@ -2342,7 +2342,7 @@ async function salvarFaturamento(criadorId) {
   const valor = parseFloat(document.getElementById('fat-val').value);
   const data = document.getElementById('fat-data').value;
   if (!valor || valor <= 0) { toast('Informe um valor válido','warn'); return; }
-  const { error } = await sb.from('faturamento').insert({criador_id: criadorId, plataforma, valor, data});
+  const { error } = await sb.from('faturamento').insert({criador_id: criadorId, plataforma, valor, data, mes: mesAtual()});
   if (error) { toast('Erro: '+error.message,'err'); return; }
   toast(`Faturamento lançado! +${fmtBRL(valor)}`,'ok');
   closeModal();
@@ -2376,7 +2376,7 @@ async function salvarKpi(criadorId) {
   const valor = parseFloat(document.getElementById('kpi-val').value);
   const data = document.getElementById('kpi-data').value;
   if (!valor) { toast('Informe o valor','warn'); return; }
-  const { error } = await sb.from('kpis_manuais').insert({criador_id: criadorId, plataforma, metrica, valor, data});
+  const { error } = await sb.from('kpis_manuais').insert({criador_id: criadorId, plataforma, metrica, valor, data, mes: mesAtual()});
   if (error) { toast('Erro: '+error.message,'err'); return; }
   toast('KPI salvo!','ok');
   closeModal();
