@@ -249,7 +249,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);font-size:14px;l
     <div class="fg"><label class="fl">E-mail</label><input class="fi" type="email" id="login-email" autocomplete="email" placeholder="seuemail@raise.com"></div>
     <div class="fg"><label class="fl">Senha</label><input class="fi" type="password" id="login-senha" autocomplete="current-password" placeholder="Sua senha"></div>
     <div class="login-actions">
-      <button class="btn btn-p" onclick="entrarCRM()">Entrar</button>
+      <button class="btn btn-p" id="login-btn" onclick="entrarCRM()">Entrar</button>
       <button class="btn" onclick="recuperarSenha()">Recuperar senha</button>
     </div>
     <div id="login-erro" class="nf nf-r login-err" style="display:none!important"><span></span><span id="login-erro-txt"></span></div>
@@ -1173,6 +1173,7 @@ function esconderErroLogin(){
   }
 }
 async function carregarPerfilUsuario(user){
+  const email=(user.email||'').trim().toLowerCase();
   const pessoaResp=await sb.from('pessoas').select('*').eq('auth_user_id',user.id).eq('ativo',true).maybeSingle().catch(()=>({data:null,error:null}));
   if(pessoaResp?.data){
     const p=pessoaResp.data;
@@ -1187,8 +1188,32 @@ async function carregarPerfilUsuario(user){
       ativo:p.ativo
     };
   }
-  const {data,error}=await sb.from('perfis_usuarios').select('*').eq('id',user.id).eq('ativo',true).maybeSingle();
-  if(error){console.error('[PERFIL]',error.message);return null;}
+  const pessoaEmailResp=email
+    ? await sb.from('pessoas').select('*').ilike('email',email).eq('ativo',true).maybeSingle().catch(()=>({data:null,error:null}))
+    : {data:null,error:null};
+  if(pessoaEmailResp?.data){
+    const p=pessoaEmailResp.data;
+    await sb.from('pessoas').update({auth_user_id:user.id,updated_at:new Date().toISOString()}).eq('id',p.id).catch(()=>null);
+    return {
+      id:user.id,
+      pessoa_id:p.id,
+      email:p.email||user.email,
+      nome:p.nome,
+      tipo:p.tipo==='operador'?'colaborador':p.tipo,
+      operador_id:p.tipo==='operador'?p.id:null,
+      criador_id:p.tipo==='criador'?p.id:null,
+      ativo:p.ativo
+    };
+  }
+  let {data,error}=await sb.from('perfis_usuarios').select('*').eq('id',user.id).eq('ativo',true).maybeSingle();
+  if(error){console.error('[PERFIL-ID]',error.message);}
+  if(!data&&email){
+    const resp=await sb.from('perfis_usuarios').select('*').ilike('email',email).eq('ativo',true).maybeSingle().catch(()=>({data:null,error:null}));
+    data=resp.data;
+    error=resp.error;
+    if(data)await sb.from('perfis_usuarios').update({id:user.id,updated_at:new Date().toISOString()}).ilike('email',email).catch(()=>null);
+  }
+  if(error){console.error('[PERFIL-EMAIL]',error.message);return null;}
   if(data?.pessoa_id&&!data.operador_id&&!data.criador_id){
     if(String(data.pessoa_id).startsWith('cl'))data.operador_id=data.pessoa_id;
     if(String(data.pessoa_id).startsWith('cr'))data.criador_id=data.pessoa_id;
@@ -1232,41 +1257,56 @@ function reaplicarVinculoPerfil(){
 }
 async function iniciarAuth(){
   esconderErroLogin();
-  const {data}=await sb.auth.getSession();
-  const user=data.session?.user;
-  if(!user){$('app').classList.add('auth-locked');return false;}
-  const perfil=await carregarPerfilUsuario(user);
-  if(!perfil){
-    await sb.auth.signOut();
-    mostrarErroLogin('Seu login existe, mas ainda nao tem perfil liberado no CRM.');
-    $('app').classList.add('auth-locked');
+  try{
+    const {data}=await sb.auth.getSession();
+    const user=data.session?.user;
+    if(!user){$('app').classList.add('auth-locked');return false;}
+    const perfil=await carregarPerfilUsuario(user);
+    if(!perfil){
+      await sb.auth.signOut();
+      mostrarErroLogin('Seu login existe, mas ainda nao tem perfil liberado no CRM.');
+      $('app').classList.add('auth-locked');
+      return false;
+    }
+    aplicarPerfilUsuario(user,perfil);
+    return true;
+  }catch(e){
+    console.error('[AUTH INIT]',e);
+    mostrarErroLogin(`Erro ao abrir sessao: ${e.message||e}`);
     return false;
   }
-  aplicarPerfilUsuario(user,perfil);
-  return true;
 }
 async function entrarCRM(){
   esconderErroLogin();
+  const btn=$('login-btn');
+  if(btn){btn.disabled=true;btn.textContent='Entrando...';}
   const email=$('login-email').value.trim().toLowerCase();
   const senha=($('login-senha').value||'').trim();
-  if(!email||!senha){mostrarErroLogin('Informe e-mail e senha.');return;}
-  const {data,error}=await sb.auth.signInWithPassword({email,password:senha});
-  if(error){
-    console.error('[LOGIN]',error.message,error);
-    const msg=error.message==='Invalid login credentials'
-      ? 'Login ou senha inválidos no Supabase Auth. Confira o usuário em Authentication > Users e redefina a senha.'
-      : `Erro Supabase Auth: ${error.message}`;
-    mostrarErroLogin(msg);
-    return;
+  try{
+    if(!email||!senha){mostrarErroLogin('Informe e-mail e senha.');return;}
+    const {data,error}=await sb.auth.signInWithPassword({email,password:senha});
+    if(error){
+      console.error('[LOGIN]',error.message,error);
+      const msg=error.message==='Invalid login credentials'
+        ? 'Login ou senha inválidos no Supabase Auth. Confira o usuário em Authentication > Users e redefina a senha.'
+        : `Erro Supabase Auth: ${error.message}`;
+      mostrarErroLogin(msg);
+      return;
+    }
+    const perfil=await carregarPerfilUsuario(data.user);
+    if(!perfil){
+      await sb.auth.signOut();
+      mostrarErroLogin('Senha aceita, mas este e-mail ainda nao esta vinculado a uma pessoa ativa no CRM.');
+      return;
+    }
+    aplicarPerfilUsuario(data.user,perfil);
+    await iniciarCRMLogado();
+  }catch(e){
+    console.error('[LOGIN-FLUXO]',e);
+    mostrarErroLogin(`Senha aceita, mas o CRM travou ao abrir: ${e.message||e}`);
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent='Entrar';}
   }
-  const perfil=await carregarPerfilUsuario(data.user);
-  if(!perfil){
-    await sb.auth.signOut();
-    mostrarErroLogin('Acesso sem perfil liberado. Peça para um admin vincular seu usuario.');
-    return;
-  }
-  aplicarPerfilUsuario(data.user,perfil);
-  await iniciarCRMLogado();
 }
 async function recuperarSenha(){
   esconderErroLogin();
