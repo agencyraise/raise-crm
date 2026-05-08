@@ -496,6 +496,12 @@ function showPortalSelector() {
 // INIT
 // ============================================================
 async function boot() {
+  // Login anonimo automatico (necessario para RLS do Supabase)
+  const { data: sessionData } = await sb.auth.getSession();
+  if (!sessionData?.session) {
+    await sb.auth.signInAnonymously();
+  }
+
   // Data no topbar
   document.getElementById('tb-date').textContent = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
 
