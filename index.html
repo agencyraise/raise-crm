@@ -1237,11 +1237,18 @@ async function iniciarAuth(){
 }
 async function entrarCRM(){
   esconderErroLogin();
-  const email=$('login-email').value.trim();
+  const email=$('login-email').value.trim().toLowerCase();
   const senha=$('login-senha').value||'';
   if(!email||!senha){mostrarErroLogin('Informe e-mail e senha.');return;}
   const {data,error}=await sb.auth.signInWithPassword({email,password:senha});
-  if(error){mostrarErroLogin('Login ou senha invalidos.');return;}
+  if(error){
+    console.error('[LOGIN]',error.message,error);
+    const msg=error.message==='Invalid login credentials'
+      ? 'Login ou senha inválidos no Supabase Auth. Confira o usuário em Authentication > Users e redefina a senha.'
+      : `Erro Supabase Auth: ${error.message}`;
+    mostrarErroLogin(msg);
+    return;
+  }
   const perfil=await carregarPerfilUsuario(data.user);
   if(!perfil){
     await sb.auth.signOut();
