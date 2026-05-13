@@ -403,6 +403,35 @@ function plataformasSociais() {
   const nomes = STATE.plataformas.length ? STATE.plataformas : PLATAFORMAS_SOCIAIS;
   return listaUnica([...nomes.filter(p => PLATAFORMAS_SOCIAIS.includes(p)), ...PLATAFORMAS_SOCIAIS]);
 }
+function plataformaCanonica(valor) {
+  const raw = String(valor || '').trim();
+  const todas = [...PLATAFORMAS_FATURAMENTO, ...PLATAFORMAS_SOCIAIS];
+  return todas.find(p => p.toLowerCase() === raw.toLowerCase()) || raw;
+}
+function normalizarMetrica(metrica) {
+  const m = String(metrica || '').trim().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '_');
+  return {
+    visualizacao:'visualizacoes',
+    visualizacoes:'visualizacoes',
+    seguidores:'seguidores',
+    seguidor:'seguidores',
+    postagem:'postagens',
+    postagens:'postagens',
+    posts:'postagens',
+    assinante:'assinantes',
+    assinantes:'assinantes',
+    venda_avulsa:'vendas_avulsas',
+    vendas_avulsas:'vendas_avulsas',
+    engajamento:'engajamento'
+  }[m] || m;
+}
+function metricasDaPlataforma(plataforma) {
+  const p = plataformaCanonica(plataforma);
+  if (PLATAFORMAS_FATURAMENTO.includes(p)) return ['assinantes','vendas_avulsas'];
+  return ['seguidores','visualizacoes','postagens'];
+}
 
 const ROTINA_OFICIAL = [
   {dia:'segunda', responsavel:'operador', descricao:'Criacao de post'},
@@ -608,17 +637,20 @@ function fmtBRL(val) {
 }
 function somarKpisPorMetrica(kpis = []) {
   return kpis.reduce((acc, item) => {
-    acc[item.metrica] = (acc[item.metrica] || 0) + Number(item.valor || 0);
+    const metrica = normalizarMetrica(item.metrica);
+    acc[metrica] = (acc[metrica] || 0) + Number(item.valor || 0);
     return acc;
   }, {});
 }
 function resumoIndicadores(faturamentos = [], kpis = []) {
   const sociais = plataformasSociais();
   const adultos = plataformasFaturamento();
-  const kpisSociais = kpis.filter(k => sociais.includes(k.plataforma));
-  const kpisAdultos = kpis.filter(k => adultos.includes(k.plataforma));
-  const totalFat = faturamentos.reduce((acc, f) => acc + Number(f.valor || 0), 0);
-  const totalFatVendaAvulsa = faturamentos.filter(f => f.plataforma === 'Venda Avulsa').reduce((acc, f) => acc + Number(f.valor || 0), 0);
+  const kpisNormalizados = (kpis || []).map(k => ({...k, plataforma: plataformaCanonica(k.plataforma), metrica: normalizarMetrica(k.metrica)}));
+  const faturamentosNormalizados = (faturamentos || []).map(f => ({...f, plataforma: plataformaCanonica(f.plataforma)}));
+  const kpisSociais = kpisNormalizados.filter(k => sociais.includes(k.plataforma));
+  const kpisAdultos = kpisNormalizados.filter(k => adultos.includes(k.plataforma));
+  const totalFat = faturamentosNormalizados.reduce((acc, f) => acc + Number(f.valor || 0), 0);
+  const totalFatVendaAvulsa = faturamentosNormalizados.filter(f => f.plataforma === 'Venda Avulsa').reduce((acc, f) => acc + Number(f.valor || 0), 0);
   const totaisSociais = somarKpisPorMetrica(kpisSociais);
   const totaisAdultos = somarKpisPorMetrica(kpisAdultos);
   const totaisGerais = somarKpisPorMetrica(kpis);
@@ -631,11 +663,11 @@ function resumoIndicadores(faturamentos = [], kpis = []) {
     assinantes: totaisAdultos.assinantes || totaisGerais.assinantes || 0,
     vendasAvulsas: (totaisAdultos.vendas_avulsas || 0) + totalFatVendaAvulsa,
     engajamento: totaisSociais.engajamento || 0,
-    fatPorPlataforma: faturamentos.reduce((acc, f) => {
+    fatPorPlataforma: faturamentosNormalizados.reduce((acc, f) => {
       acc[f.plataforma] = (acc[f.plataforma] || 0) + Number(f.valor || 0);
       return acc;
     }, {}),
-    kpiPorPlataforma: kpis.reduce((acc, k) => {
+    kpiPorPlataforma: kpisNormalizados.reduce((acc, k) => {
       acc[k.plataforma] = acc[k.plataforma] || {};
       acc[k.plataforma][k.metrica] = (acc[k.plataforma][k.metrica] || 0) + Number(k.valor || 0);
       return acc;
@@ -3311,12 +3343,13 @@ async function salvarFaturamento(criadorId) {
 function modalKpi(criadorId, nome) {
   if (!requireAdmin('alimentação de KPIs oficiais')) return;
   const plataformasKpi = listaUnica([...plataformasSociais(), ...plataformasFaturamento()]);
+  const primeiraPlataforma = plataformasKpi[0] || 'Instagram';
   openModal(`Alimentar KPI — ${esc(nome)}`, `
     <div class="form-group"><label class="form-label">Plataforma</label>
-      <select id="kpi-plat">${plataformasKpi.map(p=>`<option value="${attr(p)}">${esc(p)}</option>`).join('')}</select>
+      <select id="kpi-plat" onchange="atualizarMetricasKpi()">${plataformasKpi.map(p=>`<option value="${attr(p)}">${esc(p)}</option>`).join('')}</select>
     </div>
     <div class="form-group"><label class="form-label">Métrica</label>
-      <select id="kpi-met">${STATE.metricasKpi.map(m=>`<option value="${attr(m)}">${esc(m)}</option>`).join('')}</select>
+      <select id="kpi-met">${metricasDaPlataforma(primeiraPlataforma).map(m=>`<option value="${attr(m)}">${esc(labelMetrica(m))}</option>`).join('')}</select>
     </div>
     <div class="form-group"><label class="form-label">Valor</label><input id="kpi-val" type="number" placeholder="ex: 1500"></div>
     <div class="form-group"><label class="form-label">Data</label><input id="kpi-data" type="date" value="${hoje()}"></div>
@@ -3327,14 +3360,34 @@ function modalKpi(criadorId, nome) {
      <button class="btn btn-primary" onclick="salvarKpi('${criadorId}')">Salvar</button>`
   );
 }
+function labelMetrica(metrica) {
+  return {
+    seguidores:'Seguidores',
+    visualizacoes:'Visualizações',
+    postagens:'Postagens feitas',
+    assinantes:'Assinantes',
+    vendas_avulsas:'Vendas avulsas',
+    engajamento:'Engajamento'
+  }[normalizarMetrica(metrica)] || metrica;
+}
+function atualizarMetricasKpi() {
+  const plataforma = document.getElementById('kpi-plat')?.value;
+  const select = document.getElementById('kpi-met');
+  if (!select) return;
+  select.innerHTML = metricasDaPlataforma(plataforma).map(m => `<option value="${attr(m)}">${esc(labelMetrica(m))}</option>`).join('');
+}
 
 async function salvarKpi(criadorId) {
   if (!requireAdmin('alimentação de KPIs oficiais')) return;
-  const plataforma = document.getElementById('kpi-plat').value;
-  const metrica = document.getElementById('kpi-met').value;
+  const plataforma = plataformaCanonica(document.getElementById('kpi-plat').value);
+  const metrica = normalizarMetrica(document.getElementById('kpi-met').value);
   const valor = parseFloat(document.getElementById('kpi-val').value);
   const data = document.getElementById('kpi-data').value;
   if (!valor) { toast('Informe o valor','warn'); return; }
+  if (!metricasDaPlataforma(plataforma).includes(metrica)) {
+    toast('Métrica incompatível com esta plataforma','warn');
+    return;
+  }
   const { error } = await sb.from('kpis_manuais').insert({criador_id: criadorId, plataforma, metrica, valor, data, mes: (data || hoje()).slice(0,7)});
   if (error) { toast('Erro: '+error.message,'err'); return; }
   toast('KPI salvo!','ok');
