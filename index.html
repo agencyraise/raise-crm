@@ -3176,6 +3176,10 @@ async function carregarDossieOp(id, btnEl) {
   btnEl.classList.add('btn-primary'); btnEl.classList.remove('btn-secondary');
 
   const cr = STATE.criadores.find(c=>c.id===id);
+  if (!cr || cr.operador_id !== STATE.userId || !cr.ativo) {
+    document.getElementById('opdossie-content').innerHTML = `<div class="alerta-item alta"><div class="alerta-icon">!</div><div><div class="alerta-msg">Acesso bloqueado</div><div class="alerta-criador">Este criador nao esta atribuido a este operador.</div></div></div>`;
+    return;
+  }
   let d = {};
   try {
     d = await buscarOuCriarDossie(id);
@@ -3197,6 +3201,10 @@ async function carregarDossieOp(id, btnEl) {
     <div class="form-group"><label class="form-label">Observacoes</label><textarea readonly>${esc(d.observacoes||'Sem observacoes')}</textarea></div>
     <div class="form-group"><label class="form-label">Links</label><textarea readonly>${esc(JSON.stringify(d.links||[], null, 2))}</textarea></div>
     <div class="form-group"><label class="form-label">Documentos</label><textarea readonly>${esc(d.documentos||'Sem documentos')}</textarea></div>
+    <div class="sep"></div>
+    <div class="card-title" style="color:var(--p)">Cofre de Senhas</div>
+    <div class="cofre-field" onclick="revelarCofre(this)">${esc(JSON.stringify(d.cofre||{}, null, 2))}</div>
+    <div class="text-muted" style="font-size:12px;margin-top:8px">Toque no cofre para revelar. O operador visualiza somente criadores atribuídos a ele.</div>
   </div>`;
 }
 
