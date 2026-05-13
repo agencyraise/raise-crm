@@ -814,6 +814,22 @@ async function garantirRotinaOficial() {
   }
 }
 
+async function carregarObrigacoesAtivas() {
+  await garantirRotinaOficial();
+  const { data, error } = await sb.from('obrigacoes').select('*').eq('ativo', true);
+  if (error) throw error;
+
+  const chaves = new Set((data || []).map(o => `${o.dia}|${normalizarResponsavel(o.responsavel)}|${o.descricao}`));
+  const faltantes = ROTINA_OFICIAL.filter(o => !chaves.has(`${o.dia}|${o.responsavel}|${o.descricao}`));
+  if (!faltantes.length) return data || [];
+
+  const { error: insertError } = await sb.from('obrigacoes').insert(faltantes.map(o => ({...o, ativo:true})));
+  if (insertError) throw insertError;
+  const { data: atualizadas, error: refetchError } = await sb.from('obrigacoes').select('*').eq('ativo', true);
+  if (refetchError) throw refetchError;
+  return atualizadas || [];
+}
+
 function initApp() {
   setupSidebar();
   const firstPage = getNavItems()[0]?.id;
