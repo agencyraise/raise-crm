@@ -390,6 +390,7 @@ let STATE = {
 
 const PLATAFORMAS_FATURAMENTO = ['Privacy','OnlyFans','Telegram VIP','Venda Avulsa'];
 const PLATAFORMAS_SOCIAIS = ['Instagram','TikTok','Kwai','Facebook','YouTube','X'];
+const METRICAS_KPI_PADRAO = ['seguidores','assinantes','visualizacoes','postagens','vendas_avulsas','engajamento'];
 
 function listaUnica(items) {
   return [...new Set(items.filter(Boolean))];
@@ -439,7 +440,6 @@ const ROTINA_OFICIAL = [
   {dia:'quarta', responsavel:'operador', descricao:'Verificar DM'},
   {dia:'quarta', responsavel:'operador', descricao:'Monitoramento de engajamento'},
   {dia:'quarta', responsavel:'operador', descricao:'Venda via chat Privacy'},
-  {dia:'quarta', responsavel:'operador', descricao:'Envio de ideias de conteudo'},
   {dia:'quarta', responsavel:'admin', descricao:'Post grupo free'},
   {dia:'quarta', responsavel:'admin', descricao:'Post X/Twitter'},
   {dia:'quarta', responsavel:'admin', descricao:'Monitorar faturamento'},
@@ -507,8 +507,21 @@ function rotinaDoDia(obrigacoes, dia, responsaveis = null) {
     const resp = normalizarResponsavel(o.responsavel);
     const diaOk = o.dia === 'todos' || o.dia === dia;
     const respOk = !responsaveis || responsaveis.includes(resp);
-    return diaOk && respOk;
+    return diaOk && respOk && obrigacaoExibivel(o);
   });
+}
+function chaveObrigacao(o) {
+  return `${o.dia}|${normalizarResponsavel(o.responsavel)}|${String(o.descricao || '').trim().toLowerCase()}`;
+}
+function obrigacaoOficial(o) {
+  const chave = chaveObrigacao(o);
+  return ROTINA_OFICIAL.some(item => chaveObrigacao(item) === chave);
+}
+function obrigacaoExibivel(o) {
+  const desc = String(o.descricao || '').trim().toLowerCase();
+  if (o.dia === 'quarta' && desc === 'envio de ideias de conteudo') return false;
+  if (['agencia','ambos'].includes(o.responsavel) && !obrigacaoOficial(o)) return false;
+  return true;
 }
 function normalizarResponsavel(resp) {
   if (resp === 'agencia') return 'operador';
@@ -572,6 +585,17 @@ const inicioSemana = () => {
   base.setDate(base.getDate() - base.getDay());
   return dataBR(base);
 };
+const dataRelativa = (deltaDias) => {
+  const [y,m,d] = hoje().split('-').map(Number);
+  const base = new Date(y, m - 1, d, 12);
+  base.setDate(base.getDate() + deltaDias);
+  return dataBR(base);
+};
+function diaNomeDeData(dataIso) {
+  const [y,m,d] = dataIso.split('-').map(Number);
+  const dt = new Date(y, m - 1, d, 12);
+  return diasSemana[dt.getDay()];
+}
 
 function fmt(val) {
   const n = Number(val) || 0;
@@ -588,11 +612,86 @@ function somarKpisPorMetrica(kpis = []) {
     return acc;
   }, {});
 }
+function resumoIndicadores(faturamentos = [], kpis = []) {
+  const sociais = plataformasSociais();
+  const adultos = plataformasFaturamento();
+  const kpisSociais = kpis.filter(k => sociais.includes(k.plataforma));
+  const kpisAdultos = kpis.filter(k => adultos.includes(k.plataforma));
+  const totalFat = faturamentos.reduce((acc, f) => acc + Number(f.valor || 0), 0);
+  const totalFatVendaAvulsa = faturamentos.filter(f => f.plataforma === 'Venda Avulsa').reduce((acc, f) => acc + Number(f.valor || 0), 0);
+  const totaisSociais = somarKpisPorMetrica(kpisSociais);
+  const totaisAdultos = somarKpisPorMetrica(kpisAdultos);
+  const totaisGerais = somarKpisPorMetrica(kpis);
+
+  return {
+    totalFat,
+    seguidores: totaisSociais.seguidores || totaisGerais.seguidores || 0,
+    visualizacoes: totaisSociais.visualizacoes || totaisGerais.visualizacoes || 0,
+    postagens: totaisSociais.postagens || totaisGerais.postagens || 0,
+    assinantes: totaisAdultos.assinantes || totaisGerais.assinantes || 0,
+    vendasAvulsas: (totaisAdultos.vendas_avulsas || 0) + totalFatVendaAvulsa,
+    engajamento: totaisSociais.engajamento || 0,
+    fatPorPlataforma: faturamentos.reduce((acc, f) => {
+      acc[f.plataforma] = (acc[f.plataforma] || 0) + Number(f.valor || 0);
+      return acc;
+    }, {}),
+    kpiPorPlataforma: kpis.reduce((acc, k) => {
+      acc[k.plataforma] = acc[k.plataforma] || {};
+      acc[k.plataforma][k.metrica] = (acc[k.plataforma][k.metrica] || 0) + Number(k.valor || 0);
+      return acc;
+    }, {})
+  };
+}
+function resumoCardsHtml(resumo, contexto = 'geral') {
+  const cards = [
+    ['Faturamento', fmtBRL(resumo.totalFat), contexto === 'criador' ? 'informado pela agencia' : 'mes atual'],
+    ['Seguidores', fmt(resumo.seguidores), 'redes sociais'],
+    ['Visualizacoes', fmt(resumo.visualizacoes), 'redes sociais'],
+    ['Assinantes', fmt(resumo.assinantes), 'plataformas +18'],
+    ['Postagens', fmt(resumo.postagens), 'posts feitos'],
+  ];
+  return `<div class="stats-grid">${cards.map((c,i)=>`
+    <div class="stat-card ${i===0?'accent':''}">
+      <div class="stat-label">${esc(c[0])}</div>
+      <div class="stat-val">${c[1]}</div>
+      <div class="stat-sub">${esc(c[2])}</div>
+    </div>`).join('')}</div>`;
+}
+function plataformasResumoHtml(resumo, opts = {}) {
+  const showFat = opts.showFat !== false;
+  const adultos = plataformasFaturamento();
+  const sociais = plataformasSociais();
+  const adultosHtml = adultos.map(p => {
+    const k = resumo.kpiPorPlataforma[p] || {};
+    const fat = resumo.fatPorPlataforma[p] || 0;
+    return `<div class="projeto-card">
+      <div class="pj-header"><div class="pj-name">${esc(p)}</div><span class="badge badge-purple">+18</span></div>
+      <div class="pj-meta">
+        ${showFat ? `<div class="pj-meta-item">Faturamento<br><span class="pj-meta-val">${fmtBRL(fat)}</span></div>` : ''}
+        <div class="pj-meta-item">Assinantes<br><span class="pj-meta-val">${fmt(k.assinantes || 0)}</span></div>
+        <div class="pj-meta-item">Vendas avulsas<br><span class="pj-meta-val">${fmt((k.vendas_avulsas || 0) + (p === 'Venda Avulsa' ? fat : 0))}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+  const sociaisHtml = sociais.map(p => {
+    const k = resumo.kpiPorPlataforma[p] || {};
+    return `<div class="projeto-card">
+      <div class="pj-header"><div class="pj-name">${esc(p)}</div><span class="badge badge-info">Social</span></div>
+      <div class="pj-meta">
+        <div class="pj-meta-item">Seguidores<br><span class="pj-meta-val">${fmt(k.seguidores || 0)}</span></div>
+        <div class="pj-meta-item">Visualizacoes<br><span class="pj-meta-val">${fmt(k.visualizacoes || 0)}</span></div>
+        <div class="pj-meta-item">Postagens<br><span class="pj-meta-val">${fmt(k.postagens || 0)}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="section-title mb-4">Plataformas +18</div><div class="grid-2" style="margin-bottom:18px">${adultosHtml}</div>
+    <div class="section-title mb-4">Redes sociais</div><div class="grid-2">${sociaisHtml}</div>`;
+}
 function kpiSocialResumoHtml(kpis = []) {
   const sociais = plataformasSociais();
   const dadosSociais = kpis.filter(k => sociais.includes(k.plataforma));
   const totais = somarKpisPorMetrica(dadosSociais);
-  const cards = ['seguidores','visualizacoes','engajamento','assinantes'].map(metrica => `
+  const cards = ['seguidores','visualizacoes','postagens','engajamento'].map(metrica => `
     <div class="stat-card">
       <div class="stat-label">${esc(metrica)}</div>
       <div class="stat-val">${fmt(totais[metrica] || 0)}</div>
@@ -776,7 +875,8 @@ async function boot() {
   STATE.criadores = crs.data || [];
   const plataformasConfig = cfg1.data?.[0]?.valor?.length ? cfg1.data[0].valor : [];
   STATE.plataformas = listaUnica([...plataformasConfig, ...PLATAFORMAS_FATURAMENTO, ...PLATAFORMAS_SOCIAIS]);
-  STATE.metricasKpi = cfg2.data?.[0]?.valor?.length ? cfg2.data[0].valor : ['seguidores','assinantes','visualizacoes','engajamento'];
+  const metricasConfig = cfg2.data?.[0]?.valor?.length ? cfg2.data[0].valor : [];
+  STATE.metricasKpi = listaUnica([...metricasConfig, ...METRICAS_KPI_PADRAO]);
   await garantirRotinaOficial();
 
   // Restaurar sessão
@@ -812,6 +912,10 @@ async function garantirRotinaOficial() {
     const { error: insertError } = await sb.from('obrigacoes').insert(novas.map(o => ({...o, ativo:true})));
     if (insertError) console.warn('Rotina oficial nao inserida:', insertError.message);
   }
+  await sb.from('obrigacoes')
+    .update({ativo:false})
+    .eq('dia','quarta')
+    .ilike('descricao','Envio de ideias de conteudo');
 }
 
 async function carregarObrigacoesAtivas() {
@@ -1074,14 +1178,17 @@ async function renderDashboard() {
   const content = document.getElementById('content');
 
   // Dados
-  const [fatData, chamData, midData, advData] = await Promise.all([
-    sb.from('faturamento').select('valor').eq('mes', mes),
+  const [fatData, kpiGeralData, chamData, midData, advData, logsData] = await Promise.all([
+    sb.from('faturamento').select('valor, plataforma').eq('mes', mes),
+    sb.from('kpis_manuais').select('valor, metrica, plataforma').eq('mes', mes),
     sb.from('chamados').select('status').neq('status','resolvido'),
     sb.from('midias_status').select('status').eq('status','pendente'),
     sb.from('advertencias').select('id').eq('ativo',true),
+    sb.from('logs_extra').select('*, operadores(nome), criadores(nome)').eq('visto_admin', false).order('created_at',{ascending:false}).limit(5),
   ]);
 
-  const totalFat = fatData.data?.reduce((a,b)=>a+Number(b.valor),0) || 0;
+  const resumoGeral = resumoIndicadores(fatData.data || [], kpiGeralData.data || []);
+  const totalFat = resumoGeral.totalFat;
 
   // Semana atual
   const { data: fatSem } = await sb.from('faturamento').select('valor').gte('data', inicioSemana());
@@ -1128,6 +1235,16 @@ async function renderDashboard() {
       <div class="stat-val" style="color:var(--warn)">${midData.data?.length || 0}</div>
       <div class="stat-sub">para enviar</div>
     </div>
+    <div class="stat-card">
+      <div class="stat-label">Postagens</div>
+      <div class="stat-val">${fmt(resumoGeral.postagens)}</div>
+      <div class="stat-sub">somadas no mes</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Logs Extras</div>
+      <div class="stat-val">${logsData.data?.length || 0}</div>
+      <div class="stat-sub">aguardando admin</div>
+    </div>
   </div>`;
 
   // Alertas críticos
@@ -1144,8 +1261,20 @@ async function renderDashboard() {
       </div>`).join('')}
     </div>`;
   }
+  const htmlLogs = logsData.data?.length ? `<div class="card mb-4">
+    <div class="card-title">Logs extras da equipe</div>
+    ${logsData.data.map(l=>`<div class="fin-item">
+      <div><div class="fin-tipo">${esc(l.operadores?.nome || l.operador_id)}</div><div class="fin-desc">${esc(l.criadores?.nome || l.criador_id)} · ${esc(l.mensagem)}</div></div>
+      <button class="btn btn-secondary btn-xs" onclick="marcarLogVisto('${jsArg(l.id)}')">Visto</button>
+    </div>`).join('')}
+  </div>` : '';
 
-  content.innerHTML = `<div>${htmlStats}${htmlAlertas}
+  content.innerHTML = `<div>${htmlStats}${htmlAlertas}${htmlLogs}
+    <div class="card mb-4">
+      <div class="card-title">Indicadores consolidados</div>
+      ${resumoCardsHtml(resumoGeral, 'admin')}
+      ${plataformasResumoHtml(resumoGeral, {showFat:true})}
+    </div>
     <div class="section-header">
       <div class="section-title">Saúde dos Projetos</div>
     </div>
@@ -1183,6 +1312,11 @@ async function renderDashboard() {
 function tipoIcon(tipo) {
   return {rotina:'📅',midia:'🎬',kpi:'📊',faturamento:'💰',chamado:'💬',advertencia:'⚠️',log:'📝'}[tipo] || '🔔';
 }
+async function marcarLogVisto(id) {
+  const { error } = await sb.from('logs_extra').update({visto_admin:true}).eq('id', id);
+  if (error) toast('Erro ao marcar log: '+error.message,'err');
+  else { toast('Log marcado como visto','ok'); renderPage('dashboard'); }
+}
 
 // ============================================================
 // PROJETOS
@@ -1205,12 +1339,11 @@ async function renderProjetos() {
   for (const cr of criadores) {
     const [saude, fatData, kpiData] = await Promise.all([
       calcularSaude(cr.id),
-      sb.from('faturamento').select('valor').eq('criador_id', cr.id).eq('mes', mes),
+      sb.from('faturamento').select('valor, plataforma').eq('criador_id', cr.id).eq('mes', mes),
       sb.from('kpis_manuais').select('metrica, valor, plataforma').eq('criador_id', cr.id).eq('mes', mes),
     ]);
     const op = STATE.operadores.find(o=>o.id===cr.operador_id);
-    const totalFat = fatData.data?.reduce((a,b)=>a+Number(b.valor),0) || 0;
-    const totaisKpi = somarKpisPorMetrica((kpiData.data || []).filter(k => plataformasSociais().includes(k.plataforma)));
+    const resumo = resumoIndicadores(fatData.data || [], kpiData.data || []);
 
     const card = document.createElement('div');
     card.className = 'projeto-card';
@@ -1231,12 +1364,15 @@ async function renderProjetos() {
       </div>
       <div class="text-muted mt-4">${esc(saude.motivos.slice(0,2).join(' · ') || '✓ Projeto saudável')}</div>
       <div class="pj-meta">
-        <div class="pj-meta-item">Faturamento Mês<br><span class="pj-meta-val">${fmtBRL(totalFat)}</span></div>
+        <div class="pj-meta-item">Faturamento Mês<br><span class="pj-meta-val">${fmtBRL(resumo.totalFat)}</span></div>
         <div class="pj-meta-item">Operador<br><span class="pj-meta-val">${esc(op?.nome || '—')}</span></div>
-        <div class="pj-meta-item">Seguidores<br><span class="pj-meta-val">${fmt(totaisKpi.seguidores || 0)}</span></div>
-        <div class="pj-meta-item">Visualizacoes<br><span class="pj-meta-val">${fmt(totaisKpi.visualizacoes || 0)}</span></div>
+        <div class="pj-meta-item">Seguidores<br><span class="pj-meta-val">${fmt(resumo.seguidores)}</span></div>
+        <div class="pj-meta-item">Visualizacoes<br><span class="pj-meta-val">${fmt(resumo.visualizacoes)}</span></div>
+        <div class="pj-meta-item">Postagens<br><span class="pj-meta-val">${fmt(resumo.postagens)}</span></div>
+        <div class="pj-meta-item">Assinantes<br><span class="pj-meta-val">${fmt(resumo.assinantes)}</span></div>
         <div class="pj-meta-item">Score<br><span class="pj-meta-val">${saude.score}/100</span></div>
       </div>
+      <div style="margin-top:12px">${plataformasResumoHtml(resumo, {showFat:true})}</div>
       <div style="margin-top:12px">
         <button class="btn btn-secondary btn-sm" onclick="modalFaturamento('${jsArg(cr.id)}','${jsArg(cr.nome)}')">💰 Lançar</button>
         <button class="btn btn-secondary btn-sm" onclick="modalKpi('${jsArg(cr.id)}','${jsArg(cr.nome)}')">📊 KPI</button>
@@ -1356,7 +1492,7 @@ async function renderRotina() {
   const content = document.getElementById('content');
   const diaHoje = diaNome();
   const { data: obrigacoes } = await sb.from('obrigacoes').select('*').eq('ativo', true);
-  const rotinaHoje = rotinaDoDia(obrigacoes, diaHoje);
+  const rotinaHoje = rotinaDoDia(obrigacoes, diaHoje, ['admin']);
   const criadores = STATE.criadores.filter(c=>c.ativo);
 
   content.innerHTML = `<div>
@@ -1367,7 +1503,10 @@ async function renderRotina() {
     ${rotinaHoje.length === 0 ? '<div class="empty"><div class="empty-icon">😌</div><div class="empty-msg">Nenhuma obrigação para hoje</div></div>' : ''}
     <div id="rotina-lista"></div>
     <div class="sep"></div>
-    <div class="section-title mb-4">Status por Criador</div>
+    <div class="section-title mb-4">Pendencias de ontem</div>
+    <div id="rotina-atrasos"></div>
+    <div class="sep"></div>
+    <div class="section-title mb-4">Status dos criadores hoje</div>
     <div id="rotina-criadores"></div>
   </div>`;
 
@@ -1384,8 +1523,27 @@ async function renderRotina() {
     lista.appendChild(el);
   }
 
+  const atrasosDiv = document.getElementById('rotina-atrasos');
+  const dataOntem = dataRelativa(-1);
+  const diaOntem = diaNomeDeData(dataOntem);
+  const rotinaOntem = rotinaDoDia(obrigacoes, diaOntem, ['operador','criador','admin_criador','todos']);
+  const idsOntem = rotinaOntem.map(o=>o.id);
+  const { data: statusOntem } = idsOntem.length
+    ? await sb.from('rotina_status').select('obrigacao_id,criador_id,feito').eq('data', dataOntem).in('obrigacao_id', idsOntem)
+    : { data: [] };
+  const feitasOntem = new Set((statusOntem || []).filter(s=>s.feito).map(s=>`${s.criador_id}|${s.obrigacao_id}`));
+  const pendencias = [];
+  for (const cr of criadores) {
+    for (const ob of rotinaOntem) {
+      if (!feitasOntem.has(`${cr.id}|${ob.id}`)) pendencias.push({criador:cr.nome, tarefa:ob.descricao, resp:labelResponsavel(ob.responsavel)});
+    }
+  }
+  atrasosDiv.innerHTML = pendencias.length ? pendencias.slice(0,18).map(p=>`<div class="alerta-item media">
+    <div class="alerta-icon">!</div><div><div class="alerta-msg">${esc(p.tarefa)}</div><div class="alerta-criador">${esc(p.criador)} · ${esc(p.resp)}</div></div>
+  </div>`).join('') : '<div class="alerta-item baixa"><div class="alerta-icon">✓</div><div><div class="alerta-msg">Nenhuma pendencia do dia anterior.</div></div></div>';
+
   const crDiv = document.getElementById('rotina-criadores');
-  const obrigacoesCriadorHoje = rotinaHoje.filter(o=>['criador','admin_criador','todos'].includes(normalizarResponsavel(o.responsavel)));
+  const obrigacoesCriadorHoje = rotinaDoDia(obrigacoes, diaHoje, ['criador','admin_criador','todos']);
   const obrigacoesCriadorIds = obrigacoesCriadorHoje.map(o=>o.id);
   for (const cr of criadores) {
     const { data: status } = await sb.from('rotina_status').select('*').eq('criador_id', cr.id).eq('data', hoje());
@@ -1499,6 +1657,10 @@ async function renderMidias() {
       <div class="section-title">Mídias da Semana</div>
       <button class="btn btn-primary" onclick="modalLancarMidia()">+ Lançar</button>
     </div>
+    <div class="alerta-item media">
+      <div class="alerta-icon">⏰</div>
+      <div><div class="alerta-msg">Prazo máximo para envio do banco de mídias: domingo.</div><div class="alerta-criador">Use Notificar para lembrar quem ainda não enviou.</div></div>
+    </div>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Criador</th><th>Tipo</th><th>Status</th><th>Notificado</th><th>Ações</th></tr></thead>
@@ -1508,13 +1670,14 @@ async function renderMidias() {
   </div>`;
 
   const tbody = document.getElementById('midias-tbody');
-  if (!midiasData?.length) {
-    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--tx3);padding:24px">Nenhuma mídia esta semana</td></tr>';
-    return;
-  }
-  for (const m of midiasData) {
+  const midias = midiasData || [];
+  const enviados = new Set(midias.filter(m => ['enviado','aprovado'].includes(m.status)).map(m => m.criador_id));
+  const comRegistro = new Set(midias.map(m => m.criador_id));
+  const faltantes = criadores.filter(c => !enviados.has(c.id));
+  const linhas = [];
+  for (const m of midias) {
     const cr = STATE.criadores.find(c=>c.id===m.criador_id);
-    tbody.innerHTML += `<tr>
+    linhas.push(`<tr>
       <td><strong>${esc(cr?.nome || m.criador_id)}</strong></td>
       <td>${esc(m.tipo)}</td>
       <td>${statusBadge(m.status)}</td>
@@ -1525,8 +1688,16 @@ async function renderMidias() {
         </select>
         ${!m.notificado ? `<button class="btn btn-secondary btn-xs" onclick="notificarCriador('${jsArg(m.criador_id)}','${jsArg(m.id)}')">🔔 Notificar</button>` : ''}
       </td>
-    </tr>`;
+    </tr>`);
   }
+  faltantes.filter(c => !comRegistro.has(c.id)).forEach(c => linhas.push(`<tr>
+    <td><strong>${esc(c.nome)}</strong></td>
+    <td>Banco de mídias</td>
+    <td><span class="badge badge-warn">sem envio</span></td>
+    <td><span class="badge badge-warn">Não</span></td>
+    <td><button class="btn btn-secondary btn-xs" onclick="notificarCriador('${jsArg(c.id)}','')">🔔 Notificar</button></td>
+  </tr>`));
+  tbody.innerHTML = linhas.join('') || '<tr><td colspan="5" style="text-align:center;color:var(--tx3);padding:24px">Nenhuma mídia esta semana</td></tr>';
 }
 
 function statusBadge(s) {
@@ -1542,7 +1713,17 @@ async function atualizarStatusMidia(id, status) {
 
 async function notificarCriador(criadorId, midiaId) {
   const mensagem = 'ATENCAO: voce tem midias pendentes para enviar esta semana. Prazo maximo: domingo.';
-  const { error: e1 } = await sb.from('midias_status').update({notificado: true, updated_at: new Date().toISOString()}).eq('id', midiaId);
+  let e1 = null;
+  if (midiaId) {
+    const resp = await sb.from('midias_status').update({notificado: true, updated_at: new Date().toISOString()}).eq('id', midiaId);
+    e1 = resp.error;
+  } else {
+    try {
+      await salvarOuAtualizarMidia({criador_id: criadorId, tipo:'rotineiro', status:'pendente', semana: inicioSemana(), notificado:true});
+    } catch (error) {
+      e1 = error;
+    }
+  }
   const { data: existente, error: eBusca } = await sb.from('notificacoes')
     .select('id')
     .eq('criador_id', criadorId)
@@ -1571,7 +1752,7 @@ async function criarNotificacaoCriador(criadorId, mensagem, prioritaria = true) 
   return data?.[0]?.id;
 }
 
-async function salvarOuAtualizarMidia({criador_id, tipo, status, semana}) {
+async function salvarOuAtualizarMidia({criador_id, tipo, status, semana, notificado = false}) {
   const { data: atual, error: eBusca } = await sb.from('midias_status')
     .select('id,status')
     .eq('criador_id', criador_id)
@@ -1580,14 +1761,16 @@ async function salvarOuAtualizarMidia({criador_id, tipo, status, semana}) {
     .limit(1);
   if (eBusca) throw eBusca;
   if (atual?.length) {
+    const patch = {status, updated_at: new Date().toISOString()};
+    if (notificado) patch.notificado = true;
     const { error } = await sb.from('midias_status')
-      .update({status, updated_at: new Date().toISOString()})
+      .update(patch)
       .eq('id', atual[0].id);
     if (error) throw error;
     return { updated: true, id: atual[0].id };
   }
   const { data, error } = await sb.from('midias_status')
-    .insert({criador_id, tipo, status, semana})
+    .insert({criador_id, tipo, status, semana, notificado})
     .select('id')
     .limit(1);
   if (error) throw error;
@@ -2415,9 +2598,12 @@ async function renderRelatorios() {
   const criadores = STATE.criadores.filter(c=>c.ativo);
 
   const { data: fatTotal } = await sb.from('faturamento').select('criador_id, valor, plataforma').eq('mes', mes);
+  const { data: kpiTotal } = await sb.from('kpis_manuais').select('criador_id, valor, metrica, plataforma').eq('mes', mes);
   const { data: chamTodos } = await sb.from('chamados').select('status, criador_id');
   const { data: midTodos } = await sb.from('midias_status').select('status, criador_id');
   const { data: rotHoje } = await sb.from('rotina_status').select('criador_id,feito').eq('data', hoje());
+  const { data: rotMes } = await sb.from('rotina_status').select('criador_id,feito').gte('data', mes+'-01');
+  const resumoGeral = resumoIndicadores(fatTotal || [], kpiTotal || []);
 
   const fatPorCriador = {};
   fatTotal?.forEach(f => { fatPorCriador[f.criador_id] = (fatPorCriador[f.criador_id]||0) + Number(f.valor); });
@@ -2432,6 +2618,10 @@ async function renderRelatorios() {
 
   content.innerHTML = `<div>
     <div class="section-header"><div class="section-title">Relatorios - ${esc(mes)}</div></div>
+    <div class="card mb-4">
+      <div class="card-title">Resumo geral de indicadores</div>
+      ${resumoCardsHtml(resumoGeral, 'admin')}
+    </div>
     <div class="grid-2">
       <div class="card">
         <div class="card-title">Faturamento por Criador</div>
@@ -2461,6 +2651,16 @@ async function renderRelatorios() {
           <div class="stat-card"><div class="stat-label">Pendentes</div><div class="stat-val">${Math.max(rotinaTotal-rotinaFeitas,0)}</div></div>
         </div>
         <div id="rel-atividades" style="margin-top:12px"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Entrega da equipe no mes</div>
+        ${STATE.operadores.filter(o=>o.ativo).map(op=>{
+          const ids = criadores.filter(c=>c.operador_id===op.id).map(c=>c.id);
+          const marcacoes = (rotMes || []).filter(r=>ids.includes(r.criador_id));
+          const feitas = marcacoes.filter(r=>r.feito).length;
+          const posts = (kpiTotal || []).filter(k=>ids.includes(k.criador_id) && k.metrica === 'postagens').reduce((a,b)=>a+Number(b.valor||0),0);
+          return `<div class="fin-item"><div><div class="fin-tipo">${esc(op.nome)}</div><div class="fin-desc">${ids.length} criador(es) · ${fmt(posts)} postagens</div></div><div class="fin-val">${feitas}/${marcacoes.length}</div></div>`;
+        }).join('')}
       </div>
       <div class="card">
         <div class="card-title">Chamados e midias</div>
@@ -2839,13 +3039,15 @@ async function renderOpCriadores() {
 
   const grid = document.getElementById('op-cr-grid');
   for (const cr of meusCriadores) {
-    const [saude, kpiData] = await Promise.all([
+    const [saude, kpiData, fatData, rotData] = await Promise.all([
       calcularSaude(cr.id),
       sb.from('kpis_manuais').select('metrica, valor, plataforma').eq('criador_id', cr.id).eq('mes', mes),
+      sb.from('faturamento').select('valor, plataforma').eq('criador_id', cr.id).eq('mes', mes),
+      sb.from('rotina_status').select('feito').eq('criador_id', cr.id).gte('data', mes+'-01'),
     ]);
     const { data: advData } = await sb.from('advertencias').select('motivo,gravidade,created_at').eq('criador_id', cr.id).eq('ativo', true).order('created_at',{ascending:false}).limit(2);
-    const kpisSociais = kpiData.data?.filter(k => plataformasSociais().includes(k.plataforma)) || [];
-    const totaisKpi = somarKpisPorMetrica(kpisSociais);
+    const resumo = resumoIndicadores(fatData.data || [], kpiData.data || []);
+    const feitas = rotData.data?.filter(r=>r.feito).length || 0;
 
     grid.innerHTML += `<div class="projeto-card">
       <div class="pj-header">
@@ -2854,10 +3056,14 @@ async function renderOpCriadores() {
       </div>
       <div class="saude-bar saude-${saudeClass(saude.score)}"><div class="saude-fill" style="width:${saude.score}%"></div></div>
       <div class="pj-meta">
-        <div class="pj-meta-item">Seguidores<br><span class="pj-meta-val">${fmt(totaisKpi.seguidores || 0)}</span></div>
-        <div class="pj-meta-item">Visualizacoes<br><span class="pj-meta-val">${fmt(totaisKpi.visualizacoes || 0)}</span></div>
+        <div class="pj-meta-item">Seguidores<br><span class="pj-meta-val">${fmt(resumo.seguidores)}</span></div>
+        <div class="pj-meta-item">Visualizacoes<br><span class="pj-meta-val">${fmt(resumo.visualizacoes)}</span></div>
+        <div class="pj-meta-item">Postagens<br><span class="pj-meta-val">${fmt(resumo.postagens)}</span></div>
+        <div class="pj-meta-item">Assinantes<br><span class="pj-meta-val">${fmt(resumo.assinantes)}</span></div>
+        <div class="pj-meta-item">Atividades feitas<br><span class="pj-meta-val">${fmt(feitas)}</span></div>
         <div class="pj-meta-item">Score<br><span class="pj-meta-val">${saude.score}/100</span></div>
       </div>
+      <div style="margin-top:12px">${plataformasResumoHtml(resumo, {showFat:false})}</div>
       <div style="margin-top:12px;font-size:12px;color:var(--tx3);background:var(--p4);border:1px solid var(--p3);border-radius:var(--r2);padding:10px">
         KPIs sociais sao alimentados pelo ADM. Faturamento fica visivel somente para ADM e criador.
       </div>
@@ -2873,18 +3079,14 @@ async function renderOpCriadores() {
 
 async function renderOpMidias() {
   const content = document.getElementById('content');
-  const meusCriadores = STATE.criadores.filter(c=>c.operador_id===STATE.userId && c.ativo).map(c=>c.id);
+  const meusCriadoresLista = STATE.criadores.filter(c=>c.operador_id===STATE.userId && c.ativo);
+  const meusCriadores = meusCriadoresLista.map(c=>c.id);
   const { data: midias } = await sb.from('midias_status').select('*, criadores(nome)').in('criador_id', meusCriadores.length ? meusCriadores : ['none']).gte('semana', inicioSemana());
-
-  content.innerHTML = `<div>
-    <div class="section-header">
-      <div class="section-title">Mídias da Semana</div>
-      <div class="text-muted" style="font-size:12px">Novas solicitações de mídia são lançadas pelo ADM.</div>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Criador</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead>
-        <tbody>${midias?.map(m=>`<tr>
+  const registros = midias || [];
+  const enviados = new Set(registros.filter(m => ['enviado','aprovado'].includes(m.status)).map(m => m.criador_id));
+  const comRegistro = new Set(registros.map(m => m.criador_id));
+  const faltantes = meusCriadoresLista.filter(c => !enviados.has(c.id));
+  const linhas = registros.map(m=>`<tr>
           <td><strong>${esc(m.criadores?.nome||m.criador_id)}</strong></td>
           <td>${esc(m.tipo)}</td>
           <td>${statusBadge(m.status)}</td>
@@ -2892,9 +3094,26 @@ async function renderOpMidias() {
             <select class="btn btn-secondary btn-xs" onchange="atualizarStatusMidia('${m.id}',this.value)">
               ${['pendente','enviado','aprovado','recusado'].map(s=>`<option ${m.status===s?'selected':''} value="${s}">${s}</option>`).join('')}
             </select>
-            ${!m.notificado ? `<button class="btn btn-secondary btn-xs" onclick="notificarCriador('${jsArg(m.criador_id)}','${jsArg(m.id)}')">🔔</button>` : ''}
+            ${!m.notificado ? `<button class="btn btn-secondary btn-xs" onclick="notificarCriador('${jsArg(m.criador_id)}','${jsArg(m.id)}')">🔔 Notificar</button>` : ''}
           </td>
-        </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;padding:24px">Nenhuma mídia</td></tr>'}
+        </tr>`);
+  faltantes.filter(c => !comRegistro.has(c.id)).forEach(c => linhas.push(`<tr>
+          <td><strong>${esc(c.nome)}</strong></td>
+          <td>Banco de mídias</td>
+          <td><span class="badge badge-warn">sem envio</span></td>
+          <td><button class="btn btn-secondary btn-xs" onclick="notificarCriador('${jsArg(c.id)}','')">🔔 Notificar</button></td>
+        </tr>`));
+
+  content.innerHTML = `<div>
+    <div class="section-header">
+      <div class="section-title">Mídias da Semana</div>
+      <div class="text-muted" style="font-size:12px">Novas solicitações de mídia são lançadas pelo ADM.</div>
+    </div>
+    <div class="alerta-item media"><div class="alerta-icon">⏰</div><div><div class="alerta-msg">Prazo máximo de envio: domingo.</div><div class="alerta-criador">${faltantes.length} criador(es) ainda precisam confirmar envio.</div></div></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Criador</th><th>Tipo</th><th>Status</th><th>Ações</th></tr></thead>
+        <tbody>${linhas.join('') || '<tr><td colspan="4" style="text-align:center;padding:24px">Nenhuma mídia</td></tr>'}
         </tbody>
       </table>
     </div>
@@ -3026,38 +3245,34 @@ async function renderOpResultados() {
 
   if (!ids.length) { content.innerHTML = '<div class="empty"><div class="empty-msg">Nenhum criador atribuído</div></div>'; return; }
 
-  const { data: kpiData } = await sb.from('kpis_manuais').select('valor, criador_id, metrica, plataforma').in('criador_id', ids).eq('mes', mes);
-  const kpisSociais = kpiData?.filter(k => plataformasSociais().includes(k.plataforma)) || [];
-  const totaisKpi = somarKpisPorMetrica(kpisSociais);
+  const [kpiResp, rotResp] = await Promise.all([
+    sb.from('kpis_manuais').select('valor, criador_id, metrica, plataforma').in('criador_id', ids).eq('mes', mes),
+    sb.from('rotina_status').select('criador_id,feito').in('criador_id', ids).gte('data', mes+'-01'),
+  ]);
+  const kpiData = kpiResp.data || [];
+  const resumo = resumoIndicadores([], kpiData);
+  const atividadesFeitas = rotResp.data?.filter(r=>r.feito).length || 0;
+  const atividadesMarcadas = rotResp.data?.length || 0;
 
   content.innerHTML = `<div>
     <div class="section-header"><div class="section-title">Meus Resultados — ${mes}</div></div>
+    ${resumoCardsHtml(resumo, 'operador')}
     <div class="stats-grid">
-      <div class="stat-card accent">
-        <div class="stat-label">Seguidores</div>
-        <div class="stat-val">${fmt(totaisKpi.seguidores || 0)}</div>
-        <div class="stat-sub">KPIs sociais dos seus criadores</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Criadores</div>
-        <div class="stat-val">${meusCriadores.length}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Visualizacoes</div>
-        <div class="stat-val">${fmt(totaisKpi.visualizacoes || 0)}</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Engajamento</div>
-        <div class="stat-val">${fmt(totaisKpi.engajamento || 0)}</div>
-      </div>
+      <div class="stat-card"><div class="stat-label">Criadores</div><div class="stat-val">${meusCriadores.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Atividades feitas</div><div class="stat-val">${fmt(atividadesFeitas)}</div><div class="stat-sub">${fmt(atividadesMarcadas)} marcacoes no mes</div></div>
     </div>
     <div class="card mt-4">
       <div class="card-title">KPIs sociais por Criador</div>
       ${meusCriadores.map(cr=>{
-        const total = kpisSociais.filter(f=>f.criador_id===cr.id).reduce((a,b)=>a+Number(b.valor),0)||0;
-        return `<div class="fin-item"><div class="fin-tipo">${esc(cr.nome)}</div><div class="fin-val">${fmt(total)}</div></div>`;
+        const r = resumoIndicadores([], kpiData.filter(f=>f.criador_id===cr.id));
+        const feitasCr = rotResp.data?.filter(a=>a.criador_id===cr.id && a.feito).length || 0;
+        return `<div class="fin-item">
+          <div><div class="fin-tipo">${esc(cr.nome)}</div><div class="fin-desc">Posts ${fmt(r.postagens)} · Seguidores ${fmt(r.seguidores)} · Atividades ${fmt(feitasCr)}</div></div>
+          <div class="fin-val">${fmt(r.visualizacoes)}</div>
+        </div>`;
       }).join('')}
     </div>
+    <div style="margin-top:16px">${plataformasResumoHtml(resumo, {showFat:false})}</div>
   </div>`;
 }
 
@@ -3095,9 +3310,10 @@ async function salvarFaturamento(criadorId) {
 // ============================================================
 function modalKpi(criadorId, nome) {
   if (!requireAdmin('alimentação de KPIs oficiais')) return;
+  const plataformasKpi = listaUnica([...plataformasSociais(), ...plataformasFaturamento()]);
   openModal(`Alimentar KPI — ${esc(nome)}`, `
     <div class="form-group"><label class="form-label">Plataforma</label>
-      <select id="kpi-plat">${plataformasSociais().map(p=>`<option value="${attr(p)}">${esc(p)}</option>`).join('')}</select>
+      <select id="kpi-plat">${plataformasKpi.map(p=>`<option value="${attr(p)}">${esc(p)}</option>`).join('')}</select>
     </div>
     <div class="form-group"><label class="form-label">Métrica</label>
       <select id="kpi-met">${STATE.metricasKpi.map(m=>`<option value="${attr(m)}">${esc(m)}</option>`).join('')}</select>
@@ -3136,7 +3352,7 @@ async function renderCrVisao() {
   const cr = STATE.criadores.find(c=>c.id===id);
 
   const [fatData, kpiData, notifData, chamData] = await Promise.all([
-    sb.from('faturamento').select('valor').eq('criador_id', id).eq('mes', mes),
+    sb.from('faturamento').select('valor, plataforma').eq('criador_id', id).eq('mes', mes),
     sb.from('kpis_manuais').select('metrica, valor, plataforma').eq('criador_id', id).eq('mes', mes),
     sb.from('notificacoes').select('*').eq('criador_id', id).eq('lida', false).order('created_at', {ascending:false}).limit(3),
     sb.from('chamados').select('*').eq('criador_id', id).neq('status','resolvido'),
@@ -3144,34 +3360,19 @@ async function renderCrVisao() {
   const alertaPrioritario = notifData.data?.find(n => n.prioritaria);
   if (alertaPrioritario) notificarNavegador('RaiseHot - Pendencia importante', alertaPrioritario.mensagem);
 
-  const totalFat = fatData.data?.reduce((a,b)=>a+Number(b.valor),0) || 0;
-  const seguidores = kpiData.data?.filter(k=>k.metrica==='seguidores').reduce((a,b)=>a+Number(b.valor),0) || 0;
-  const assinantes = kpiData.data?.filter(k=>k.metrica==='assinantes').reduce((a,b)=>a+Number(b.valor),0) || 0;
+  const resumo = resumoIndicadores(fatData.data || [], kpiData.data || []);
 
   content.innerHTML = `<div>
     <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:20px">Olá, ${esc(cr?.nome?.split(' ')[0])} 👋</div>
+    <div class="section-title mb-4">Resumo geral do mês</div>
+    ${resumoCardsHtml(resumo, 'criador')}
     <div class="stats-grid">
-      <div class="stat-card accent">
-        <div class="stat-label">Faturamento informado</div>
-        <div class="stat-val">${fmt(totalFat)}</div>
-        <div class="stat-sub">${fmtBRL(totalFat)} este mês · alimentado pela agência</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Seguidores</div>
-        <div class="stat-val">${fmt(seguidores)}</div>
-        <div class="stat-sub">acumulado do mês</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Assinantes</div>
-        <div class="stat-val">${fmt(assinantes)}</div>
-        <div class="stat-sub">acumulado do mês</div>
-      </div>
       <div class="stat-card">
         <div class="stat-label">Chamados Abertos</div>
         <div class="stat-val" style="color:${chamData.data?.length?'var(--warn)':'var(--ok)'}">${chamData.data?.length || 0}</div>
       </div>
     </div>
-    <div style="margin-top:16px">${kpiSocialResumoHtml(kpiData.data || [])}</div>
+    <div style="margin-top:16px">${plataformasResumoHtml(resumo, {showFat:true})}</div>
     ${notifData.data?.length ? `<div class="card mb-4" style="border-left:6px solid var(--err);background:var(--err2);box-shadow:0 8px 24px rgba(220,38,38,.18)">
       <div class="card-title" style="color:var(--err)">Atencao: recados importantes</div>
       ${notifData.data.map(n=>`<div class="notif-item ${n.prioritaria?'prioritaria':''}" style="margin-bottom:8px">
@@ -3241,6 +3442,7 @@ async function renderCrMidias() {
 
   content.innerHTML = `<div>
     <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px">Minhas Mídias desta Semana</div>
+    <div class="alerta-item media"><div class="alerta-icon">⏰</div><div><div class="alerta-msg">Prazo máximo para envio do banco de mídias: domingo.</div><div class="alerta-criador">Marque abaixo assim que enviar suas mídias.</div></div></div>
     ${midias?.map(m=>`<div class="rotina-item">
       <div style="flex:1"><div class="ri-desc">${m.tipo==='rotineiro'?'📌 Conteúdo Rotineiro':m.tipo==='ideia'?'💡 Ideia de Conteúdo':'🔞 Mídia +18'}</div></div>
       ${statusBadge(m.status)}
