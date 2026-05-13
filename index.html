@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -62,6 +62,9 @@ a{color:var(--p);text-decoration:none}
 .ps-select-row{display:flex;flex-direction:column;gap:8px;align-items:center}
 .ps-select-row label{font-size:13px;color:var(--tx2);font-weight:500}
 .ps-select-row select{max-width:280px}
+.ps-access-box{display:none;flex-direction:column;gap:10px;align-items:center;width:min(320px,100%)}
+.ps-access-box input{max-width:280px;text-align:center}
+.ps-error{display:none;max-width:320px;background:var(--err2);color:var(--err);border:1px solid #FCA5A5;border-radius:var(--r2);padding:10px 12px;font-size:13px;text-align:center}
 .ps-enter{background:var(--p);color:#fff;padding:12px 32px;border-radius:var(--r2);font-weight:600;font-size:15px;letter-spacing:.3px}
 .ps-enter:hover{background:var(--p2);transform:translateY(-1px)}
 
@@ -307,6 +310,11 @@ tr:hover td{background:var(--p4)}
   <div id="portal-sub-select" style="display:none" class="ps-select-row">
     <label id="portal-sub-label"></label>
     <select id="portal-sub-dropdown"></select>
+  </div>
+  <div id="portal-access-box" class="ps-access-box">
+    <label style="font-size:13px;color:var(--tx2);font-weight:500">Senha de acesso</label>
+    <input id="portal-password" type="password" placeholder="Digite sua senha" onkeydown="if(event.key==='Enter') enterPortal()">
+    <div id="portal-login-error" class="ps-error"></div>
   </div>
   <button class="btn btn-primary ps-enter" onclick="enterPortal()" style="display:none" id="btn-enter">Entrar no CRM →</button>
 </div>
@@ -574,15 +582,25 @@ function criadorNome(criadorId) {
   return STATE.criadores.find(c => c.id === criadorId)?.nome || criadorId;
 }
 async function resumoTarefasCriadorHoje(criadorId) {
-  const diaHoje = diaNome();
+  return resumoTarefasCriadorData(criadorId, hoje());
+}
+async function resumoTarefasCriadorData(criadorId, dataIso) {
+  const diaHoje = diaNomeDeData(dataIso);
   const { data: obrigacoes } = await sb.from('obrigacoes').select('*').eq('ativo', true);
   const tarefas = rotinaDoDia(obrigacoes, diaHoje, ['criador','admin_criador','todos']);
   const ids = tarefas.map(t => t.id);
-  const { data: status } = await sb.from('rotina_status').select('obrigacao_id,feito').eq('criador_id', criadorId).eq('data', hoje());
+  const { data: status } = await sb.from('rotina_status').select('obrigacao_id,feito').eq('criador_id', criadorId).eq('data', dataIso);
   const feitasIds = new Set((status || []).filter(s => s.feito).map(s => s.obrigacao_id));
   const feitas = tarefas.filter(t => feitasIds.has(t.id));
   const pendentes = tarefas.filter(t => !feitasIds.has(t.id));
   return {total: ids.length, feitas, pendentes};
+}
+async function resumoMidiasSemana(criadorId) {
+  const { data: midias } = await sb.from('midias_status').select('status,tipo,notificado').eq('criador_id', criadorId).gte('semana', inicioSemana());
+  const registros = midias || [];
+  const enviadas = registros.filter(m => ['enviado','aprovado'].includes(m.status));
+  const pendentes = registros.filter(m => m.status === 'pendente');
+  return {registros, enviadas, pendentes, faltandoEnvio: enviadas.length === 0};
 }
 
 // ============================================================
@@ -842,8 +860,17 @@ function selectPortal(type) {
   const dd = document.getElementById('portal-sub-dropdown');
   const label = document.getElementById('portal-sub-label');
   const btnEnter = document.getElementById('btn-enter');
+  const accessBox = document.getElementById('portal-access-box');
+  const passInput = document.getElementById('portal-password');
+  const err = document.getElementById('portal-login-error');
+  err.style.display = 'none';
+  err.textContent = '';
+  passInput.value = '';
+  accessBox.style.display = 'flex';
   if (type === 'admin') {
-    subSel.style.display = 'none';
+    subSel.style.display = 'flex';
+    label.textContent = 'Selecione o administrador:';
+    dd.innerHTML = STATE.admins.filter(a=>a.ativo).map(a=>`<option value="${attr(a.id)}">${esc(a.nome)}</option>`).join('');
     btnEnter.style.display = 'inline-flex';
   } else {
     subSel.style.display = 'flex';
@@ -856,16 +883,37 @@ function selectPortal(type) {
       dd.innerHTML = STATE.criadores.filter(c=>c.ativo).map(c=>`<option value="${attr(c.id)}">${esc(c.nome)}</option>`).join('');
     }
   }
+  setTimeout(()=>passInput.focus(), 0);
 }
 
+function mostrarErroLogin(msg) {
+  const err = document.getElementById('portal-login-error');
+  err.textContent = msg;
+  err.style.display = 'block';
+}
+async function validarAcessoCrm(tipo, pessoaId, senha) {
+  if (!senha) return {ok:false, mensagem:'Digite a senha de acesso.'};
+  const { data, error } = await sb.from('acessos_crm')
+    .select('id,nome,tipo,pessoa_id,ativo')
+    .eq('tipo', tipo)
+    .eq('pessoa_id', pessoaId)
+    .eq('senha', senha)
+    .eq('ativo', true)
+    .limit(1);
+  if (error) return {ok:false, mensagem:'Erro ao consultar acessos. Rode o SQL de acessos no Supabase.'};
+  if (!data?.length) return {ok:false, mensagem:'Senha incorreta ou acesso não cadastrado.'};
+  return {ok:true, acesso:data[0]};
+}
 async function enterPortal() {
   const type = STATE.portal;
   if (!type) { toast('Selecione um portal','warn'); return; }
+  const dd = document.getElementById('portal-sub-dropdown');
+  const senha = document.getElementById('portal-password').value;
   if (type === 'admin') {
-    STATE.userId = 'adm01';
-    STATE.userName = STATE.admins[0]?.nome || 'Admin';
+    if (!dd.value) { mostrarErroLogin('Selecione o administrador.'); return; }
+    STATE.userId = dd.value;
+    STATE.userName = STATE.admins.find(a=>a.id===STATE.userId)?.nome || 'Admin';
   } else {
-    const dd = document.getElementById('portal-sub-dropdown');
     if (!dd.value) { toast('Nenhum perfil disponivel para este portal','warn'); return; }
     STATE.userId = dd.value;
     if (type === 'operador') {
@@ -874,15 +922,22 @@ async function enterPortal() {
       STATE.userName = STATE.criadores.find(c=>c.id===STATE.userId)?.nome || 'Criador';
     }
   }
+  const validacao = await validarAcessoCrm(type, STATE.userId, senha);
+  if (!validacao.ok) { mostrarErroLogin(validacao.mensagem); return; }
   localStorage.setItem('rh_portal', type);
   localStorage.setItem('rh_userId', STATE.userId);
   localStorage.setItem('rh_userName', STATE.userName);
+  localStorage.setItem('rh_access_ok', '1');
   document.getElementById('portal-selector').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
   initApp();
 }
 
 function showPortalSelector() {
+  localStorage.removeItem('rh_portal');
+  localStorage.removeItem('rh_userId');
+  localStorage.removeItem('rh_userName');
+  localStorage.removeItem('rh_access_ok');
   document.getElementById('portal-selector').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
 }
@@ -910,15 +965,18 @@ async function boot() {
   const metricasConfig = cfg2.data?.[0]?.valor?.length ? cfg2.data[0].valor : [];
   STATE.metricasKpi = listaUnica([...metricasConfig, ...METRICAS_KPI_PADRAO]);
   await garantirRotinaOficial();
+  await verificarAdvertenciasMidiaSemanal();
 
   // Restaurar sessão
   const savedPortal = localStorage.getItem('rh_portal');
   const savedId = localStorage.getItem('rh_userId');
   const savedName = localStorage.getItem('rh_userName');
+  const savedAccess = localStorage.getItem('rh_access_ok') === '1';
   const savedStillValid = savedPortal === 'admin'
-    || (savedPortal === 'operador' && STATE.operadores.some(o=>o.id===savedId && o.ativo))
-    || (savedPortal === 'criador' && STATE.criadores.some(c=>c.id===savedId && c.ativo));
-  if (savedPortal && savedId && savedStillValid) {
+    ? STATE.admins.some(a=>a.id===savedId && a.ativo)
+    : (savedPortal === 'operador' && STATE.operadores.some(o=>o.id===savedId && o.ativo))
+      || (savedPortal === 'criador' && STATE.criadores.some(c=>c.id===savedId && c.ativo));
+  if (savedPortal && savedId && savedStillValid && savedAccess) {
     STATE.portal = savedPortal;
     STATE.userId = savedId;
     STATE.userName = savedName;
@@ -929,6 +987,7 @@ async function boot() {
     localStorage.removeItem('rh_portal');
     localStorage.removeItem('rh_userId');
     localStorage.removeItem('rh_userName');
+    localStorage.removeItem('rh_access_ok');
   }
 }
 
@@ -964,6 +1023,34 @@ async function carregarObrigacoesAtivas() {
   const { data: atualizadas, error: refetchError } = await sb.from('obrigacoes').select('*').eq('ativo', true);
   if (refetchError) throw refetchError;
   return atualizadas || [];
+}
+
+async function verificarAdvertenciasMidiaSemanal() {
+  if (diaNome() !== 'segunda') return;
+  const inicio = dataRelativa(-8);
+  const fim = dataRelativa(-1);
+  const motivo = `Banco de midias nao enviado na semana ${inicio} a ${fim}`;
+  for (const cr of STATE.criadores.filter(c=>c.ativo)) {
+    const { data: envios } = await sb.from('midias_status')
+      .select('id')
+      .eq('criador_id', cr.id)
+      .eq('semana', inicio)
+      .in('status', ['enviado','aprovado']);
+    if (envios?.length) continue;
+
+    const { data: existente } = await sb.from('advertencias')
+      .select('id')
+      .eq('criador_id', cr.id)
+      .eq('motivo', motivo)
+      .eq('ativo', true)
+      .limit(1);
+    if (existente?.length) continue;
+
+    const { error } = await sb.from('advertencias').insert({criador_id: cr.id, motivo, gravidade:'media'});
+    if (!error) {
+      try { await criarNotificacaoCriador(cr.id, `Advertencia media: ${motivo}`, true); } catch(e) {}
+    }
+  }
 }
 
 function initApp() {
@@ -1102,12 +1189,10 @@ async function calcularSaude(criador_id) {
   let score = 0;
 
   // Rotina (25pts)
-  const { data: rotinas } = await sb.from('rotina_status').select('feito').eq('criador_id', criador_id).gte('data', mes+'-01');
-  const total = rotinas?.length || 0;
-  const feitas = rotinas?.filter(r=>r.feito).length || 0;
-  const pct = total > 0 ? feitas/total : 0;
+  const rotinaHoje = await resumoTarefasCriadorData(criador_id, hoje_);
+  const pct = rotinaHoje.total > 0 ? rotinaHoje.feitas.length / rotinaHoje.total : 1;
   score += Math.round(pct * 25);
-  if (pct < 0.5) motivos.push('Rotina baixa');
+  if (pct < 1) motivos.push(`${rotinaHoje.pendentes.length} tarefa(s) pendente(s) hoje`);
 
   // Faturamento (20pts)
   const { data: fat } = await sb.from('faturamento').select('valor').eq('criador_id', criador_id).eq('mes', mes);
@@ -1116,10 +1201,9 @@ async function calcularSaude(criador_id) {
   else motivos.push('Sem faturamento no mês');
 
   // Mídias (20pts)
-  const { data: midias } = await sb.from('midias_status').select('status').eq('criador_id', criador_id).gte('semana', inicioSemana());
-  const pendentes = midias?.filter(m=>m.status==='pendente').length || 0;
-  if (pendentes === 0) score += 20;
-  else motivos.push('Mídias pendentes');
+  const midiasResumo = await resumoMidiasSemana(criador_id);
+  if (!midiasResumo.faltandoEnvio && midiasResumo.pendentes.length === 0) score += 20;
+  else motivos.push(midiasResumo.faltandoEnvio ? 'Banco de mídias ainda não enviado' : 'Mídias pendentes');
 
   // Chamados (15pts)
   const diasAtras3 = new Date(); diasAtras3.setDate(diasAtras3.getDate()-3);
@@ -1153,12 +1237,15 @@ async function gerarAlertas() {
 
   for (const cr of criadores) {
     // Rotina atrasada
-    const { data: rot } = await sb.from('rotina_status').select('feito').eq('criador_id', cr.id).eq('data', hoje());
-    if (rot?.some(r=>!r.feito)) alertas.push({criador_id:cr.id, criador:cr.nome, tipo:'rotina', mensagem:`Rotina pendente hoje`, urgencia:'media'});
+    const rotinaHoje = await resumoTarefasCriadorData(cr.id, hoje());
+    if (rotinaHoje.pendentes.length) {
+      alertas.push({criador_id:cr.id, criador:cr.nome, tipo:'rotina', mensagem:`${rotinaHoje.pendentes.length} tarefa(s) do criador pendente(s) hoje`, urgencia:'media'});
+    }
 
     // Mídias pendentes
-    const { data: mid } = await sb.from('midias_status').select('tipo').eq('criador_id', cr.id).eq('status','pendente');
-    if (mid?.length) alertas.push({criador_id:cr.id, criador:cr.nome, tipo:'midia', mensagem:`${mid.length} mídia(s) pendente(s)`, urgencia:'media'});
+    const mid = await resumoMidiasSemana(cr.id);
+    if (mid.faltandoEnvio) alertas.push({criador_id:cr.id, criador:cr.nome, tipo:'midia', mensagem:'Banco de mídias da semana ainda não enviado', urgencia:'media'});
+    else if (mid.pendentes.length) alertas.push({criador_id:cr.id, criador:cr.nome, tipo:'midia', mensagem:`${mid.pendentes.length} mídia(s) pendente(s)`, urgencia:'media'});
 
     // KPI ausente no mês
     const { data: kpi } = await sb.from('kpis_manuais').select('id').eq('criador_id', cr.id).eq('mes', mes);
@@ -1210,11 +1297,10 @@ async function renderDashboard() {
   const content = document.getElementById('content');
 
   // Dados
-  const [fatData, kpiGeralData, chamData, midData, advData, logsData] = await Promise.all([
+  const [fatData, kpiGeralData, chamData, advData, logsData] = await Promise.all([
     sb.from('faturamento').select('valor, plataforma').eq('mes', mes),
     sb.from('kpis_manuais').select('valor, metrica, plataforma').eq('mes', mes),
     sb.from('chamados').select('status').neq('status','resolvido'),
-    sb.from('midias_status').select('status').eq('status','pendente'),
     sb.from('advertencias').select('id').eq('ativo',true),
     sb.from('logs_extra').select('*, operadores(nome), criadores(nome)').eq('visto_admin', false).order('created_at',{ascending:false}).limit(5),
   ]);
@@ -1226,14 +1312,14 @@ async function renderDashboard() {
   const { data: fatSem } = await sb.from('faturamento').select('valor').gte('data', inicioSemana());
   const fatSemana = fatSem?.reduce((a,b)=>a+Number(b.valor),0) || 0;
 
-  // Rotina média
-  const { data: rotAll } = await sb.from('rotina_status').select('feito').gte('data', mes+'-01');
-  const rotTotal = rotAll?.length || 0;
-  const rotFeitas = rotAll?.filter(r=>r.feito).length || 0;
-  const rotPct = rotTotal > 0 ? Math.round((rotFeitas/rotTotal)*100) : 0;
-
   // Projetos e saúde
   const criadores = STATE.criadores.filter(c=>c.ativo);
+  const resumosHoje = await Promise.all(criadores.map(c => resumoTarefasCriadorHoje(c.id)));
+  const rotTotal = resumosHoje.reduce((acc, r) => acc + r.total, 0);
+  const rotFeitas = resumosHoje.reduce((acc, r) => acc + r.feitas.length, 0);
+  const rotPct = rotTotal > 0 ? Math.round((rotFeitas/rotTotal)*100) : 100;
+  const midiasSemana = await Promise.all(criadores.map(c => resumoMidiasSemana(c.id)));
+  const midiasPendentesTotal = midiasSemana.filter(m => m.faltandoEnvio).length + midiasSemana.reduce((acc, m) => acc + m.pendentes.length, 0);
 
   let htmlStats = `
   <div class="stats-grid">
@@ -1264,7 +1350,7 @@ async function renderDashboard() {
     </div>
     <div class="stat-card">
       <div class="stat-label">Mídias Pendentes</div>
-      <div class="stat-val" style="color:var(--warn)">${midData.data?.length || 0}</div>
+      <div class="stat-val" style="color:var(--warn)">${midiasPendentesTotal}</div>
       <div class="stat-sub">para enviar</div>
     </div>
     <div class="stat-card">
@@ -2632,8 +2718,6 @@ async function renderRelatorios() {
   const { data: fatTotal } = await sb.from('faturamento').select('criador_id, valor, plataforma').eq('mes', mes);
   const { data: kpiTotal } = await sb.from('kpis_manuais').select('criador_id, valor, metrica, plataforma').eq('mes', mes);
   const { data: chamTodos } = await sb.from('chamados').select('status, criador_id');
-  const { data: midTodos } = await sb.from('midias_status').select('status, criador_id');
-  const { data: rotHoje } = await sb.from('rotina_status').select('criador_id,feito').eq('data', hoje());
   const { data: rotMes } = await sb.from('rotina_status').select('criador_id,feito').gte('data', mes+'-01');
   const resumoGeral = resumoIndicadores(fatTotal || [], kpiTotal || []);
 
@@ -2644,9 +2728,11 @@ async function renderRelatorios() {
   fatTotal?.forEach(f => { fatPorPlat[f.plataforma] = (fatPorPlat[f.plataforma]||0) + Number(f.valor); });
   const chamadosAbertos = chamTodos?.filter(c => c.status !== 'resolvido').length || 0;
   const chamadosResolvidos = chamTodos?.filter(c => c.status === 'resolvido').length || 0;
-  const midiasPendentes = midTodos?.filter(m => m.status === 'pendente').length || 0;
-  const rotinaFeitas = rotHoje?.filter(r => r.feito).length || 0;
-  const rotinaTotal = rotHoje?.length || 0;
+  const resumosHoje = await Promise.all(criadores.map(c => resumoTarefasCriadorHoje(c.id)));
+  const rotinaFeitas = resumosHoje.reduce((acc, r) => acc + r.feitas.length, 0);
+  const rotinaTotal = resumosHoje.reduce((acc, r) => acc + r.total, 0);
+  const midiasSemana = await Promise.all(criadores.map(c => resumoMidiasSemana(c.id)));
+  const midiasPendentes = midiasSemana.filter(m => m.faltandoEnvio).length + midiasSemana.reduce((acc, m) => acc + m.pendentes.length, 0);
 
   content.innerHTML = `<div>
     <div class="section-header"><div class="section-title">Relatorios - ${esc(mes)}</div></div>
@@ -2730,29 +2816,106 @@ async function renderRelatorios() {
 async function renderGestao() {
   const content = document.getElementById('content');
   content.innerHTML = `<div>
-    <div class="section-header"><div class="section-title">Gestão do CRM</div></div>
+    <div class="section-header"><div class="section-title">Gestao do CRM</div></div>
     <div class="grid-2">
       <div class="card">
-        <div class="card-title">🔄 Reset Mensal</div>
-        <p style="font-size:13px;color:var(--tx3);margin-bottom:16px">Remove dados alimentados no mês atual sem tocar nos meses anteriores.</p>
-        <button class="btn btn-danger" onclick="executarReset()">⚠️ Reset do Mês Atual</button>
+        <div class="card-title">Reset Mensal</div>
+        <p style="font-size:13px;color:var(--tx3);margin-bottom:16px">Remove dados alimentados no mes atual sem tocar nos meses anteriores.</p>
+        <button class="btn btn-danger" onclick="executarReset()">Reset do Mes Atual</button>
       </div>
       <div class="card">
-        <div class="card-title">🔧 Correção de Lançamentos</div>
-        <p style="font-size:13px;color:var(--tx3);margin-bottom:16px">Editar ou excluir lançamentos incorretos de faturamento e financeiro.</p>
-        <button class="btn btn-secondary" onclick="renderCorrecoes()">Abrir Correções</button>
+        <div class="card-title">Correcao de Lancamentos</div>
+        <p style="font-size:13px;color:var(--tx3);margin-bottom:16px">Editar ou excluir lancamentos incorretos de faturamento e financeiro.</p>
+        <button class="btn btn-secondary" onclick="renderCorrecoes()">Abrir Correcoes</button>
+      </div>
+      <div class="card">
+        <div class="card-title">Alterar Senha de Acesso do CRM</div>
+        <p style="font-size:13px;color:var(--tx3);margin-bottom:16px">Altere apenas senhas de criadores e operadores. Senhas dos ADMs ficam no Supabase.</p>
+        <button class="btn btn-secondary" onclick="renderAlterarSenhaAcesso()">Abrir Senhas</button>
       </div>
     </div>
     <div class="card mt-4" style="margin-top:16px">
-      <div class="card-title">🧪 Auditoria do CRM</div>
-      <p style="font-size:13px;color:var(--tx3);margin-bottom:16px">Verifica módulos principais sem criar nem apagar dados reais.</p>
-      <button class="btn btn-primary" onclick="executarAuditoria()">▶ Executar Auditoria</button>
+      <div class="card-title">Auditoria do CRM</div>
+      <p style="font-size:13px;color:var(--tx3);margin-bottom:16px">Verifica modulos principais sem criar nem apagar dados reais.</p>
+      <button class="btn btn-primary" onclick="executarAuditoria()">Executar Auditoria</button>
       <div id="auditoria-result" style="margin-top:16px"></div>
     </div>
     <div id="correcoes-area"></div>
   </div>`;
 }
 
+function renderAlterarSenhaAcesso() {
+  if (!requireAdmin('alteracao de senha de acesso')) return;
+  const div = document.getElementById('correcoes-area');
+  div.innerHTML = `<div class="card" style="margin-top:16px">
+    <div class="card-title">Alterar Senha de Acesso do CRM</div>
+    <p class="text-muted" style="margin-bottom:16px">Escolha o tipo, selecione a pessoa e defina a nova senha. Yuri e Murilo continuam com senha alteravel somente pelo SQL.</p>
+    <div class="grid-2">
+      <div class="form-group">
+        <label class="form-label">Tipo de pessoa</label>
+        <select id="senha-tipo" onchange="atualizarPessoasSenhaAcesso()">
+          <option value="criador">Criador</option>
+          <option value="operador">Operador</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pessoa</label>
+        <select id="senha-pessoa"></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Nova senha</label>
+      <input id="senha-nova" type="password" placeholder="Digite a nova senha de acesso">
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="salvarSenhaAcesso()">Salvar Senha</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('senha-nova').type = document.getElementById('senha-nova').type === 'password' ? 'text' : 'password'">Mostrar/Ocultar</button>
+    </div>
+  </div>`;
+  atualizarPessoasSenhaAcesso();
+}
+
+function atualizarPessoasSenhaAcesso() {
+  const tipo = document.getElementById('senha-tipo')?.value || 'criador';
+  const select = document.getElementById('senha-pessoa');
+  if (!select) return;
+  const lista = tipo === 'operador'
+    ? STATE.operadores.filter(o => o.ativo)
+    : STATE.criadores.filter(c => c.ativo);
+  select.innerHTML = lista.length
+    ? lista.map(p => `<option value="${attr(p.id)}">${esc(p.nome)}</option>`).join('')
+    : '<option value="">Nenhuma pessoa ativa encontrada</option>';
+}
+
+async function salvarSenhaAcesso() {
+  if (!requireAdmin('alteracao de senha de acesso')) return;
+  const tipo = document.getElementById('senha-tipo')?.value;
+  const pessoaId = document.getElementById('senha-pessoa')?.value;
+  const senha = document.getElementById('senha-nova')?.value.trim();
+  if (!['criador','operador'].includes(tipo)) { toast('Escolha criador ou operador.','warn'); return; }
+  if (!pessoaId) { toast('Selecione uma pessoa.','warn'); return; }
+  if (!senha || senha.length < 4) { toast('A senha precisa ter pelo menos 4 caracteres.','warn'); return; }
+
+  const lista = tipo === 'operador' ? STATE.operadores : STATE.criadores;
+  const pessoa = lista.find(p => p.id === pessoaId);
+  if (!pessoa) { toast('Pessoa nao encontrada no CRM.','err'); return; }
+
+  const payload = {
+    tipo,
+    pessoa_id: pessoa.id,
+    nome: pessoa.nome,
+    senha,
+    ativo: true,
+    updated_at: new Date().toISOString()
+  };
+  const { error } = await sb.from('acessos_crm').upsert(payload, { onConflict: 'tipo,pessoa_id' });
+  if (error) {
+    toast('Erro ao salvar senha. Confira se o SQL de acessos foi rodado no Supabase.','err');
+    return;
+  }
+  document.getElementById('senha-nova').value = '';
+  toast('Senha de acesso atualizada!','ok');
+}
 async function executarReset() {
   if (!requireAdmin('reset mensal')) return;
   const mes = mesAtual();
