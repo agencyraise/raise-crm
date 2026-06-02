@@ -2074,10 +2074,9 @@ async function carregarDossie(id, btnEl) {
     <div class="form-group"><label class="form-label">Links</label><input id="d-links" value="${attr(JSON.stringify(d.links||[]))}" placeholder='["https://..."]'></div>
     <div class="form-group"><label class="form-label">Documentos / Anotações</label><textarea id="d-docs">${esc(d.documentos)}</textarea></div>
     ${STATE.portal === 'admin' ? `<div class="sep"></div>
-    <div class="card-title" style="color:var(--err)">🔒 Cofre de Senhas (somente Admin)</div>
-    <div class="form-group"><label class="form-label">Cofre (JSON)</label>
-      <div class="cofre-field" id="cofre-field" onclick="revelarCofre(this)">${esc(JSON.stringify(d.cofre||{}, null, 2))}</div>
-      <textarea id="d-cofre" style="margin-top:8px">${esc(JSON.stringify(d.cofre||{}, null, 2))}</textarea>
+    <div class="card-title" style="color:var(--err)">Cofre de Senhas (somente Admin)</div>
+    <div class="form-group"><label class="form-label">Contas cadastradas</label>
+      ${cofreTabelaEditavel(d.cofre)}
     </div>` : ''}
     <div style="margin-top:16px">
       <button class="btn btn-primary" onclick="salvarDossie('${id}')">💾 Salvar Dossiê</button>
@@ -2086,6 +2085,89 @@ async function carregarDossie(id, btnEl) {
 }
 
 function revelarCofre(el) { el.classList.toggle('revealed'); }
+
+function normalizarCofreContas(cofre) {
+  if (!cofre) return [];
+  const fonte = Array.isArray(cofre) ? cofre : Array.isArray(cofre.contas) ? cofre.contas : null;
+  if (fonte) {
+    return fonte.map(item => ({
+      conta: item.conta || item.plataforma || item.nome || '',
+      login: item.login || item.usuario || item.email || '',
+      senha: item.senha || item.password || '',
+      status: item.status || item.status_conta || 'ativa'
+    })).filter(item => item.conta || item.login || item.senha);
+  }
+  if (typeof cofre === 'object') {
+    return Object.entries(cofre).map(([conta, valor]) => {
+      if (valor && typeof valor === 'object') {
+        return {
+          conta,
+          login: valor.login || valor.usuario || valor.email || '',
+          senha: valor.senha || valor.password || '',
+          status: valor.status || valor.status_conta || 'ativa'
+        };
+      }
+      return {conta, login:'', senha:String(valor || ''), status:'ativa'};
+    }).filter(item => item.conta || item.login || item.senha);
+  }
+  return [];
+}
+
+function cofreLinhaHtml(item = {}) {
+  const status = item.status || 'ativa';
+  return `<tr class="cofre-row">
+    <td><input class="cofre-conta" value="${attr(item.conta||'')}" placeholder="Instagram"></td>
+    <td><input class="cofre-login" value="${attr(item.login||'')}" placeholder="login ou email"></td>
+    <td><input class="cofre-senha" value="${attr(item.senha||'')}" placeholder="senha"></td>
+    <td><select class="cofre-status">
+      ${['ativa','em analise','bloqueada','desativada'].map(s=>`<option value="${s}" ${status===s?'selected':''}>${s}</option>`).join('')}
+    </select></td>
+    <td><button class="btn btn-danger btn-xs" onclick="this.closest('tr').remove()">Remover</button></td>
+  </tr>`;
+}
+
+function cofreTabelaEditavel(cofre) {
+  const contas = normalizarCofreContas(cofre);
+  return `<div class="table-wrap">
+    <table>
+      <thead><tr><th>Conta</th><th>Login</th><th>Senha</th><th>Status da conta</th><th>Ações</th></tr></thead>
+      <tbody id="d-cofre-tbody">
+        ${(contas.length ? contas : [{conta:'',login:'',senha:'',status:'ativa'}]).map(item => cofreLinhaHtml(item)).join('')}
+      </tbody>
+    </table>
+  </div>
+  <button class="btn btn-secondary btn-sm" style="margin-top:10px" onclick="adicionarContaCofre()">+ Adicionar conta</button>`;
+}
+
+function cofreTabelaLeitura(cofre) {
+  const contas = normalizarCofreContas(cofre);
+  if (!contas.length) return '<div class="text-muted">Nenhuma conta cadastrada no cofre.</div>';
+  return `<div class="table-wrap">
+    <table>
+      <thead><tr><th>Conta</th><th>Login</th><th>Senha</th><th>Status da conta</th></tr></thead>
+      <tbody>${contas.map(item=>`<tr>
+        <td>${esc(item.conta||'-')}</td>
+        <td>${esc(item.login||'-')}</td>
+        <td style="font-family:monospace">${esc(item.senha||'-')}</td>
+        <td>${esc(item.status||'ativa')}</td>
+      </tr>`).join('')}</tbody>
+    </table>
+  </div>`;
+}
+
+function adicionarContaCofre() {
+  const tbody = document.getElementById('d-cofre-tbody');
+  if (tbody) tbody.insertAdjacentHTML('beforeend', cofreLinhaHtml({status:'ativa'}));
+}
+
+function lerCofreEditavel() {
+  return {contas: Array.from(document.querySelectorAll('#d-cofre-tbody .cofre-row')).map(row => ({
+    conta: row.querySelector('.cofre-conta')?.value.trim() || '',
+    login: row.querySelector('.cofre-login')?.value.trim() || '',
+    senha: row.querySelector('.cofre-senha')?.value.trim() || '',
+    status: row.querySelector('.cofre-status')?.value || 'ativa'
+  })).filter(item => item.conta || item.login || item.senha)};
+}
 
 function parseJsonCampo(valor, fallback, nomeCampo) {
   try {
@@ -2118,12 +2200,7 @@ async function salvarDossie(id) {
     return;
   }
   if (STATE.portal === 'admin') {
-    try {
-      updates.cofre = parseJsonCampo(document.getElementById('d-cofre').value, {}, 'Cofre');
-    } catch(e) {
-      toast(e.message,'err');
-      return;
-    }
+    updates.cofre = lerCofreEditavel();
   }
   const { error } = await sb.from('dossies').upsert({id, ...updates});
   if (error) toast('Erro: '+error.message,'err');
@@ -3366,7 +3443,7 @@ async function carregarDossieOp(id, btnEl) {
     <div class="form-group"><label class="form-label">Documentos</label><textarea readonly>${esc(d.documentos||'Sem documentos')}</textarea></div>
     <div class="sep"></div>
     <div class="card-title" style="color:var(--p)">Cofre de Senhas</div>
-    <div class="cofre-field" onclick="revelarCofre(this)">${esc(JSON.stringify(d.cofre||{}, null, 2))}</div>
+    <div class="cofre-field" onclick="revelarCofre(this)">${cofreTabelaLeitura(d.cofre)}</div>
     <div class="text-muted" style="font-size:12px;margin-top:8px">Toque no cofre para revelar. O operador visualiza somente criadores atribuídos a ele.</div>
   </div>`;
 }
@@ -3399,7 +3476,7 @@ async function renderCrDossie() {
       <div class="form-group"><label class="form-label">Observacoes</label><textarea readonly>${esc(d.observacoes||'Sem observacoes')}</textarea></div>
       <div class="sep"></div>
       <div class="card-title" style="color:var(--p)">Cofre de Senhas</div>
-      <div class="cofre-field" onclick="revelarCofre(this)">${esc(JSON.stringify(d.cofre||{}, null, 2))}</div>
+      <div class="cofre-field" onclick="revelarCofre(this)">${cofreTabelaLeitura(d.cofre)}</div>
       <div class="text-muted" style="font-size:12px;margin-top:8px">Toque no cofre para revelar. Alteracoes sao feitas somente pelo ADM.</div>
     </div>
   </div>`;
