@@ -195,12 +195,24 @@ tr:hover td{background:var(--p4)}
 
 /* ---- ROTINA ---- */
 .rotina-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--r2);border:1px solid var(--bor);background:var(--sur);margin-bottom:8px;transition:all .2s}
+.rotina-item.rotina-admin{border-left:4px solid var(--p);background:#F4F0FF}
+.rotina-item.rotina-operador{border-left:4px solid var(--info);background:var(--info2)}
+.rotina-item.rotina-criador{border-left:4px solid var(--ok);background:var(--ok2)}
+.rotina-item.rotina-admin-criador{border-left:4px solid var(--warn);background:var(--warn2)}
 .rotina-item.feito{opacity:.6;background:var(--bg)}
 .rotina-item.feito .ri-desc{text-decoration:line-through;color:var(--tx3)}
 .ri-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--bor2);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s}
 .ri-check.done{background:var(--ok);border-color:var(--ok)}
 .ri-desc{font-size:13px;flex:1}
 .ri-resp{font-size:11px;color:var(--tx3)}
+.rotina-painel{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rotina-painel-card{border:1px solid var(--bor);border-radius:var(--r);background:var(--sur);padding:14px;min-width:0}
+.rotina-painel-card.admin{border-top:4px solid var(--p)}
+.rotina-painel-card.operador{border-top:4px solid var(--info)}
+.rotina-painel-card.criador{border-top:4px solid var(--ok)}
+.rotina-painel-card.admin_criador{border-top:4px solid var(--warn)}
+.rotina-status-line{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--bor);font-size:12px}
+@media (max-width:900px){.rotina-painel{grid-template-columns:1fr}}
 
 /* ---- CHAMADO ---- */
 .chamado-item{border:1px solid var(--bor);border-radius:var(--r2);padding:14px 16px;margin-bottom:10px;background:var(--sur)}
@@ -456,6 +468,7 @@ const ROTINA_OFICIAL = [
   {dia:'segunda', responsavel:'admin', descricao:'Monitorar faturamento'},
   {dia:'segunda', responsavel:'criador', descricao:'Stories com rotina pessoal'},
   {dia:'segunda', responsavel:'criador', descricao:'Stories com link as plataformas'},
+  {dia:'segunda', responsavel:'criador', descricao:'Replicar midias enviadas pelo colaborador'},
 
   {dia:'terca', responsavel:'operador', descricao:'Criacao de post'},
   {dia:'terca', responsavel:'operador', descricao:'Postagem Instagram'},
@@ -465,7 +478,7 @@ const ROTINA_OFICIAL = [
   {dia:'terca', responsavel:'operador', descricao:'Venda via chat Privacy'},
   {dia:'terca', responsavel:'admin', descricao:'Post grupo free'},
   {dia:'terca', responsavel:'admin', descricao:'Post X/Twitter'},
-  {dia:'terca', responsavel:'admin', descricao:'Programar TikTok da semana'},
+  {dia:'terca', responsavel:'admin', descricao:'Resolver pendencias'},
   {dia:'terca', responsavel:'admin', descricao:'Monitorar faturamento'},
   {dia:'terca', responsavel:'criador', descricao:'Stories com rotina pessoal'},
   {dia:'terca', responsavel:'criador', descricao:'Stories com link as plataformas'},
@@ -479,9 +492,11 @@ const ROTINA_OFICIAL = [
   {dia:'quarta', responsavel:'operador', descricao:'Venda via chat Privacy'},
   {dia:'quarta', responsavel:'admin', descricao:'Post grupo free'},
   {dia:'quarta', responsavel:'admin', descricao:'Post X/Twitter'},
+  {dia:'quarta', responsavel:'admin', descricao:'Programar TikTok da semana'},
   {dia:'quarta', responsavel:'admin', descricao:'Monitorar faturamento'},
   {dia:'quarta', responsavel:'criador', descricao:'Stories com rotina pessoal'},
   {dia:'quarta', responsavel:'criador', descricao:'Stories com link as plataformas'},
+  {dia:'quarta', responsavel:'criador', descricao:'Abrir stories com caixinha de pergunta'},
 
   {dia:'quinta', responsavel:'operador', descricao:'Criacao de post'},
   {dia:'quinta', responsavel:'operador', descricao:'Postagem Instagram'},
@@ -557,6 +572,7 @@ function obrigacaoOficial(o) {
 function obrigacaoExibivel(o) {
   const desc = String(o.descricao || '').trim().toLowerCase();
   if (o.dia === 'quarta' && desc === 'envio de ideias de conteudo') return false;
+  if (o.dia === 'terca' && desc === 'programar tiktok da semana') return false;
   if (['agencia','ambos'].includes(o.responsavel) && !obrigacaoOficial(o)) return false;
   return true;
 }
@@ -1007,6 +1023,10 @@ async function garantirRotinaOficial() {
     .update({ativo:false})
     .eq('dia','quarta')
     .ilike('descricao','Envio de ideias de conteudo');
+  await sb.from('obrigacoes')
+    .update({ativo:false})
+    .eq('dia','terca')
+    .ilike('descricao','Programar TikTok da semana');
 }
 
 async function carregarObrigacoesAtivas() {
@@ -1606,40 +1626,92 @@ function renderAlertGroup(title, items) {
 // ============================================================
 // ROTINA SEMANAL
 // ============================================================
+function classeRotinaResponsavel(resp) {
+  const r = normalizarResponsavel(resp);
+  return r === 'admin_criador' ? 'admin-criador' : r;
+}
+function badgeRotinaResponsavel(resp) {
+  const r = normalizarResponsavel(resp);
+  const badge = {admin:'badge-purple', operador:'badge-info', criador:'badge-ok', admin_criador:'badge-warn', todos:'badge-info'}[r] || 'badge-info';
+  return `<span class="badge ${badge}">${esc(labelResponsavel(r))}</span>`;
+}
+function criadoresAlvoDaRotina(tipo, criadores) {
+  if (tipo === 'operador') return criadores.filter(c => !!c.operador_id);
+  return criadores;
+}
+function resumoStatusObrigacao(ob, statusHoje, criadoresAlvo) {
+  const ids = new Set(criadoresAlvo.map(c => c.id));
+  const feitos = (statusHoje || []).filter(s => s.obrigacao_id === ob.id && s.feito && ids.has(s.criador_id));
+  const feitosIds = new Set(feitos.map(s => s.criador_id));
+  const pendentes = criadoresAlvo.filter(c => !feitosIds.has(c.id));
+  return {feitos, pendentes, total: criadoresAlvo.length, qtdFeitas: feitos.length};
+}
+function nomesCriadoresResumo(lista, limite = 5) {
+  if (!lista.length) return 'Nenhum';
+  const nomes = lista.slice(0, limite).map(c => c.nome).join(', ');
+  return lista.length > limite ? `${nomes} +${lista.length - limite}` : nomes;
+}
+function renderRotinaGrupoAdmin(titulo, tipo, obrigacoesGrupo, statusHoje, criadores, permitirMarcar = false) {
+  const cls = tipo === 'admin_criador' ? 'admin-criador' : tipo;
+  const alvo = criadoresAlvoDaRotina(tipo, criadores);
+  return `<div class="rotina-painel-card ${attr(tipo)}">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px">
+      <div class="card-title" style="margin-bottom:0">${esc(titulo)}</div>
+      ${badgeRotinaResponsavel(tipo)}
+    </div>
+    ${!obrigacoesGrupo.length ? '<div class="text-muted">Nenhuma tarefa para hoje.</div>' : obrigacoesGrupo.map(ob => {
+      const r = resumoStatusObrigacao(ob, statusHoje, alvo);
+      const pct = r.total > 0 ? Math.round((r.qtdFeitas / r.total) * 100) : 0;
+      const feito = r.total > 0 && r.qtdFeitas >= r.total;
+      return `<div class="rotina-item rotina-${attr(cls)} ${feito?'feito':''}">
+        ${permitirMarcar ? `<div class="ri-check ${feito?'done':''}" onclick="toggleObrigacaoGlobal(this,'${jsArg(ob.id)}')">${feito?'✓':''}</div>` : `<div class="ri-check ${feito?'done':''}" style="cursor:default">${feito?'✓':''}</div>`}
+        <div style="flex:1;min-width:0">
+          <div class="ri-desc">${esc(ob.descricao)}</div>
+          <div class="ri-resp">${r.qtdFeitas}/${r.total} concluido(s) · pendentes: ${esc(nomesCriadoresResumo(r.pendentes, 4))}</div>
+          <div class="progress mt-4"><div class="progress-fill" style="width:${pct}%"></div></div>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
 async function renderRotina() {
   const content = document.getElementById('content');
   const diaHoje = diaNome();
   const { data: obrigacoes } = await sb.from('obrigacoes').select('*').eq('ativo', true);
-  const rotinaHoje = rotinaDoDia(obrigacoes, diaHoje, ['admin']);
   const criadores = STATE.criadores.filter(c=>c.ativo);
+  const rotinaAdmin = rotinaDoDia(obrigacoes, diaHoje, ['admin']);
+  const rotinaOperador = rotinaDoDia(obrigacoes, diaHoje, ['operador']);
+  const rotinaCriador = rotinaDoDia(obrigacoes, diaHoje, ['criador']);
+  const rotinaConjunta = rotinaDoDia(obrigacoes, diaHoje, ['admin_criador']);
 
   content.innerHTML = `<div>
     <div class="section-header">
-      <div class="section-title">Rotina de Hoje — ${diaHoje.charAt(0).toUpperCase()+diaHoje.slice(1)}</div>
+      <div>
+        <div class="section-title">Painel Geral da Rotina — ${diaHoje.charAt(0).toUpperCase()+diaHoje.slice(1)}</div>
+        <div class="text-muted" style="font-size:12px;margin-top:4px">O ADM acompanha aqui tarefas do ADM, colaboradores e criadores em um só painel.</div>
+      </div>
       <button class="btn btn-primary" onclick="modalNovaObrigacao()">+ Obrigação</button>
     </div>
-    ${rotinaHoje.length === 0 ? '<div class="empty"><div class="empty-icon">😌</div><div class="empty-msg">Nenhuma obrigação para hoje</div></div>' : ''}
-    <div id="rotina-lista"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+      <span class="badge badge-purple">ADM</span>
+      <span class="badge badge-info">Operador / Colaborador</span>
+      <span class="badge badge-ok">Criador</span>
+      <span class="badge badge-warn">ADM + Criador</span>
+    </div>
+    <div class="rotina-painel" id="rotina-painel"></div>
     <div class="sep"></div>
     <div class="section-title mb-4">Pendencias de ontem</div>
     <div id="rotina-atrasos"></div>
-    <div class="sep"></div>
-    <div class="section-title mb-4">Status dos criadores hoje</div>
-    <div id="rotina-criadores"></div>
   </div>`;
 
   const { data: statusHojeGlobal } = await sb.from('rotina_status').select('obrigacao_id,criador_id,feito').eq('data', hoje());
-  const lista = document.getElementById('rotina-lista');
-  for (const ob of rotinaHoje) {
-    const idsBase = criadores.map(c=>c.id);
-    const feitosOb = statusHojeGlobal?.filter(s => s.obrigacao_id === ob.id && s.feito && idsBase.includes(s.criador_id)).length || 0;
-    const feito = idsBase.length > 0 && feitosOb === idsBase.length;
-    const el = document.createElement('div');
-    el.className = `rotina-item ${feito?'feito':''}`;
-    el.innerHTML = `<div class="ri-check ${feito?'done':''}" onclick="toggleObrigacaoGlobal(this,'${jsArg(ob.id)}')">${feito?'✓':''}</div>
-      <div><div class="ri-desc">${esc(ob.descricao)}</div><div class="ri-resp">${esc(labelResponsavel(ob.responsavel))} · ${esc(ob.dia)}</div></div>`;
-    lista.appendChild(el);
-  }
+  document.getElementById('rotina-painel').innerHTML = [
+    renderRotinaGrupoAdmin('Rotina do ADM', 'admin', rotinaAdmin, statusHojeGlobal || [], criadores, true),
+    renderRotinaGrupoAdmin('Rotina do Colaborador', 'operador', rotinaOperador, statusHojeGlobal || [], criadores, false),
+    renderRotinaGrupoAdmin('Rotina do Criador', 'criador', rotinaCriador, statusHojeGlobal || [], criadores, false),
+    renderRotinaGrupoAdmin('Responsabilidade Conjunta', 'admin_criador', rotinaConjunta, statusHojeGlobal || [], criadores, false)
+  ].join('');
 
   const atrasosDiv = document.getElementById('rotina-atrasos');
   const dataOntem = dataRelativa(-1);
@@ -1656,27 +1728,10 @@ async function renderRotina() {
       if (!feitasOntem.has(`${cr.id}|${ob.id}`)) pendencias.push({criador:cr.nome, tarefa:ob.descricao, resp:labelResponsavel(ob.responsavel)});
     }
   }
-  atrasosDiv.innerHTML = pendencias.length ? pendencias.slice(0,18).map(p=>`<div class="alerta-item media">
+  atrasosDiv.innerHTML = pendencias.length ? pendencias.slice(0,24).map(p=>`<div class="alerta-item media">
     <div class="alerta-icon">!</div><div><div class="alerta-msg">${esc(p.tarefa)}</div><div class="alerta-criador">${esc(p.criador)} · ${esc(p.resp)}</div></div>
   </div>`).join('') : '<div class="alerta-item baixa"><div class="alerta-icon">✓</div><div><div class="alerta-msg">Nenhuma pendencia do dia anterior.</div></div></div>';
-
-  const crDiv = document.getElementById('rotina-criadores');
-  const obrigacoesCriadorHoje = rotinaDoDia(obrigacoes, diaHoje, ['criador','admin_criador','todos']);
-  const obrigacoesCriadorIds = obrigacoesCriadorHoje.map(o=>o.id);
-  for (const cr of criadores) {
-    const { data: status } = await sb.from('rotina_status').select('*').eq('criador_id', cr.id).eq('data', hoje());
-    const feitas = status?.filter(r=>r.feito && obrigacoesCriadorIds.includes(r.obrigacao_id)).length || 0;
-    const total = obrigacoesCriadorHoje.length;
-    crDiv.innerHTML += `<div class="card mb-4" style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div><strong>${esc(cr.nome)}</strong><span class="text-muted" style="margin-left:8px">${esc(cr.codigo)}</span></div>
-        <div class="text-muted">${feitas}/${total} feitas</div>
-      </div>
-      <div class="progress mt-4"><div class="progress-fill" style="width:${total>0?Math.round(feitas/total*100):0}%"></div></div>
-    </div>`;
-  }
 }
-
 async function salvarRotinaParaCriadores(obId, feito, criadorIds) {
   const data = hoje();
   for (const criador_id of criadorIds) {
